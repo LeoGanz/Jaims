@@ -5,6 +5,9 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.ByteArrayInputStream;
@@ -49,6 +52,7 @@ public class PanelProfile extends JPanel implements Runnable{
 		setMaximumSize(new Dimension(400, 60));
 		setPreferredSize(new Dimension(mf.getFrame().getWidth()/3, 60));
 		setBorder(new LineBorder(Color.BLACK));
+		
 		
 		add(Box.createRigidArea(new Dimension(10, 0)));
 		
@@ -125,13 +129,6 @@ public class PanelProfile extends JPanel implements Runnable{
 		
 	}
 	
-	public void resized() {
-		removeAll();
-		
-		initGUI(userProfile, mf);
-		revalidate();
-	}
-	
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -139,7 +136,7 @@ public class PanelProfile extends JPanel implements Runnable{
 		
 	}
 	
-	private void doResizing() {
+	public void doResizing() {
 		removeAll();
 		initGUI(userProfile, mf);
 		revalidate();

@@ -104,7 +104,6 @@ public class DatabaseManagement implements Runnable{
 					mo.setImage(rs.getBytes(4));
 					mo.setTimeDelievered(convertTimestampToDate(rs.getTimestamp(5)));
 					//mo.setTImeRead(convertTimestampToDate(rs.getTimestamp(6)));
-					
 					profileList.get(i).addMessage(mo);
 				}
 			}
@@ -118,6 +117,8 @@ public class DatabaseManagement implements Runnable{
 	
 	public void setExample() {
 		UUID sender = UUID.randomUUID();
+		UUID sender2 = UUID.randomUUID();
+		UUID sender3 = UUID.randomUUID();
 		try {
 			con = DriverManager.getConnection("jdbc:hsqldb:file:c:/database/", "root", "");
 			con.setAutoCommit(false);
@@ -136,7 +137,6 @@ public class DatabaseManagement implements Runnable{
 			pStatement.setTimestamp(5, new Timestamp(Calendar.getInstance().getTimeInMillis()));
 			byte[] img = IOUtils.toByteArray(this.getClass().getClassLoader().getResource("images/JAIMS_PENGUIN.png"));
 			pStatement.setBytes(6, img);
-			
 			pStatement.executeUpdate();
 			con.commit();
 			
@@ -148,17 +148,100 @@ public class DatabaseManagement implements Runnable{
 			pStatement.executeUpdate();
 			con.commit();
 			
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			
 			pStatement = con.prepareStatement("INSERT INTO BU88LE_MESSAGES (SENDER, RECIEVER, MESSAGE, TIME_DELIEVERED) VALUES (?,?,?,?)");
 			pStatement.setObject(1, userProfile.getUUID());
 			pStatement.setObject(2, sender);
 			pStatement.setString(3, "Beispiel-Nachricht 2");
+			pStatement.setTimestamp(4, new Timestamp(Calendar.getInstance().getTimeInMillis()));
+			pStatement.executeUpdate();
+			con.commit();
+			
+			pStatement = con.prepareStatement("INSERT INTO BU88LE_MESSAGES (SENDER, RECIEVER, MESSAGE, TIME_DELIEVERED) VALUES(?,?,?,?)");
+			pStatement.setObject(1, sender);
+			pStatement.setObject(2, userProfile.getUUID());
+			pStatement.setString(3, "Das hier sollte der Sender verschickt haben; es müsste also auf der linken Seite angezeigt werden...");
+			pStatement.setTimestamp(4, new Timestamp(Calendar.getInstance().getTimeInMillis()));
+			pStatement.executeUpdate();
+			con.commit();
+			
+			pStatement = con.prepareStatement("INSERT INTO BU88LE_MESSAGES (SENDER, RECIEVER, MESSAGE, TIME_DELIEVERED) VALUES(?,?,?,?)");
+			pStatement.setObject(1, sender);
+			pStatement.setObject(2, userProfile.getUUID());
+			pStatement.setString(3, "Theresa denkt, dass Josef auf Kathrin steht... mittlerweile hat sie es auch geschafft Annika von dieser Idee zu überzeugen, die eigentlich auch was von ihm will");
+			pStatement.setTimestamp(4, new Timestamp(Calendar.getInstance().getTimeInMillis()));
+			pStatement.executeUpdate();
+			con.commit();
+			
+			pStatement = con.prepareStatement("INSERT INTO BU88LE_MESSAGES (SENDER, RECIEVER, MESSAGE, TIME_DELIEVERED) VALUES (?,?,?,?)");
+			pStatement.setObject(1, userProfile.getUUID());
+			pStatement.setObject(2, sender);
+			pStatement.setString(3, "Tut er das denn ? Also steht er auf sie ?");
+			pStatement.setTimestamp(4, new Timestamp(Calendar.getInstance().getTimeInMillis()));
+			pStatement.executeUpdate();
+			con.commit();
+			
+			
+			pStatement = con.prepareStatement("INSERT INTO BU88LE_MESSAGES (SENDER, RECIEVER, MESSAGE, TIME_DELIEVERED) VALUES(?,?,?,?)");
+			pStatement.setObject(1, sender);
+			pStatement.setObject(2, userProfile.getUUID());
+			pStatement.setString(3, "Wenn man das nur wüsste ^^");
+			pStatement.setTimestamp(4, new Timestamp(Calendar.getInstance().getTimeInMillis()));
+			pStatement.executeUpdate();
+			con.commit();
+			
+			pStatement = con.prepareStatement("INSERT INTO BU88LE VALUES (?,?,?,?,?,?)");
+			pStatement.setObject(1, sender3);
+			pStatement.setString(2, "Sebi");
+			pStatement.setString(3, "Nur ein Test");
+			pStatement.setString(4, "Das ist ein Status :O");
+			pStatement.setTimestamp(5, new Timestamp(Calendar.getInstance().getTimeInMillis()));
+			img = IOUtils.toByteArray(this.getClass().getClassLoader().getResource("images/JAIMS_PENGUIN.png"));
+			pStatement.setBytes(6, img);
+			pStatement.executeUpdate();
+			con.commit();
+			
+			
+			pStatement = con.prepareStatement("INSERT INTO BU88LE_MESSAGES (SENDER, RECIEVER, MESSAGE, TIME_DELIEVERED) VALUES (?,?,?,?)");
+			pStatement.setObject(1, userProfile.getUUID());
+			pStatement.setObject(2, sender3);
+			pStatement.setString(3, "Hi Sebi, ich wollt dich hier auch mal anschreiben ^^");
+			pStatement.setTimestamp(4, new Timestamp(Calendar.getInstance().getTimeInMillis()));
+			pStatement.executeUpdate();
+			con.commit();
+			
+			pStatement = con.prepareStatement("INSERT INTO BU88LE_MESSAGES (SENDER, RECIEVER, MESSAGE, TIME_DELIEVERED) VALUES(?,?,?,?)");
+			pStatement.setObject(1, sender3);
+			pStatement.setObject(2, userProfile.getUUID());
+			pStatement.setString(3, "Oh nein, nicht der schon wieder :P");
+			pStatement.setTimestamp(4, new Timestamp(Calendar.getInstance().getTimeInMillis()));
+			pStatement.executeUpdate();
+			con.commit();
+			
+			pStatement = con.prepareStatement("INSERT INTO BU88LE VALUES (?,?,?,?,?,?)");
+			pStatement.setObject(1, sender2);
+			pStatement.setString(2, "Leo");
+			pStatement.setString(3, "Nur ein Test");
+			pStatement.setString(4, "Das ist ein Status :O");
+			pStatement.setTimestamp(5, new Timestamp(Calendar.getInstance().getTimeInMillis()));
+			img = IOUtils.toByteArray(this.getClass().getClassLoader().getResource("images/JAIMS_PENGUIN.png"));
+			pStatement.setBytes(6, img);
+			pStatement.executeUpdate();
+			con.commit();
+			
+			
+			pStatement = con.prepareStatement("INSERT INTO BU88LE_MESSAGES (SENDER, RECIEVER, MESSAGE, TIME_DELIEVERED) VALUES(?,?,?,?)");
+			pStatement.setObject(1, sender2);
+			pStatement.setObject(2, userProfile.getUUID());
+			pStatement.setString(3, "Hey Josef, hier ist Leo Ganz");
+			pStatement.setTimestamp(4, new Timestamp(Calendar.getInstance().getTimeInMillis()));
+			pStatement.executeUpdate();
+			con.commit();
+			
+			pStatement = con.prepareStatement("INSERT INTO BU88LE_MESSAGES (SENDER, RECIEVER, MESSAGE, TIME_DELIEVERED) VALUES (?,?,?,?)");
+			pStatement.setObject(1, userProfile.getUUID());
+			pStatement.setObject(2, sender2);
+			pStatement.setString(3, "Hi Leo :)");
 			pStatement.setTimestamp(4, new Timestamp(Calendar.getInstance().getTimeInMillis()));
 			pStatement.executeUpdate();
 			con.commit();

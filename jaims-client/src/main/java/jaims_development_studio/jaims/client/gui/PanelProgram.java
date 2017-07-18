@@ -1,12 +1,12 @@
 package jaims_development_studio.jaims.client.gui;import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
+import java.awt.Font;
+import java.awt.Graphics;
 
-import javax.swing.Box;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.border.EmptyBorder;
 
 import jaims_development_studio.jaims.client.logic.DatabaseManagement;
 import jaims_development_studio.jaims.client.logic.Profile;
@@ -47,8 +47,14 @@ public class PanelProgram extends JPanel{
 		while(threadBuildChatWithUsers.isAlive()) {
 			
 		}
+	        
+		JTabbedPane tabbedPane = new JTabbedPane();
+		tabbedPane.addTab("Chats", new JScrollPane(panelChatWithUsers));
+		tabbedPane.addTab("Contacts", new PanelContacts(databaseManagement, mf));
+		tabbedPane.setFont(new Font("Calibri", Font.ITALIC, 14));
+		tabbedPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		
-		leftNorth.add(panelChatWithUsers, BorderLayout.CENTER);
+		leftNorth.add(tabbedPane, BorderLayout.CENTER);
 		leftNorth.add(panelProfile, BorderLayout.NORTH);
 		
 		add(leftNorth, BorderLayout.LINE_START);
@@ -63,6 +69,7 @@ public class PanelProgram extends JPanel{
 		centerpanel = chatWindow;
 		add(centerpanel, BorderLayout.CENTER);
 		revalidate();
+		repaint();
 	}
 	
 	public MainFrame getMF() {
@@ -74,15 +81,19 @@ public class PanelProgram extends JPanel{
 	}
 	
 	public void doResizing() {
-		Thread threadPanelProfile = new Thread(panelProfile);
-		threadPanelProfile.start();
+		panelProfile.doResizing();
 		
-		if(centerpanel != null) {
-			Thread threadPanelWindow = new Thread(centerpanel);
-			threadPanelWindow.start();
-		}
 		
 		panelChatWithUsers.doResizing();
+		revalidate();
+
+	}
+	
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		g.drawImage(null, 0, 0, null);
+		doResizing();
 		
 	}
 }

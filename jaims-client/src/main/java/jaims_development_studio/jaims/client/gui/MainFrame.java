@@ -5,6 +5,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -112,10 +113,9 @@ public class MainFrame {
 			
 			@Override
 			public void windowStateChanged(WindowEvent evt) {
-				if (evt.getNewState() != Frame.NORMAL) {
-					c.revalidate();
-					c.repaint();
-				}
+				System.out.println("StateChanged: " + evt.getNewState());
+				c.revalidate();
+				c.repaint();
 				
 			}
 		});

@@ -59,7 +59,7 @@ public class MessageObject implements Comparable<MessageObject> {
 		return timestampDelievered;
 	}
 	
-	public void setTImeRead(Date timestampRead) {
+	public void setTimeRead(Date timestampRead) {
 		this.timestampRead = timestampRead;
 	}
 	

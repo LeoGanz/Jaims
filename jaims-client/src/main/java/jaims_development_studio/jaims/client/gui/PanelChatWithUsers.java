@@ -9,6 +9,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.imageio.ImageIO;
 import javax.swing.Box;
@@ -18,6 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
+import javax.swing.plaf.synth.SynthSpinnerUI;
 
 import jaims_development_studio.jaims.client.logic.DatabaseManagement;
 import jaims_development_studio.jaims.client.logic.Profile;
@@ -35,8 +39,8 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 	PanelProgram panelProgram;
 	Profile userProfile;
 	PanelChatWindow chatWindow;
-	
 	PanelChatWindow lastClicked;
+	ArrayList<ChatPanel> list = new ArrayList<>();
 
 	public PanelChatWithUsers(MainFrame mf, DatabaseManagement databaseManagement, PanelProgram panelProgram, Thread threadDatabaseManagement, Profile userProfile) {
 		this.mf = mf;
@@ -45,7 +49,7 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 		this.threadDatabaseManagement = threadDatabaseManagement;
 		this.userProfile = userProfile;
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		setBorder(new LineBorder(Color.black));
+		setBorder(new LineBorder(Color.DARK_GRAY));
 	}
 	
 	@Override
@@ -58,23 +62,16 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 				e.printStackTrace();
 			}
 		}while (threadDatabaseManagement.isAlive());
-		
 		initGUI();
 		
 	}
 	
 	public void initGUI() {
+		list.clear();
 		for (int i = 0; i < databaseManagement.getProfileList().size(); i++) {
-			JPanel chatPanel = new JPanel();
-			chatPanel.setMinimumSize(new Dimension(200, 60));
-			chatPanel.setMaximumSize(new Dimension(400, 60));
-			chatPanel.setPreferredSize(new Dimension(mf.getFrame().getWidth()/3, 60));
-			chatPanel.setBorder(new LineBorder(Color.BLACK));
-			chatPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 			
-			chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.LINE_AXIS));
-			chatPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-			
+			ChatPanel chatPanel = new ChatPanel(mf);
+			chatPanel.setMaximumSize(new Dimension(mf.getFrame().getWidth()/3, 60));
 			Image profileImage = null;
 			try {
 				profileImage = ImageIO.read(new ByteArrayInputStream(databaseManagement.getProfileList().get(i).getByteImage()));
@@ -95,24 +92,48 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 			chatPanel.add(username);
 			
 			chatWindow = new PanelChatWindow(panelProgram, databaseManagement, databaseManagement.getProfileList().get(i), userProfile);
+			chatPanel.setChatWindow(chatWindow);
 			chatPanel.addMouseListener(new MouseAdapter() {
 				
 				@Override
-				public void mouseClicked(MouseEvent e) {
+				public void mousePressed(MouseEvent e) {
 					//chatWindow.resized();
-					lastClicked = chatWindow;
-					panelProgram.setChatWindow(chatWindow);
+					lastClicked = chatPanel.getChatWindow();
+					panelProgram.setChatWindow(chatPanel.getChatWindow());
+
 					
 				}
 			});
 			
-			add(chatPanel);
+			list.add(chatPanel);
+			
+		}
+		
+		Comparator<ChatPanel> comp = new Comparator<ChatPanel>() {
+
+			@Override
+			public int compare(ChatPanel p1, ChatPanel p2) {
+				if (p1.getChatWindow().getLastMessage().before(p2.getChatWindow().getLastMessage())) {
+					return -1;
+				}else if(p1.getChatWindow().getLastMessage().after(p2.getChatWindow().getLastMessage())) {
+					return 1;
+				}else {
+					return 0;
+				}
+			}
+		};
+		Collections.sort(list, comp);
+		list.sort(comp);
+		
+		for (ChatPanel panel : list) {
+			add(panel);
+			
 		}
 	}
 	
 	public void resized() {
 		removeAll();
-		
+		list.clear();
 		initGUI();
 		revalidate();
 		
