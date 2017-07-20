@@ -2,7 +2,7 @@
 
 <configuration packagingData="true">
 
-    <variable name="FILE_NAME" value="server"/>
+    <variable name="FILE_NAME" value="client"/>
     <variable name="DIRECTORY" value="logs"/>
     <variable name="DESTINATION" value="${DIRECTORY}/${FILE_NAME}"/>
     <variable name="ENCODING_PATTERN" value="%date %-5level [%thread] %logger{10} [%file:%line] %msg%n"/>
