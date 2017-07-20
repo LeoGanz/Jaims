@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+                                         "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+		<property name="hibernate.connection.driver_class">org.hsqldb.jdbcDriver</property>
+		<property name="hibernate.connection.password">Bx8rY3</property>
+		<property name="hibernate.connection.url">jdbc:hsqldb:file:C:/opt/db/chat_server</property>
+		<property name="hibernate.connection.username">root</property>
+		<property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>
+		<property name="hibernate.default_catalog">PUBLIC</property>
+		<property name="hibernate.default_schema">PUBLIC</property>
+		<property name="hibernate.hbm2ddl.auto">update</property>
+		<mapping class="server.account.Account" />
+	</session-factory>
+</hibernate-configuration>

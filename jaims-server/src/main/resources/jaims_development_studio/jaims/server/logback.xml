@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration packagingData="true">
+
+    <variable name="FILE_NAME" value="server"/>
+    <variable name="DIRECTORY" value="logs"/>
+    <variable name="DESTINATION" value="${DIRECTORY}/${FILE_NAME}"/>
+    <variable name="ENCODING_PATTERN" value="%date %-5level [%thread] %logger{10} [%file:%line] %msg%n"/>
+    <variable name="ENCODING_PATTERN_SHORT" value="[%d{HH:mm:ss.SSS} %-5level]: %msg%n"/>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>${ENCODING_PATTERN}</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="GUIConsole" class="server.logging.GUIConsoleAppender">
+        <encoder>
+            <pattern>${ENCODING_PATTERN_SHORT}</pattern>
+        </encoder>
+	</appender>
+
+    <!-- Daily rollover appender that also appends timestamp and rolls over on startup -->
+    <appender name="startupDailyRolloverAppender"
+        class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${DESTINATION}-%d{yyyyMMdd}_%d{HHmmss,aux}.log</fileNamePattern>
+            <TimeBasedFileNamingAndTriggeringPolicy class="server.logging.StartupTimeBasedTriggeringPolicy" />
+        </rollingPolicy>
+        <encoder>
+            <!-- <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern> -->
+            <pattern>${ENCODING_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+	<root level="ALL">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="GUIConsole"/>
+		<appender-ref ref ="startupDailyRolloverAppender"/>
+	</root>
+</configuration>
