@@ -1,4 +1,4 @@
-package jaims_development_studio.jaims.server.logging;
+package jaims_development_studio.jaims.api.logging;
 
 import ch.qos.logback.core.joran.spi.NoAutoStart;
 import ch.qos.logback.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy;

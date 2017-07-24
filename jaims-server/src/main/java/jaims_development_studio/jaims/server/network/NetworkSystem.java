@@ -38,7 +38,6 @@ public class NetworkSystem implements Runnable, Closeable {
 			LOG.warn("FAILED TO BIND TO PORT!");
 			LOG.warn("Perhaps a server is already running on that port?");
 			server.initiateShutdown();
-
 		}
 
 	}
@@ -58,7 +57,7 @@ public class NetworkSystem implements Runnable, Closeable {
 				LOG.info("Shutting down network system");
 				break;
 			} catch (IOException e) {
-				LOG.error("An unexpected exception occurred while accepting clients", e);
+				LOG.error("An unexpected IOException occurred while accepting clients", e);
 			}
 
 			clientManager.newConnection(clientSocket);
@@ -73,7 +72,8 @@ public class NetworkSystem implements Runnable, Closeable {
 				serverSocket.close();
 			if (clientManager != null)
 				clientManager.shutdown();
-		} catch (@SuppressWarnings("unused") IOException e) {
+		} catch (IOException e) {
+			LOG.error("An unexpected IOException occurred while closing NetworkSystem", e);
 		}
 	}
 

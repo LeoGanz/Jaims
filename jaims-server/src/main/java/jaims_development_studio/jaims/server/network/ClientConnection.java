@@ -124,7 +124,7 @@ public class ClientConnection implements Runnable {
 	
 	private void manageReceiveRegistration(SendableRegistration registration) {
 		try {
-			user = clientManager.getUserManager().registerNewUser(registration);
+			user = clientManager.registerNewUser(registration);
 			
 			final SendableUUID sendableUUID = new SendableUUID(user.getAccount().getUuid());
 			manageSendSendable(sendableUUID);
@@ -136,7 +136,7 @@ public class ClientConnection implements Runnable {
 	
 	private void manageReceiveLogin(SendableLogin login) {
 		try {
-			user = clientManager.getUserManager().loginUser(login);
+			user = clientManager.loginUser(login);
 		} catch (NullPointerException | UserNotFoundException | IncorrectPasswordException e) {
 			SendableException sendableException = new SendableException(e);
 			manageSendSendable(sendableException);
@@ -146,7 +146,7 @@ public class ClientConnection implements Runnable {
 	private void manageReceiveMessage(SendableMessage message) {
 		try {
 			message.setTimestampServerReceived();
-			clientManager.getUserManager().deliverMessage(message);
+			clientManager.deliverMessage(message);
 			SendableMessageResponse messageResponse = message.buildMessageResponse();
 			manageSendSendable(messageResponse);
 		} catch (UserNotFoundException e) {
@@ -157,7 +157,7 @@ public class ClientConnection implements Runnable {
 
 	private void manageReceiveAccountDeletion() {
 		if (user != null) {
-			clientManager.getUserManager().deleteUserAndAccount(user.getAccount().getUuid());
+			clientManager.deleteUserAndAccount(user.getAccount().getUuid());
 			user = null;
 		} else {
 			UserNotFoundException userNotFoundException = new UserNotFoundException("User not logged in!");

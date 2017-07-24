@@ -1,4 +1,4 @@
-package jaims_development_studio.jaims.server.util;
+package jaims_development_studio.jaims.api.util;
 
 import java.util.AbstractCollection;
 import java.util.Iterator;

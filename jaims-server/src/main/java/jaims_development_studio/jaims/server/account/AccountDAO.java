@@ -55,7 +55,6 @@ public class AccountDAO {
 			criteriaDelete.where(condition);
 			TypedQuery<Account> query = session.createQuery(criteriaDelete);
 			query.executeUpdate();
-			//			transaction.commit();
 		}
 	}
 	

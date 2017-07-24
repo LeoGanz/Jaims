@@ -1,4 +1,4 @@
-package jaims_development_studio.jaims.server.logging;
+package jaims_development_studio.jaims.api.logging;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;

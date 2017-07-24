@@ -30,9 +30,9 @@ import javax.swing.text.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.api.logging.GUIConsoleAppender;
+import jaims_development_studio.jaims.api.util.History;
 import jaims_development_studio.jaims.server.Server;
-import jaims_development_studio.jaims.server.logging.GUIConsoleAppender;
-import jaims_development_studio.jaims.server.util.History;
 
 public class ServerGui extends JComponent {
 	

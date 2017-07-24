@@ -14,7 +14,7 @@
 		</encoder>
 	</appender>
 
-	<appender name="GUIConsole" class="server.logging.GUIConsoleAppender">
+	<appender name="GUIConsole" class="jaims_development_studio.jaims.api.logging.GUIConsoleAppender">
         <encoder>
             <pattern>${ENCODING_PATTERN_SHORT}</pattern>
         </encoder>
@@ -26,7 +26,7 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${DESTINATION}-%d{yyyyMMdd}_%d{HHmmss,aux}.log</fileNamePattern>
-            <TimeBasedFileNamingAndTriggeringPolicy class="server.logging.StartupTimeBasedTriggeringPolicy" />
+            <TimeBasedFileNamingAndTriggeringPolicy class="jaims_development_studio.jaims.api.logging.StartupTimeBasedTriggeringPolicy" />
         </rollingPolicy>
         <encoder>
             <!-- <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern> -->
