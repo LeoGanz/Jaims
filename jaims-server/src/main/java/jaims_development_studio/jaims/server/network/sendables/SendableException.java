@@ -1,25 +1,25 @@
 package jaims_development_studio.jaims.server.network.sendables;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
-import jaims_development_studio.jaims.server.network.sendables.Sendable.SendableType;
-
 @Entity(name = "SendableException")
-@DiscriminatorValue(value = SendableType.Values.EXCEPTION)
+@DiscriminatorValue(value = ESendableType.Values.EXCEPTION)
 public class SendableException extends Sendable {
+
+	private static final long	serialVersionUID	= 1L;
 	
-	private static final long serialVersionUID = 1L;
-
+	@Column(name = "EXCEPTION")
 	private final Exception		exception;
-
+	
 	public SendableException(Exception exception) {
-		super(SendableType.EXCEPTION);
+		super(ESendableType.EXCEPTION);
 		this.exception = exception;
 	}
-
+	
 	public Exception getException() {
 		return exception;
 	}
-	
+
 }

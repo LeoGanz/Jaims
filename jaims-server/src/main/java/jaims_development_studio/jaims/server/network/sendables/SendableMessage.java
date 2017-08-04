@@ -4,28 +4,54 @@ import java.awt.Image;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-
-import jaims_development_studio.jaims.server.network.sendables.Sendable.SendableType;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.Lob;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity(name = "SendableMessage")
-@DiscriminatorValue(value = SendableType.Values.MESSAGE)
+@DiscriminatorValue(value = ESendableType.Values.MESSAGE)
 public class SendableMessage extends Sendable {
 	
 	private static final long	serialVersionUID	= 1L;
-	private final UUID			sender, recipient;
+	@Column(name = "SENDER_UUID", columnDefinition = "BINARY(16) NOT NULL")
+	private final UUID			sender;
+	@Column(name = "RECIPIENT_UUID", columnDefinition = "BINARY(16) NOT NULL")
+	private final UUID			recipient;
+	@Column(name = "MESSAGE", columnDefinition = "NTEXT")
 	private final String		message;
+	@Column(name = "IMAGE")
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
 	private final Image			image;
-	private Date				timestampServerReceived, timestampServerSent, timestampDelivered, timestampRead;
-	private MessageState		state				= MessageState.UNSENT;
+	@Column(name = "TS_SERVER_RECEIVED", columnDefinition = "TIMESTAMP")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date				timestampServerReceived;
+	@Column(name = "TS_SERVER_SENT", columnDefinition = "TIMESTAMP")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date				timestampServerSent;
+	@Column(name = "TS_DELIVERED", columnDefinition = "TIMESTAMP")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date				timestampDelivered;
+	@Column(name = "TS_READ", columnDefinition = "TIMESTAMP")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date				timestampRead;
+	@Column(name = "MESSAGE_STATE", columnDefinition = "VARCHAR(64) NOT NULL")
+	@Enumerated(EnumType.STRING)
+	private EMessageState		state				= EMessageState.UNSENT;
 	
 	public SendableMessage(UUID sender, UUID recipient, String message) {
 		this(sender, recipient, message, null);
 	}
 	
 	public SendableMessage(UUID sender, UUID recipient, String message, Image image) {
-		super(SendableType.MESSAGE);
+		super(ESendableType.MESSAGE);
 		this.sender = sender;
 		this.recipient = recipient;
 		this.message = message;
@@ -53,19 +79,19 @@ public class SendableMessage extends Sendable {
 		return image;
 	}
 	
-	public MessageState getState() {
+	public EMessageState getState() {
 		return state;
 	}
 	
 	@Override
 	public void setTimestampSent() {
 		super.setTimestampSent();
-		state = MessageState.SENT;
+		state = EMessageState.SENT;
 	}
 	
 	public void setTimestampServerReceived() {
 		timestampServerReceived = new Date();
-		state = MessageState.SERVER_RECEIVED;
+		state = EMessageState.SERVER_RECEIVED;
 	}
 	
 	public Date getTimestampServerReceived() {
@@ -74,7 +100,7 @@ public class SendableMessage extends Sendable {
 	
 	public void setTimestampServerSent() {
 		timestampServerSent = new Date();
-		state = MessageState.SERVER_SENT;
+		state = EMessageState.SERVER_SENT;
 	}
 	
 	public Date getTimestampServerSent() {
@@ -83,7 +109,7 @@ public class SendableMessage extends Sendable {
 	
 	public void setTimestampDelivered() {
 		timestampDelivered = new Date();
-		state = MessageState.DELIVERED;
+		state = EMessageState.DELIVERED;
 	}
 	
 	public Date getTimestampDelivered() {
@@ -92,14 +118,11 @@ public class SendableMessage extends Sendable {
 	
 	public void setTimestampRead() {
 		timestampRead = new Date();
-		state = MessageState.READ;
+		state = EMessageState.READ;
 	}
 	
 	public Date getTimestampRead() {
 		return timestampRead;
 	}
 	
-	public enum MessageState {
-		UNSENT, SENT, SERVER_RECEIVED, SERVER_SENT, DELIVERED, READ
-	}
 }

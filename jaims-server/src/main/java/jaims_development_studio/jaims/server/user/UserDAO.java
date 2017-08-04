@@ -28,7 +28,7 @@ public class UserDAO {
 			transaction.commit();
 		}
 	}
-	
+
 	@SuppressWarnings("static-method")
 	public void delete(UUID uuid) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -42,7 +42,12 @@ public class UserDAO {
 			query.executeUpdate();
 		}
 	}
-	
+
+	//	public void delete(String username) {
+	//		Account account = (new AccountDAO()).get(username);
+	//		delete(account.getUuid());
+	//	}
+
 	@SuppressWarnings("static-method")
 	public List<User> getAll() {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -52,7 +57,7 @@ public class UserDAO {
 			return users;
 		}
 	}
-	
+
 	@SuppressWarnings("static-method")
 	public User get(UUID uuid) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -62,8 +67,8 @@ public class UserDAO {
 			Predicate condition = criteriaBuilder.equal(root.get("uuid"), uuid);
 			criteriaQuery.where(condition);
 			TypedQuery<User> query = session.createQuery(criteriaQuery);
-			User result = query.getSingleResult();
-			return result;
+			List<User> result = query.getResultList();
+			return result.isEmpty() ? null : result.get(0);
 		}
 	}
 }

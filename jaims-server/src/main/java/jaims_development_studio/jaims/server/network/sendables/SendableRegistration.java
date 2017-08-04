@@ -1,21 +1,23 @@
 package jaims_development_studio.jaims.server.network.sendables;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
-import jaims_development_studio.jaims.server.network.sendables.Sendable.SendableType;
-
 @Entity(name = "SendableRegistration")
-@DiscriminatorValue(value = SendableType.Values.REGISTRATION)
+@DiscriminatorValue(value = ESendableType.Values.REGISTRATION)
 public class SendableRegistration extends Sendable {
 	
 	private static final long	serialVersionUID	= 1L;
+	@Column(name = "USERNAME", columnDefinition = "VARCHAR(256) NOT NULL")
 	private final String		username;
+	@Column(name = "PASSWORD", columnDefinition = "VARCHAR(256) NOT NULL")
 	private final String		password;
+	@Column(name = "EMAIL", columnDefinition = "VARCHAR(256) NOT NULL")
 	private final String		email;
 	
 	public SendableRegistration(String username, String password, String email) {
-		super(SendableType.REGISTRATION);
+		super(ESendableType.REGISTRATION);
 		this.username = username;
 		this.password = password;
 		this.email = email;

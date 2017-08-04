@@ -67,12 +67,6 @@ public class Account implements Serializable {
 		this.registrationDate = registrationDate;
 	}
 	
-
-	public void setUuid(UUID uuid) {
-		this.uuid = uuid;
-	}
-	
-
 	public void setUsername(String username) {
 		this.username = username;
 	}
