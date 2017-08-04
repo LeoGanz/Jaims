@@ -27,10 +27,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Server/libs/commons-lang/commons-lang3-3.5.jar" sourcepath="/Server/libs/commons-lang/commons-lang3-3.5-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/Server/libs/commons-lang/commons-lang3-3.5-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
