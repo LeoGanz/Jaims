@@ -22,7 +22,7 @@ public class DatabaseConnection {
 			con = DriverManager.getConnection("jdbc:hsqldb:file:c:/database/", "root", "");
 		} catch (SQLException e) {
 			LOG.error("Failed to connect to database");
-			JOptionPane.showMessageDialog(null, "Couldn't connect to Database");
+			JOptionPane.showMessageDialog(null, "Couldn't connect to Database", "Databaseconnection error", JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
 		}
 	}

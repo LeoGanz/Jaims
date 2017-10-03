@@ -1,11 +1,16 @@
 package jaims_development_studio.jaims.client.logic;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.sql.Timestamp;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
 import jaims_development_studio.jaims.client.gui.JaimsFrame;
 import jaims_development_studio.jaims.client.gui.LoginPanel;
+import jaims_development_studio.jaims.client.gui.PanelAccount;
 import jaims_development_studio.jaims.client.gui.PanelContactsAndChats;
 
 public class ClientMain {
@@ -67,19 +73,43 @@ public class ClientMain {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		PanelAccount pa;
 		
-		threadPCC = new Thread(pcc = new PanelContactsAndChats());
+		Thread threadPanelAccount = new Thread(pa = new PanelAccount(username));
+		threadPanelAccount.start();
+		
+		threadPCC = new Thread(pcc = new PanelContactsAndChats(jf));
 		threadPCC.start();
 		
 		try {
 			threadPCC.join();
+			threadPanelAccount.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 		jf.getContentPane().removeAll();
-		jf.getContentPane().add(pcc, BorderLayout.CENTER);
+		
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		panel.add(pa, BorderLayout.PAGE_START);
+		panel.add(pcc, BorderLayout.CENTER);
+		jf.getContentPane().add(panel, BorderLayout.LINE_START);
+		panel.revalidate();
+		panel.repaint();
+		jf.getContentPane().revalidate();
 		jf.getContentPane().repaint();
+		
+		
+		jf.addComponentListener(new ComponentAdapter() {
+			
+			@Override
+			public void componentResized(ComponentEvent e) {
+				pcc.setPreferredSize(new Dimension(250, jf.getHeight()-120));
+				//panel.repaint();
+				jf.getContentPane().repaint();		
+			}
+		});
+		
 	}
 }

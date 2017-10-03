@@ -1,6 +1,7 @@
 package jaims_development_studio.jaims.client.gui;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -42,13 +43,13 @@ public class PanelContacts extends JPanel implements Runnable{
 	public PanelContacts(PanelContactsAndChats pcc) {
 		this.pcc = pcc;
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		setBorder(new LineBorder(Color.BLACK));
 		//setPreferredSize(new Dimension(200, 10));
 		add(Box.createRigidArea(new Dimension(0, 8)));
 	}
 	
 	private void initGUI() {
-		List<ChatObjects> list = ReadFromDatabase.chatObjectsList;
+		List<ChatObjects> list = new ArrayList<>(ReadFromDatabase.chatObjectsList);
+		
 		
 		Comparator<ChatObjects> comp = new Comparator<ChatObjects>() {
 
@@ -68,11 +69,11 @@ public class PanelContacts extends JPanel implements Runnable{
 		
 		for (int i = 0; i < list.size(); i++) {
 			JPanel panel = new JPanel();
-			if (i%2 == 0) {
+			/*if (i%2 == 0) {
 				panel.setBackground(Color.GRAY);
 			}else {
 				panel.setBackground(Color.LIGHT_GRAY);
-			}
+			}*/
 			//panel.setPreferredSize(new Dimension(10, 60));
 			panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
 			panel.add(Box.createRigidArea(new Dimension(10, 0)));
@@ -91,9 +92,9 @@ public class PanelContacts extends JPanel implements Runnable{
 							frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 							frame.add(new JLabel(new ImageIcon(image)));
 							frame.setVisible(true);
-							
 						}
 					});
+					lbl.setCursor(new Cursor(Cursor.HAND_CURSOR));
 					panel.add(lbl);
 				}else {
 					Image image = ImageIO.read(getClass().getClassLoader().getResource("images/JAIMS_Penguin.png"));
@@ -108,11 +109,9 @@ public class PanelContacts extends JPanel implements Runnable{
 			lbl.setFont(new Font("Calibri", Font.PLAIN, 15));
 			panel.add(lbl);
 			panel.add(Box.createHorizontalGlue());
-
+			panel.setBorder(new LineBorder(new Color(191, 191, 191)));
 			add(panel);
 			add(Box.createRigidArea(new Dimension(0, 5)));
-			//setPreferredSize(new Dimension((int)getPreferredSize().getWidth(), (int) getPreferredSize().getHeight()+65));
-			//System.out.println(getPreferredSize().getWidth() +"/" + getPreferredSize().getHeight());
 		}
 	}
 	

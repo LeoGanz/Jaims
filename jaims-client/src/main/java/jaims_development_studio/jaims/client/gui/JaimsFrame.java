@@ -2,6 +2,7 @@ package jaims_development_studio.jaims.client.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
@@ -59,6 +60,7 @@ public class JaimsFrame extends JFrame {
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(700, 500);
+		setMinimumSize(new Dimension(700,500));
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		try {
