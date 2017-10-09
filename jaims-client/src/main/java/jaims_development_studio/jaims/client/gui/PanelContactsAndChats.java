@@ -2,17 +2,21 @@ package jaims_development_studio.jaims.client.gui;
 
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.ScrollPane;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jaims_development_studio.jaims.client.chatObjects.ChatObjects;
+import jaims_development_studio.jaims.client.database.ReadFromDatabase;
+import jaims_development_studio.jaims.client.logic.ClientMain;
 
 public class PanelContactsAndChats extends JTabbedPane implements Runnable{
 	
@@ -25,26 +29,26 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable{
 	PanelContacts pc;
 	PanelChatWithUsers pcwu;
 	PanelAccount pa;
-	JFrame frame;
+	JaimsFrame frame;
+	ClientMain cm;
 	
-	public PanelContactsAndChats(JFrame frame) {
+	public PanelContactsAndChats(JaimsFrame frame, ClientMain cm) {
 		// TODO Auto-generated constructor stub
 		this.frame = frame;
+		this.cm = cm;
 	};
 	
-	private void initGUI() {		
-		Thread thread = new Thread(pc = new PanelContacts(this));
-		thread.start();
+	private void initGUI() {
+		List<ContactPanel> list = Collections.synchronizedList(new ArrayList<ContactPanel>());
 		
-		Thread thread2 = new Thread(pcwu = new PanelChatWithUsers());
-		thread2.start();
-		
-		try {
-			thread.join();
-			thread2.join();
-		} catch (InterruptedException e) {
-			LOG.error("Failed to join Thread");
+		for (int i = 0; i < ReadFromDatabase.chatObjectsList.size(); i++) {
+			ContactPanel cp = new ContactPanel(ReadFromDatabase.chatObjectsList.get(i), frame, cm);
+			list.add(cp);
 		}
+		
+		
+		pcwu = new PanelChatWithUsers(list);
+		pcwu.initGUI();
 		
 		setFont(new Font("Calibri", Font.BOLD, 15));
 		
@@ -58,6 +62,12 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable{
 		});		
 		addTab("Chats", scrollpane);
 		
+		
+		
+		
+		
+		pc = new PanelContacts(list);
+		pc.initGUI();		
 		JScrollPane scrollpane2 = new JScrollPane(pc);
 		scrollpane2.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
 			
@@ -66,7 +76,7 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable{
 				scrollpane2.getViewport().repaint();				
 			}
 		});
-		addTab("Contacts", scrollpane2);
+		addTab("Contacts", pc);
 		
 		revalidate();
 		repaint();

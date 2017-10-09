@@ -10,6 +10,8 @@ import java.awt.event.MouseEvent;
 import java.awt.image.ImageObserver;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -20,7 +22,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
 
 import org.slf4j.Logger;
@@ -36,21 +37,26 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 	 */
 	private static final long serialVersionUID = -6014240532566432438L;
 	private static final Logger LOG = LoggerFactory.getLogger(PanelChatWithUsers.class);
+
+	List<ContactPanel> panels;
 	
-	public PanelChatWithUsers() {
+	public PanelChatWithUsers(List<ContactPanel> panels) {
+		this.panels = Collections.synchronizedList(new ArrayList<ContactPanel>());
+		for (ContactPanel cp : panels) {
+			this.panels.add(cp);
+		}
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 	}
 
-	private void initGUI() {
+	public void initGUI() {
 		
-		List<ChatObjects> list = ReadFromDatabase.chatObjectsList2;
-		Comparator<ChatObjects> comp = new Comparator<ChatObjects>() {
+		Comparator<ContactPanel> comp = new Comparator<ContactPanel>() {
 
 			@Override
-			public int compare(ChatObjects o1, ChatObjects o2) {
-				if (o1.getList().get(o1.getList().size()-1).getTimestampRecieved().compareTo(o2.getList().get(o2.getList().size()-1).getTimestampRecieved()) > 0) {
+			public int compare(ContactPanel o1, ContactPanel o2) {
+				if (o1.getChatObject().getList().get(o1.getChatObject().getList().size()-1).getTimestampRecieved().compareTo(o2.getChatObject().getList().get(o2.getChatObject().getList().size()-1).getTimestampRecieved()) > 0) {
 					return 1;
-				}else if (o1.getList().get(o1.getList().size()-1).getTimestampRecieved().compareTo(o2.getList().get(o2.getList().size()-1).getTimestampRecieved()) < 0 ) {
+				}else if (o1.getChatObject().getList().get(o1.getChatObject().getList().size()-1).getTimestampRecieved().compareTo(o2.getChatObject().getList().get(o2.getChatObject().getList().size()-1).getTimestampRecieved()) < 0 ) {
 					return -1;
 				}else {
 					return 0;
@@ -58,49 +64,12 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 			}
 			
 		};
-		list.sort(comp);
+		panels.sort(comp);
 		
-		for (int i = 0; i < list.size(); i++) {
-			if (list.get(i).getList() != null) {
-				JPanel panel = new JPanel();
-				panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
-				panel.add(Box.createRigidArea(new Dimension(10, 0)));
-				try {
-					if (list.get(i).getProfileContact().getProfilePicture() != null) {
-						Image image = ImageIO.read(new ByteArrayInputStream(list.get(i).getProfileContact().getProfilePicture()));
-						ImageObserver io = this;
-						Image bimage = image.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-						JLabel lbl = new JLabel(new ImageIcon(bimage));
-						lbl.addMouseListener(new MouseAdapter() {
-						
-							@Override
-							public void mousePressed(MouseEvent arg0) {
-								JFrame frame = new JFrame();
-								frame.setSize(image.getWidth(io), image.getHeight(io));
-								frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-								frame.add(new JLabel(new ImageIcon(image)));
-								frame.setVisible(true);
-							}
-						});
-						lbl.setCursor(new Cursor(Cursor.HAND_CURSOR));
-						panel.add(lbl);
-					}else {
-						Image image = ImageIO.read(getClass().getClassLoader().getResource("images/JAIMS_Penguin.png"));
-						image = image.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
-						panel.add(new JLabel(new ImageIcon(image)));
-					}
-				}catch (IOException ioe) {
-					LOG.error("Failed to create image");
-				}
-				panel.add(Box.createRigidArea(new Dimension(10, 0)));
-				JLabel lbl = new JLabel(list.get(i).getProfileContact().getNickname());
-				lbl.setFont(new Font("Calibri", Font.PLAIN, 15));
-				panel.add(lbl);
-				panel.add(Box.createHorizontalGlue());
-				panel.setBorder(new LineBorder(new Color(191, 191, 191)));
-				add(panel);
-				add(Box.createRigidArea(new Dimension(0, 5)));
-			}
+		System.out.println(panels.size());
+		for (int i = 0; i < panels.size(); i++) {
+			add(panels.get(i));
+			add(Box.createRigidArea(new Dimension(0, 5)));
 		}
 	}
 	

@@ -27,7 +27,6 @@ public class ReadFromDatabase implements Runnable {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ReadFromDatabase.class);
 	public static List<ChatObjects> chatObjectsList = Collections.synchronizedList(new ArrayList<ChatObjects>());
-	public static List<ChatObjects> chatObjectsList2 = Collections.synchronizedList(new ArrayList<ChatObjects>());
 	static UUID user = UUID.randomUUID();
 	
 	
@@ -118,8 +117,6 @@ public class ReadFromDatabase implements Runnable {
 			chatObjectsList.add(co);
 			chatObjectsList.add(co2);
 			chatObjectsList.add(co3);
-			
-			chatObjectsList2 = chatObjectsList;
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

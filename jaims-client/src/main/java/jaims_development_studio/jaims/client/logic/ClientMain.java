@@ -8,6 +8,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.sql.Timestamp;
 
+import javax.swing.Box;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
+import jaims_development_studio.jaims.client.gui.ContactPanel;
 import jaims_development_studio.jaims.client.gui.JaimsFrame;
 import jaims_development_studio.jaims.client.gui.LoginPanel;
 import jaims_development_studio.jaims.client.gui.PanelAccount;
@@ -29,6 +31,8 @@ public class ClientMain {
 	JPanel panel = new JPanel();
 	Timestamp ts;
 	Rectangle r = new Rectangle(150, 150, 500, 500);
+	ContactPanel activeContactPanel;
+	
 	
 	Thread threadDatabaseManagement, threadPCC;
 	DatabaseConnection dc;
@@ -78,7 +82,7 @@ public class ClientMain {
 		Thread threadPanelAccount = new Thread(pa = new PanelAccount(username));
 		threadPanelAccount.start();
 		
-		threadPCC = new Thread(pcc = new PanelContactsAndChats(jf));
+		threadPCC = new Thread(pcc = new PanelContactsAndChats(jf, this));
 		threadPCC.start();
 		
 		try {
@@ -93,7 +97,8 @@ public class ClientMain {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		panel.add(pa, BorderLayout.PAGE_START);
-		panel.add(pcc, BorderLayout.CENTER);
+		panel.add(Box.createRigidArea(new Dimension(0, 20)), BorderLayout.CENTER);
+		panel.add(pcc, BorderLayout.PAGE_END);
 		jf.getContentPane().add(panel, BorderLayout.LINE_START);
 		panel.revalidate();
 		panel.repaint();
@@ -111,5 +116,9 @@ public class ClientMain {
 			}
 		});
 		
+	}
+	
+	public void setAcvtiveContactPanel(ContactPanel cp) {
+		activeContactPanel = cp;
 	}
 }
