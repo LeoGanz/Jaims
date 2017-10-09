@@ -27,6 +27,7 @@ public class SendableAndUserTest {
 		Account account = accountDAO.get(username);
 		if (account == null) {
 			account = new Account(username, "123456", username + "@test.com");
+			Assert.assertNotNull("Acccount shouldn't be null!", account);
 			try {
 				accountDAO.saveOrUpdate(account);
 			} catch (@SuppressWarnings("unused") UserNameNotAvailableException e) {
@@ -34,15 +35,18 @@ public class SendableAndUserTest {
 			}
 		}
 		
+		Assert.assertEquals("Fetched account object should match original!", account, accountDAO.get(username));
+		System.out.println(account.getUsername());
+		
 		User user = userDAO.get(account.getUuid());
 		if (user == null) {
 			user = new User(account);
 			userDAO.saveOrUpdate(user);
 		}
-		
+
 		List<Sendable> sendables = new ArrayList<>();
 		sendables.add(new SendableConfirmation(EConfirmationType.LOGIN_SUCCESSFUL));
-		
+
 		for (Sendable s : sendables)
 			user.enqueueSendable(s);
 

@@ -10,11 +10,11 @@ import javax.persistence.Entity;
 @Entity(name = "SendableDeleteAccount")
 @DiscriminatorValue(value = ESendableType.Values.DELETE_ACCOUNT)
 public class SendableDeleteAccount extends Sendable {
-
+	
 	private static final long serialVersionUID = 1L;
-	
+
 	public SendableDeleteAccount() {
-		super(ESendableType.DELETE_ACCOUNT);
+		super(ESendableType.DELETE_ACCOUNT, 10);
 	}
-	
+
 }

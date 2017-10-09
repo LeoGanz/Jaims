@@ -13,16 +13,16 @@ public class SendableConfirmation extends Sendable {
 
 	private static final long	serialVersionUID	= 1L;
 	
-	@Column(name = "CONFIRMATION_TYPE", columnDefinition = "VARCHAR(64) NOT NULL")
+	@Column(name = "CONFIRMATION_TYPE", columnDefinition = "VARCHAR(64)")
 	@Enumerated(EnumType.STRING)
 	private EConfirmationType	type;
 	
 	public SendableConfirmation() {
-		super(ESendableType.CONFIRMATION);
+		super(ESendableType.CONFIRMATION, 10);
 	}
 	
 	public SendableConfirmation(EConfirmationType type) {
-		super(ESendableType.CONFIRMATION);
+		super(ESendableType.CONFIRMATION, 10);
 		this.type = type;
 	}
 	

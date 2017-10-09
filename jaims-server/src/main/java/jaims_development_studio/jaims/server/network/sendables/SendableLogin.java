@@ -9,13 +9,13 @@ import javax.persistence.Entity;
 public class SendableLogin extends Sendable {
 
 	private static final long serialVersionUID = 1L;
-	@Column(name = "USERNAME", columnDefinition = "VARCHAR(256) NOT NULL")
+	@Column(name = "USERNAME", columnDefinition = "VARCHAR(256)")
 	private final String		username;
-	@Column(name = "PASSWORD", columnDefinition = "VARCHAR(256) NOT NULL")
+	@Column(name = "PASSWORD", columnDefinition = "VARCHAR(256)")
 	private final String		password;
 	
 	public SendableLogin(String username, String password) {
-		super(ESendableType.LOGIN);
+		super(ESendableType.LOGIN, 15);
 		this.username = username;
 		this.password = password;
 	}

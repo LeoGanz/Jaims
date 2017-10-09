@@ -12,11 +12,11 @@ public class SendableUUID extends Sendable {
 
 	private static final long	serialVersionUID	= 1L;
 	
-	@Column(name = "STORED_UUID", columnDefinition = "BINARY(16) NOT NULL")
+	@Column(name = "STORED_UUID", columnDefinition = "BINARY(16)")
 	private final UUID			uuid;
 	
 	public SendableUUID(UUID uuid) {
-		super(ESendableType.UUID);
+		super(ESendableType.UUID, 3);
 		this.uuid = uuid;
 	}
 	
