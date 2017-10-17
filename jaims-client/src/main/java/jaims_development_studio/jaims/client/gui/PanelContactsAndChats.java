@@ -46,8 +46,43 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable{
 			list.add(cp);
 		}
 		
+		List<ContactPanel> list2 = Collections.synchronizedList(new ArrayList<ContactPanel>());
+		for (ContactPanel cp : list) {
+			list2.add();
+		}
 		
+		
+		
+		
+		pc = new PanelContacts(list);
 		pcwu = new PanelChatWithUsers(list);
+		
+		Thread thread = new Thread(pc);
+		thread.start();
+		
+		Thread thread2 = new Thread(pcwu);
+		thread2.start();
+		
+		try {
+			thread.join();
+			thread2.join();
+		}catch (InterruptedException ise) {
+			LOG.error("Failed to join Thread");
+		}
+		
+		
+		JScrollPane scrollpane2 = new JScrollPane(pc);
+		scrollpane2.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+			
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				scrollpane2.getViewport().repaint();				
+			}
+		});
+		
+		
+		
+		
 		pcwu.initGUI();
 		
 		setFont(new Font("Calibri", Font.BOLD, 15));
@@ -60,25 +95,11 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable{
 				scrollpane.getViewport().repaint();
 			}
 		});		
-		addTab("Chats", scrollpane);
+		addTab("Chats", pcwu);
+		addTab("Contacts", pc);	
 		
 		
-		
-		
-		
-		pc = new PanelContacts(list);
-		pc.initGUI();		
-		JScrollPane scrollpane2 = new JScrollPane(pc);
-		scrollpane2.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-			
-			@Override
-			public void adjustmentValueChanged(AdjustmentEvent e) {
-				scrollpane2.getViewport().repaint();				
-			}
-		});
-		addTab("Contacts", pc);
-		
-		revalidate();
+		//revalidate();
 		repaint();
 		//setPreferredSize(new Dimension(250, 400));
 		setPreferredSize(new Dimension(250, frame.getHeight()-120));

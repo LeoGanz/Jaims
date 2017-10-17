@@ -66,7 +66,6 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 		};
 		panels.sort(comp);
 		
-		System.out.println(panels.size());
 		for (int i = 0; i < panels.size(); i++) {
 			add(panels.get(i));
 			add(Box.createRigidArea(new Dimension(0, 5)));
@@ -77,6 +76,10 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 	public void run() {
 		initGUI();
 		
+	}
+	
+	public List<ContactPanel> getList() {
+		return panels;
 	}
 
 }
