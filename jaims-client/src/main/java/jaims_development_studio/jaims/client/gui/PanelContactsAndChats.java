@@ -1,22 +1,24 @@
 package jaims_development_studio.jaims.client.gui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.xml.soap.SAAJResult;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PanelContactsAndChats extends JPanel implements Runnable{
+import jaims_development_studio.jaims.client.chatObjects.ChatObjects;
+import jaims_development_studio.jaims.client.database.ReadFromDatabase;
+import jaims_development_studio.jaims.client.logic.ClientMain;
+
+public class PanelContactsAndChats extends JTabbedPane implements Runnable{
 	
 	/**
 	 * 
@@ -26,43 +28,60 @@ public class PanelContactsAndChats extends JPanel implements Runnable{
 	
 	PanelContacts pc;
 	PanelChatWithUsers pcwu;
+	PanelAccount pa;
+	JaimsFrame frame;
+	ClientMain cm;
+	
+	public PanelContactsAndChats(JaimsFrame frame, ClientMain cm) {
+		// TODO Auto-generated constructor stub
+		this.frame = frame;
+		this.cm = cm;
+	};
 	
 	private void initGUI() {
-		Thread thread = new Thread(pc = new PanelContacts(this));
-		thread.start();
+		List<ContactPanel> list = Collections.synchronizedList(new ArrayList<ContactPanel>());
 		
-		Thread thread2 = new Thread(pcwu = new PanelChatWithUsers());
-		thread2.start();
-		
-		try {
-			thread.join();
-			thread2.join();
-		} catch (InterruptedException e) {
-			LOG.error("Failed to join Thread");
+		for (int i = 0; i < ReadFromDatabase.chatObjectsList.size(); i++) {
+			ContactPanel cp = new ContactPanel(ReadFromDatabase.chatObjectsList.get(i), frame, cm);
+			list.add(cp);
 		}
 		
 		
-		JTabbedPane jtp = new JTabbedPane();
-		jtp.setFont(new Font("Calibri", Font.BOLD, 15));
-		//jtp.setBorder(new LineBorder(Color.GRAY));
-		jtp.addTab("Chats", pcwu);
+		pcwu = new PanelChatWithUsers(list);
+		pcwu.initGUI();
 		
-		JScrollPane jsp = new JScrollPane(pc);
-		jsp.setBorder(new EmptyBorder(0, 0, 0, 0));
-		jsp.setPreferredSize(new Dimension((int) pc.getPreferredSize().getWidth(), (int) pc.getPreferredSize().getHeight()));
-		jsp.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+		setFont(new Font("Calibri", Font.BOLD, 15));
+		
+		JScrollPane scrollpane = new JScrollPane(pcwu);
+		scrollpane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
 			
 			@Override
 			public void adjustmentValueChanged(AdjustmentEvent e) {
-				pc.repaint();
-				jsp.repaint();				
+				scrollpane.getViewport().repaint();
+			}
+		});		
+		addTab("Chats", scrollpane);
+		
+		
+		
+		
+		
+		pc = new PanelContacts(list);
+		pc.initGUI();		
+		JScrollPane scrollpane2 = new JScrollPane(pc);
+		scrollpane2.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+			
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				scrollpane2.getViewport().repaint();				
 			}
 		});
-		jtp.addTab("Contacts", jsp);
-		jtp.setPreferredSize(new Dimension(400, 400));
+		addTab("Contacts", pc);
 		
-		add(jtp);
-		
+		revalidate();
+		repaint();
+		//setPreferredSize(new Dimension(250, 400));
+		setPreferredSize(new Dimension(250, frame.getHeight()-120));
 	}
 
 	@Override

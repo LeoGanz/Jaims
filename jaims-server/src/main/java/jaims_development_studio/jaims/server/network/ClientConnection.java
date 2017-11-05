@@ -55,7 +55,7 @@ public class ClientConnection implements Runnable {
 						if (connectionTerminated)
 							break;
 
-						Sendable sendable = user.getSendable();
+						Sendable sendable = user.takeSendable();
 						
 						manageSendSendable(sendable);
 

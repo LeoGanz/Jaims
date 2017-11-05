@@ -71,10 +71,13 @@ public class User implements Serializable, ICommandSender {
 		//		notify();
 	}
 	
-	public synchronized Sendable getSendable() {
+	public synchronized Sendable takeSendable() {
 		Sendable sendable = sendables.stream().sorted((o1, o2) -> Integer.compare(o1.getPriority(), o2.getPriority())).findFirst().get();
 		//			Sendable sendable = ((LinkedBlockingDeque<Sendable>) sendables).takeFirst();
+		//		if (sendable != null) {
+		sendables.remove(sendable);
 		sendable.setUser(null);
+		//		}
 		return sendable;
 	}
 	

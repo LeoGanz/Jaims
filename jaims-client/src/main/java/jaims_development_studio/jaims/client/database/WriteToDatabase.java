@@ -71,16 +71,16 @@ public class WriteToDatabase implements Runnable{
 			ps.executeUpdate();
 			con.commit();
 			
-			ps = con.prepareStatement("INSERT INTO BU88LE (USER_ID, NICKNAME, DESCRIPTION, STATUS, BYTE_ARRAY, LAST_UPDATED, MESSAGE_OBJECTS) VALUES(?,?,?,?,?,?,?)");
+			ps = con.prepareStatement("INSERT INTO BU88LE (USER_ID, NICKNAME, DESCRIPTION, STATUS, BYTE_ARRAY, LAST_UPDATED) VALUES(?,?,?,?,?,?)");
 			ps.setObject(1, UUID.randomUUID());
 			ps.setString(2, "Leo");
 			ps.setString(3, "Das ist die Beschreibung");
 			ps.setString(4, "Das ist der Status");
 			ps.setBytes(5, IOUtils.toByteArray(new FileInputStream("G:/Bilder/Assassin's Creed/wallpaper_9.jpg")));
 			ps.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
-			String[] arr = list2.toArray(new String[0]);
-			Array array = con.createArrayOf("VARCHAR", arr);
-			ps.setArray(7, array);
+			//String[] arr = list2.toArray(new String[0]);
+			//Array array = con.createArrayOf("VARCHAR", arr);
+			//ps.setArray(7, array);
 			ps.executeUpdate();
 			con.commit();
 			

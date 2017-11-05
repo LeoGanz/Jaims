@@ -1,5 +1,8 @@
 package jaims_development_studio.jaims.client.database;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -12,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +27,9 @@ public class ReadFromDatabase implements Runnable {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ReadFromDatabase.class);
 	public static List<ChatObjects> chatObjectsList = Collections.synchronizedList(new ArrayList<ChatObjects>());
-
+	static UUID user = UUID.randomUUID();
+	
+	
 	String tablename;
 	Connection con;
 	ResultSet rs;
@@ -35,7 +41,7 @@ public class ReadFromDatabase implements Runnable {
 	}
 
 	private void read() {		
-		try {
+		/*try {
 			//Builds a connection to the database
 			con = DriverManager.getConnection("jdbc:hsqldb:file:c:/database/", "root", "");
 		} catch (SQLException e) {
@@ -75,7 +81,49 @@ public class ReadFromDatabase implements Runnable {
 			} catch (SQLException e) {
 				LOG.error("Failed to create statement or resultSet!", e);
 			}
-	    }
+	    }*/
+		
+		try {
+			UUID user1 = UUID.randomUUID();
+			UUID user2 = UUID.randomUUID();
+			UUID user3 = UUID.randomUUID();
+			ArrayList<Message> list1 = new ArrayList<>();
+			ArrayList<Message> list2 = new ArrayList<>();
+			ArrayList<Message> list3 = new ArrayList<>();
+			list1.add(new Message(user1, user, "Nachricht 1 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis()-561423)));
+			list1.add(new Message(user, user1, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-235645), new Timestamp(System.currentTimeMillis()-55413)));
+			list1.add(new Message(user1, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-586105), new Timestamp(System.currentTimeMillis()-65148)));
+			list2.add(new Message(user2, user, "Nachricht 1 an User", new Timestamp(System.currentTimeMillis()-32654), new Timestamp(System.currentTimeMillis()-3214489)));
+			list2.add(new Message(user, user2, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-665987), new Timestamp(System.currentTimeMillis()-54496987)));
+			list2.add(new Message(user2, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-213456), new Timestamp(System.currentTimeMillis()-200)));
+			list3.add(new Message(user3, user, "Nachricht 1 an User", new Timestamp(System.currentTimeMillis()-2256), new Timestamp(System.currentTimeMillis())));
+			list3.add(new Message(user, user3, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-1234879), new Timestamp(System.currentTimeMillis()-99456)));
+			list3.add(new Message(user3, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-6549998), new Timestamp(System.currentTimeMillis()-623154)));
+			
+			
+			
+			Profile pf  = new Profile(user1, "Echo-Test", "Test", "Test", IOUtils.toByteArray(new FileInputStream("G:/Bilder/IMG_3731.jpg")), new Date(System.currentTimeMillis()));
+			ChatObjects co = new ChatObjects(pf);
+			co.setMessageObjectsArray(list1);
+			
+			Profile pf2 = new Profile(user2, "Leo", "Test", "Test", IOUtils.toByteArray(new FileInputStream("G:/Bilder/Assassin's Creed/wallpaper_9.jpg")), new Date(System.currentTimeMillis()));
+			ChatObjects co2 = new ChatObjects(pf2);
+			co2.setMessageObjectsArray(list2);
+			
+			Profile pf3 = new Profile(user3, "Sebi", "Test", "Test", IOUtils.toByteArray(new FileInputStream("G:/Bilder/Handy-07.01.17/WhatsApp Images/IMG-20160805-WA0005.jpg")), new Date(System.currentTimeMillis()));
+			ChatObjects co3 = new ChatObjects(pf3);
+			co3.setMessageObjectsArray(list3);
+			
+			chatObjectsList.add(co);
+			chatObjectsList.add(co2);
+			chatObjectsList.add(co3);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
