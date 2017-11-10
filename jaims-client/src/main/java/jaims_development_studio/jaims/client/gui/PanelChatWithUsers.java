@@ -11,6 +11,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -37,13 +39,22 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 	
 	List<ContactPanel> panels;
 	
+
 	public PanelChatWithUsers(List<ContactPanel> panels, PanelContactsAndChats jtp) {
 		this.panels = panels;
 		this.jtp = jtp;
+	}
+
+	public PanelChatWithUsers(List<ContactPanel> panels) {
+		this.panels = Collections.synchronizedList(new ArrayList<ContactPanel>());
+		for (ContactPanel cp : panels)
+			this.panels.add(cp);
+
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 	}
 
 	public void initGUI() {
+
 		Comparator<ContactPanel> comp = new Comparator<ContactPanel>() {
 
 			@Override
@@ -59,6 +70,7 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 			
 		};
 		panels.sort(comp);
+
 		for (ContactPanel panel: panels) {
 			JPanel jp = new JPanel();
 			jp.setBorder(new LineBorder(Color.BLACK));
@@ -110,6 +122,11 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 				});
 			}
 			add(jp);
+
+		
+		for (int i = 0; i < panels.size(); i++) {
+			add(panels.get(i));
+
 			add(Box.createRigidArea(new Dimension(0, 5)));
 		}
 		
@@ -125,6 +142,8 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 			}
 
 		});
+		
+		}
 	}
 	
 	@Override
