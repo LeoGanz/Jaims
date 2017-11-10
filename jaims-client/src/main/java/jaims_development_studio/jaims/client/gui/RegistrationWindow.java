@@ -25,6 +25,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import jaims_development_studio.jaims.api.sendables.SendableRegistration;
 import jaims_development_studio.jaims.client.networking.ServerConnection;
 
 public class RegistrationWindow extends JWindow{
@@ -191,7 +192,12 @@ public class RegistrationWindow extends JWindow{
 				btRegister.setMaximumSize(new Dimension(120, 40));
 				btRegister.setCursor(new Cursor(Cursor.HAND_CURSOR));
 				btRegister.addActionListener(e -> {
-					//register();
+					pw = "";
+					for (int i = 0; i < pfPassword.getPassword().length; i++)
+						pw += pfPassword.getPassword()[i];
+					
+					if (verifyPassword(pw) && verifyUsername(tfUsername.getText()) && verifyEmail(tfEmail.getText()))
+						sendRegistration(pw, username, email);
 					
 				});
 				panelButtons.add(btRegister, c);
@@ -237,6 +243,11 @@ public class RegistrationWindow extends JWindow{
 	private void cancel() {
 		dispose();
 		LoginPanel.setBooleanWindow(false);
+	}
+	
+	private void sendRegistration(String pw, String username, String email) {
+		SendableRegistration sr = new SendableRegistration(username, pw, email);
+		ServerConnection.sendSendable(sr);
 	}
 
 }

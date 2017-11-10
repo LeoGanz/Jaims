@@ -48,7 +48,7 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 		}
 
 		pc = new PanelContacts(list);
-		pcwu = new PanelChatWithUsers(list, this);
+		pcwu = new PanelChatWithUsers(list);
 		
 
 
@@ -66,7 +66,7 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 		}
 
 
-		JScrollPane scrollpane2 = new JScrollPane(pc);
+		JScrollPane scrollpane2 = new JScrollPane(pc, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollpane2.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
 			
 			@Override
@@ -77,12 +77,12 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 
 		setFont(new Font("Calibri", Font.BOLD, 15));
 
-		JScrollPane scrollpane = new JScrollPane(pcwu);
+		JScrollPane scrollpane = new JScrollPane(pcwu, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollpane.getVerticalScrollBar().addAdjustmentListener(e -> scrollpane.getViewport().repaint());
-		addTab("Chats", pcwu);
-		addTab("Contacts", pc);
+		addTab("Chats", scrollpane);
+		addTab("Contacts", scrollpane2);
 
-		// revalidate();
+		revalidate();
 		repaint();
 
 		setPreferredSize(new Dimension(250, frame.getHeight()-120));

@@ -7,15 +7,31 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 
+import jaims_development_studio.jaims.client.logic.ClientMain;
+
 public class SettingDots extends JPanel {
 	
-	public SettingDots() {
+	PreviewFrame pf;
+	
+	public SettingDots(ClientMain cm) {
 		setPreferredSize(new Dimension(38, 38));
 		setMaximumSize(getPreferredSize());
 		setCursor(new Cursor(Cursor.HAND_CURSOR));
+		addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				
+				
+			}
+
+		});
 	}
 	
 	@Override

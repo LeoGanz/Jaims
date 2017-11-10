@@ -45,6 +45,15 @@ public class ContactPanel extends JPanel{
 	}
 	
 	private void initGUI(Profile pf, JaimsFrame jf, ClientMain cm) {
+		
+//		try {
+//			PaintedChatPanel pcp = new PaintedChatPanel(ImageIO.read(new ByteArrayInputStream(pf.getProfilePicture())), pf.getNickname());
+//			add(pcp);
+//		} catch (IOException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+		
 		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 		setCursor(new Cursor(Cursor.HAND_CURSOR));
 		add(Box.createRigidArea(new Dimension(10, 0)));

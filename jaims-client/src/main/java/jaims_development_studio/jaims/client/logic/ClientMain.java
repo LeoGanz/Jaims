@@ -20,6 +20,7 @@ import jaims_development_studio.jaims.client.gui.LoginPanel;
 import jaims_development_studio.jaims.client.gui.PanelAccount;
 import jaims_development_studio.jaims.client.gui.PanelChat;
 import jaims_development_studio.jaims.client.gui.PanelContactsAndChats;
+import jaims_development_studio.jaims.client.networking.ServerConnection;
 
 public class ClientMain {
 
@@ -51,6 +52,8 @@ public class ClientMain {
 		dc = new DatabaseConnection();
 		dc.initConnection();
 		dc.writeToDatabase();
+		
+		ServerConnection.initConnection();
 		
 		try {
 			Thread.sleep(1800);
@@ -125,5 +128,9 @@ public class ClientMain {
 	
 	public void setAcvtiveContactPanel(ContactPanel cp) {
 		activeContactPanel = cp;
+	}
+	
+	public JaimsFrame getJaimsFrame() {
+		return jf;
 	}
 }

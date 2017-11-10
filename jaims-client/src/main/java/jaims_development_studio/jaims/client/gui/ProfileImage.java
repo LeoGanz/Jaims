@@ -2,19 +2,14 @@ package jaims_development_studio.jaims.client.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class ProfileImage extends JPanel {
@@ -26,45 +21,43 @@ public class ProfileImage extends JPanel {
 	public ProfileImage(Image img) {
 		setPreferredSize(new Dimension(55, 55));
 		setMaximumSize(getPreferredSize());
-		setBorder(new RoundBorder(50, 50, Color.BLACK));
-		//add(new JLabel(new ImageIcon(img)));
 		this.img = img;
+		addComponentListener(new ComponentAdapter() {
+			
+			@Override
+			public void componentShown(ComponentEvent e) {
+				createRoundedImage();
+				revalidate();
+				repaint();
+			}
+		});
 	}
 	
-	private void scaleImage() {
-		System.out.println("Jup");
-		float ratio = (float) img.getWidth(this)/ (float) img.getHeight(this);
-		float width = ratio * 50;
+	private void scaleMaintainAspectRatio() {
+        float ratio = (float) img.getHeight(this)/ (float)img.getWidth(this);
+        img = img.getScaledInstance( 53, 53, Image.SCALE_SMOOTH);
+    }
+	
+	private void createRoundedImage() {
+		scaleMaintainAspectRatio();
 		
+		BufferedImage bim = new BufferedImage(img.getWidth(this), img.getHeight(this), BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2 = (Graphics2D) bim.getGraphics();
+		RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+        qualityHints.put(RenderingHints.KEY_RENDERING,RenderingHints.VALUE_RENDER_QUALITY);
+        g2.setRenderingHints(qualityHints);
+        g2.setClip(new RoundRectangle2D.Double(1, (int) (27-(img.getHeight(this)/2)), img.getWidth(this), img.getHeight(this), 5, 5));
+		g2.drawImage(img, -5, -30, null);
+		g2.dispose();
 		
-		Image reImg = img.getScaledInstance((int) width, 50, Image.SCALE_SMOOTH);
+		Graphics2D g2d = (Graphics2D) getGraphics();
+		g2d.setColor(Color.black);
+		g2d.drawRoundRect(0, 0, 50, 50, 30, 30);
 		
-
-      
-	}
+	}	
 	
 	public void addImage() {
 		//scaleImage();
-	}
-	
-	@Override
-	public void paintComponent(Graphics g) {
-		if (painted == false) {
-			g.setColor(getBackground());
-			g.fillRect(0, 0, getWidth(), getHeight());
-			img = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-			
-			Graphics2D g2d = (Graphics2D) super.getGraphics();
-			RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
-	        qualityHints.put(RenderingHints.KEY_RENDERING,RenderingHints.VALUE_RENDER_QUALITY);
-	        g2d.setRenderingHints(qualityHints);
-	        
-	        g2d.setClip(new RoundRectangle2D.Double(0, 0, 49, 49, 30, 30));
-	        g2d.drawImage(img,0,0, this);
-	        g2d.dispose();
-	        
-	        painted = true;
-		}
 	}
 
 }

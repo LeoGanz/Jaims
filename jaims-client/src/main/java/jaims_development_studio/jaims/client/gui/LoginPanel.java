@@ -32,7 +32,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import jaims_development_studio.jaims.api.sendables.SendableLogin;
 import jaims_development_studio.jaims.client.logic.ClientMain;
+import jaims_development_studio.jaims.client.networking.ServerConnection;
 
 public class LoginPanel extends JPanel{
 	
@@ -89,7 +91,7 @@ public class LoginPanel extends JPanel{
 				tfUsername.addKeyListener(new KeyAdapter() {
 					
 					@Override
-					public void keyReleased(KeyEvent arg0) {
+					public void keyPressed(KeyEvent arg0) {
 						if (verifyUsername(tfUsername.getText())) {
 							tfUsername.setBorder(new LineBorder(Color.black, 1));
 							tField = true;
@@ -114,7 +116,7 @@ public class LoginPanel extends JPanel{
 				jpPassword.addKeyListener(new KeyAdapter() {
 					
 					@Override
-					public void keyReleased(KeyEvent arg0) {
+					public void keyPressed(KeyEvent arg0) {
 						pw = "";
 						for (int i = 0; i < jpPassword.getPassword().length; i++)
 							pw += jpPassword.getPassword()[i];
@@ -169,16 +171,14 @@ public class LoginPanel extends JPanel{
 				btLogin.setFont(new Font("Cailbri", Font.BOLD, 12));
 				btLogin.setCursor(new Cursor(Cursor.HAND_CURSOR));
 				btLogin.setPreferredSize(new Dimension(120, 40));
-				/*btLogin.addActionListener(arg0 -> {
+				btLogin.addActionListener(arg0 -> {
 					if ((pwField == true) && (tField == true)) {
-						if (tfUsername.equals(oldUsername) == false) {
-							//sendLogin(mf);
-							mf.panelProgramm();
-						}
+						//sendLogin(tfUsername.getText(), pw);
+						
 						
 					}
 					
-				});*/
+				});
 				btLogin.addActionListener(new ActionListener() {
 					
 					@Override
@@ -234,6 +234,11 @@ public class LoginPanel extends JPanel{
 	
 	public static void setBooleanWindow(Boolean b) {
 		registrationExists = b;
+	}
+	
+	private void sendLogin(String username, String pw) {
+		SendableLogin sl = new SendableLogin(username, pw);
+		ServerConnection.sendSendable(sl);
 	}
 	
 

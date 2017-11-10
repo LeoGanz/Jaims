@@ -36,7 +36,6 @@ public class DatabaseManagement implements Runnable{
 	private List<Profile> profileList = Collections.synchronizedList(new ArrayList<Profile>());
 
 	public DatabaseManagement(String username, String password) {
-		ServerConnection.initConnection(this);
 		this.username = username;
 		
 	}
