@@ -2,7 +2,7 @@ package jaims_development_studio.jaims.server.network.sendables;
 
 public enum ESendableType {
 	REGISTRATION(Values.REGISTRATION), LOGIN(Values.LOGIN), DELETE_ACCOUNT(Values.DELETE_ACCOUNT), //delete
-	MESSAGE(Values.MESSAGE), MESSAGE_RESPONSE(Values.MESSAGE_RESPONSE), EXCEPTION(Values.EXCEPTION), COMMAND(Values.COMMAND), UUID(Values.UUID), PROFILE(Values.PROFILE), CONFIRMATION(Values.CONFIRMATION), OTHER(Values.OTHER); //maybe friend request? confirmation (after sth like account deletion, login ...)?
+	MESSAGE(Values.MESSAGE), MESSAGE_RESPONSE(Values.MESSAGE_RESPONSE), EXCEPTION(Values.EXCEPTION), COMMAND(Values.COMMAND), UUID(Values.UUID), PROFILE(Values.PROFILE), CONFIRMATION(Values.CONFIRMATION), OTHER(Values.OTHER); //maybe friend request?
 
 	private String value;
 

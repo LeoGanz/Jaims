@@ -31,7 +31,7 @@ import jaims_development_studio.jaims.server.user.User;
 @Entity(name = "Sendable")
 @Table(name = "SENDABLES")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "SENDABLE_TYPE", discriminatorType = DiscriminatorType.STRING, columnDefinition = "VARCHAR(64) NOT NULL", length = 64)
+@DiscriminatorColumn(name = "SENDABLE_TYPE", discriminatorType = DiscriminatorType.STRING, columnDefinition = "VARCHAR(64)", length = 64)
 @DiscriminatorValue(value = ESendableType.Values.OTHER)
 public class Sendable implements Serializable {
 	
@@ -43,9 +43,12 @@ public class Sendable implements Serializable {
 	@Id
 	private UUID				uuid;
 	
-	@Column(name = "TYPE", columnDefinition = "VARCHAR(64) NOT NULL")
+	@Column(name = "SENDABLE_TYPE", columnDefinition = "VARCHAR(64)", insertable = false, updatable = false)
 	@Enumerated(EnumType.STRING)
 	private final ESendableType	type;
+	
+	@Column(name = "PRIORITY")
+	private int					priority;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ACCOUNT_UUID")
@@ -54,9 +57,16 @@ public class Sendable implements Serializable {
 	@Column(name = "TS_SENT", columnDefinition = "TIMESTAMP")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date				timestampSent;
-	
+
 	public Sendable(ESendableType type) {
 		this.type = type;
+	}
+
+	public Sendable(ESendableType type, int priority) {
+		this.type = type;
+		if (priority < 0)
+			throw new IllegalArgumentException("priority must be greater zero");
+		this.priority = priority;
 	}
 	
 	public UUID getUuid() {
@@ -67,6 +77,10 @@ public class Sendable implements Serializable {
 		return type;
 	}
 	
+	public int getPriority() {
+		return priority;
+	}
+
 	public User getUser() {
 		return user;
 	}

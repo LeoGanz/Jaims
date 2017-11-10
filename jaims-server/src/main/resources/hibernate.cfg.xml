@@ -5,7 +5,7 @@
  <session-factory>
   <property name="hibernate.connection.driver_class">org.hsqldb.jdbcDriver</property>
   <property name="hibernate.connection.password">Bx8rY3</property>
-  <property name="hibernate.connection.url">jdbc:hsqldb:file:C:/opt/db/jaims-server</property>
+  <property name="hibernate.connection.url">jdbc:hsqldb:file:C:/opt/db/jaims-server;shutdown=true;hsqldb.write_delay=false</property>
   <property name="hibernate.connection.username">root</property>
   <property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>
   <property name="hibernate.default_catalog">PUBLIC</property>

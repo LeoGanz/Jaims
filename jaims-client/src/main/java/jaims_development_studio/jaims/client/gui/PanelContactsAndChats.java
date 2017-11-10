@@ -50,7 +50,7 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 		pc = new PanelContacts(list);
 		pcwu = new PanelChatWithUsers(list, this);
 		
-		pcwu = new PanelChatWithUsers(list);
+
 
 		Thread thread = new Thread(pc);
 		thread.start();
@@ -65,6 +65,7 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 			LOG.error("Failed to join Thread");
 		}
 
+
 		JScrollPane scrollpane2 = new JScrollPane(pc);
 		scrollpane2.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
 			
@@ -73,26 +74,15 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 				scrollpane2.getViewport().repaint();				
 			}
 		});
-		
-
-		scrollpane2.getVerticalScrollBar().addAdjustmentListener(e -> scrollpane2.getViewport().repaint());
-
-		pcwu.initGUI();
-
 
 		setFont(new Font("Calibri", Font.BOLD, 15));
 
 		JScrollPane scrollpane = new JScrollPane(pcwu);
 		scrollpane.getVerticalScrollBar().addAdjustmentListener(e -> scrollpane.getViewport().repaint());
 		addTab("Chats", pcwu);
-
-		addTab("Contacts", pc);	
-		
-
 		addTab("Contacts", pc);
 
 		// revalidate();
-
 		repaint();
 
 		setPreferredSize(new Dimension(250, frame.getHeight()-120));

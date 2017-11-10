@@ -9,15 +9,15 @@ import javax.persistence.Entity;
 public class SendableRegistration extends Sendable {
 	
 	private static final long	serialVersionUID	= 1L;
-	@Column(name = "USERNAME", columnDefinition = "VARCHAR(256) NOT NULL")
+	@Column(name = "USERNAME", columnDefinition = "VARCHAR(256)")
 	private final String		username;
-	@Column(name = "PASSWORD", columnDefinition = "VARCHAR(256) NOT NULL")
+	@Column(name = "PASSWORD", columnDefinition = "VARCHAR(256)")
 	private final String		password;
-	@Column(name = "EMAIL", columnDefinition = "VARCHAR(256) NOT NULL")
+	@Column(name = "EMAIL", columnDefinition = "VARCHAR(256)")
 	private final String		email;
 	
 	public SendableRegistration(String username, String password, String email) {
-		super(ESendableType.REGISTRATION);
+		super(ESendableType.REGISTRATION, 20);
 		this.username = username;
 		this.password = password;
 		this.email = email;

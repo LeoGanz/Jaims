@@ -19,9 +19,9 @@ import javax.persistence.TemporalType;
 @Entity(name = "SendableMessageResponse")
 @DiscriminatorValue(value = ESendableType.Values.MESSAGE_RESPONSE)
 public class SendableMessageResponse extends Sendable {
-	
+
 	private static final long	serialVersionUID	= 1L;
-	@Column(name = "RECIPIENT_UUID", columnDefinition = "BINARY(16) NOT NULL")
+	@Column(name = "RECIPIENT_UUID", columnDefinition = "BINARY(16)")
 	private final UUID			recipient;
 	@Column(name = "TS_SENT", columnDefinition = "TIMESTAMP")
 	@Temporal(TemporalType.TIMESTAMP)
@@ -38,10 +38,10 @@ public class SendableMessageResponse extends Sendable {
 	@Column(name = "TS_READ", columnDefinition = "TIMESTAMP")
 	@Temporal(TemporalType.TIMESTAMP)
 	private final Date			timestampRead;
-	@Column(name = "MESSAGE_STATE", columnDefinition = "VARCHAR(64) NOT NULL")
+	@Column(name = "MESSAGE_STATE", columnDefinition = "VARCHAR(64)")
 	@Enumerated(EnumType.STRING)
 	private final EMessageState	state;
-	
+
 	public SendableMessageResponse(UUID recipient, Date timestampSent, Date timestampServerReceived,
 			Date timestampServerSent, Date timestampDelivered, Date timestampRead, EMessageState state) {
 		super(ESendableType.MESSAGE_RESPONSE);
@@ -53,34 +53,34 @@ public class SendableMessageResponse extends Sendable {
 		this.timestampRead = timestampRead;
 		this.state = state;
 	}
-	
+
 	public UUID getRecipient() {
 		return recipient;
 	}
-	
+
 	@Override
 	public Date getTimestampSent() {
 		return timestampSent;
 	}
-	
+
 	public Date getTimestampServerReceived() {
 		return timestampServerReceived;
 	}
-	
+
 	public Date getTimestampServerSent() {
 		return timestampServerSent;
 	}
-	
+
 	public Date getTimestampDelivered() {
 		return timestampDelivered;
 	}
-	
+
 	public Date getTimestampRead() {
 		return timestampRead;
 	}
-	
+
 	public EMessageState getState() {
 		return state;
 	}
-	
+
 }
