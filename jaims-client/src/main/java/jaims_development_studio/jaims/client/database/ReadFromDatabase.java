@@ -99,7 +99,7 @@ public class ReadFromDatabase implements Runnable {
 			list3.add(new Message(user3, user, "Nachricht 1 an User", new Timestamp(System.currentTimeMillis()-2256), new Timestamp(System.currentTimeMillis())));
 			list3.add(new Message(user, user3, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-1234879), new Timestamp(System.currentTimeMillis()-99456)));
 			list3.add(new Message(user3, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-6549998), new Timestamp(System.currentTimeMillis()-623154)));
-			
+			list3.add(new Message(user3, user, "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.", new Timestamp(System.currentTimeMillis()-105943), new Timestamp(System.currentTimeMillis()-33648)));
 			
 			
 			Profile pf  = new Profile(user1, "Echo-Test", "Test", "Test", IOUtils.toByteArray(new FileInputStream("G:/Bilder/IMG_3731.jpg")), new Date(System.currentTimeMillis()));

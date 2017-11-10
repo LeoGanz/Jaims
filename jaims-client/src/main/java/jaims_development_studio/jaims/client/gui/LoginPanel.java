@@ -183,6 +183,7 @@ public class LoginPanel extends JPanel{
 					
 					@Override
 					public void actionPerformed(ActionEvent e) {
+						caller.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 						cm.startCreatingChatWindow(tfUsername.getText());
 					}
 				});

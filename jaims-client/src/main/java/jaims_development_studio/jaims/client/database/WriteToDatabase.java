@@ -36,8 +36,8 @@ public class WriteToDatabase implements Runnable{
 	}
 
 	private void write() {
-		try {
-			con.setAutoCommit(false);
+		//try {
+			///con.setAutoCommit(false);
 			UUID user = UUID.randomUUID();
 			UUID user1 = UUID.randomUUID();
 			UUID user2 = UUID.randomUUID();
@@ -55,57 +55,57 @@ public class WriteToDatabase implements Runnable{
 			list3.add(new Message(user, user3, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
 			list3.add(new Message(user3, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
 			
-			
-			ps = con.prepareStatement("TRUNCATE TABLE BU88LE");
-			ps.executeUpdate();
-			con.commit();
-			
-			ps = con.prepareStatement("INSERT INTO BU88LE (USER_ID, NICKNAME, DESCRIPTION, STATUS, BYTE_ARRAY, LAST_UPDATED, MESSAGE_OBJECTS) VALUES(?,?,?,?,?,?,?)");
-			ps.setObject(1, UUID.randomUUID());
-			ps.setString(2, "Echo-Test");
-			ps.setString(3, "Das ist die Beschreibung");
-			ps.setString(4, "Das ist der Status");
-			ps.setBytes(5, IOUtils.toByteArray(new FileInputStream("G:/Bilder/IMG_3731.jpg")));
-			ps.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
-			ps.setArray(7, null);
-			ps.executeUpdate();
-			con.commit();
-			
-			ps = con.prepareStatement("INSERT INTO BU88LE (USER_ID, NICKNAME, DESCRIPTION, STATUS, BYTE_ARRAY, LAST_UPDATED) VALUES(?,?,?,?,?,?)");
-			ps.setObject(1, UUID.randomUUID());
-			ps.setString(2, "Leo");
-			ps.setString(3, "Das ist die Beschreibung");
-			ps.setString(4, "Das ist der Status");
-			ps.setBytes(5, IOUtils.toByteArray(new FileInputStream("G:/Bilder/Assassin's Creed/wallpaper_9.jpg")));
-			ps.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
-			//String[] arr = list2.toArray(new String[0]);
-			//Array array = con.createArrayOf("VARCHAR", arr);
-			//ps.setArray(7, array);
-			ps.executeUpdate();
-			con.commit();
-			
-			ps = con.prepareStatement("INSERT INTO BU88LE (USER_ID, NICKNAME, DESCRIPTION, STATUS, BYTE_ARRAY, LAST_UPDATED, MESSAGE_OBJECTS) VALUES(?,?,?,?,?,?,?)");
-			ps.setObject(1, UUID.randomUUID());
-			ps.setString(2, "Sebi");
-			ps.setString(3, "Das ist die Beschreibung");
-			ps.setString(4, "Das ist der Status");
-			ps.setBytes(5, IOUtils.toByteArray(new FileInputStream("G:/Bilder/Handy-07.01.17/WhatsApp Images/IMG-20160805-WA0005.jpg")));
-			ps.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
-			ps.setArray(7, null);
-			ps.executeUpdate();
-			con.commit();
-			
-			System.out.println("Written to database");
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//			
+//			ps = con.prepareStatement("TRUNCATE TABLE BU88LE");
+//			ps.executeUpdate();
+//			con.commit();
+//			
+//			ps = con.prepareStatement("INSERT INTO BU88LE (USER_ID, NICKNAME, DESCRIPTION, STATUS, BYTE_ARRAY, LAST_UPDATED, MESSAGE_OBJECTS) VALUES(?,?,?,?,?,?,?)");
+//			ps.setObject(1, UUID.randomUUID());
+//			ps.setString(2, "Echo-Test");
+//			ps.setString(3, "Das ist die Beschreibung");
+//			ps.setString(4, "Das ist der Status");
+//			ps.setBytes(5, IOUtils.toByteArray(new FileInputStream("G:/Bilder/IMG_3731.jpg")));
+//			ps.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
+//			ps.setArray(7, null);
+//			ps.executeUpdate();
+//			con.commit();
+//			
+//			ps = con.prepareStatement("INSERT INTO BU88LE (USER_ID, NICKNAME, DESCRIPTION, STATUS, BYTE_ARRAY, LAST_UPDATED) VALUES(?,?,?,?,?,?)");
+//			ps.setObject(1, UUID.randomUUID());
+//			ps.setString(2, "Leo");
+//			ps.setString(3, "Das ist die Beschreibung");
+//			ps.setString(4, "Das ist der Status");
+//			ps.setBytes(5, IOUtils.toByteArray(new FileInputStream("G:/Bilder/Assassin's Creed/wallpaper_9.jpg")));
+//			ps.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
+//			//String[] arr = list2.toArray(new String[0]);
+//			//Array array = con.createArrayOf("VARCHAR", arr);
+//			//ps.setArray(7, array);
+//			ps.executeUpdate();
+//			con.commit();
+//			
+//			ps = con.prepareStatement("INSERT INTO BU88LE (USER_ID, NICKNAME, DESCRIPTION, STATUS, BYTE_ARRAY, LAST_UPDATED, MESSAGE_OBJECTS) VALUES(?,?,?,?,?,?,?)");
+//			ps.setObject(1, UUID.randomUUID());
+//			ps.setString(2, "Sebi");
+//			ps.setString(3, "Das ist die Beschreibung");
+//			ps.setString(4, "Das ist der Status");
+//			ps.setBytes(5, IOUtils.toByteArray(new FileInputStream("G:/Bilder/Handy-07.01.17/WhatsApp Images/IMG-20160805-WA0005.jpg")));
+//			ps.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
+//			ps.setArray(7, null);
+//			ps.executeUpdate();
+//			con.commit();
+//			
+//			System.out.println("Written to database");
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 	}
 	

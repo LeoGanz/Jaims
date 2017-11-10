@@ -4,6 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -40,7 +46,12 @@ public class JaimsFrame extends JFrame {
 		frame.setLocationRelativeTo(null);
 		frame.setUndecorated(true);
 		frame.setBackground(new Color(0, 0, 0, 0));
-		
+		try {
+			frame.setIconImage(ImageIO.read(new File("C:/Users/josef/Pictures/JAIMS_Penguin.png")));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		Image img = null;		
 		try {
 			img = ImageIO.read(new File("C:/Users/josef/Pictures/JAIMS_Penguin.png"));
@@ -62,7 +73,7 @@ public class JaimsFrame extends JFrame {
 		setSize(700, 500);
 		setMinimumSize(new Dimension(700,500));
 		setLocationRelativeTo(null);
-		getContentPane().setLayout(new BorderLayout());
+		getContentPane().setLayout(new BorderLayout(10,0));
 		try {
 			setIconImage(ImageIO.read(new File("C:/Users/josef/Pictures/JAIMS_Penguin.png")));
 		} catch (IOException e) {
