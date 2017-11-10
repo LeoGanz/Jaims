@@ -1,5 +1,7 @@
 package jaims_development_studio.jaims.server.command;
 
+import jaims_development_studio.jaims.api.command.ICommandSender;
+
 public class PendingCommand {
 	
 	/** The command string */

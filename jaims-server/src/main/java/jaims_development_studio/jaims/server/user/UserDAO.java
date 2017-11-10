@@ -14,8 +14,9 @@ import javax.transaction.Transactional;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import jaims_development_studio.jaims.server.account.Account;
-import jaims_development_studio.jaims.server.util.HibernateUtil;
+import jaims_development_studio.jaims.api.account.Account;
+import jaims_development_studio.jaims.api.user.User;
+import jaims_development_studio.jaims.api.util.HibernateUtil;
 
 @Transactional
 public class UserDAO {

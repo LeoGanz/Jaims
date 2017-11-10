@@ -6,13 +6,12 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import jaims_development_studio.jaims.server.account.Account;
+import jaims_development_studio.jaims.api.account.Account;
+import jaims_development_studio.jaims.api.account.UserNameNotAvailableException;
+import jaims_development_studio.jaims.api.sendables.Sendable;
+import jaims_development_studio.jaims.api.sendables.SendableLogin;
+import jaims_development_studio.jaims.api.user.User;
 import jaims_development_studio.jaims.server.account.AccountDAO;
-import jaims_development_studio.jaims.server.account.UserNameNotAvailableException;
-import jaims_development_studio.jaims.server.network.sendables.EConfirmationType;
-import jaims_development_studio.jaims.server.network.sendables.Sendable;
-import jaims_development_studio.jaims.server.network.sendables.SendableConfirmation;
-import jaims_development_studio.jaims.server.user.User;
 import jaims_development_studio.jaims.server.user.UserDAO;
 
 public class SendableAndUserTest {
@@ -45,7 +44,9 @@ public class SendableAndUserTest {
 		}
 		
 		List<Sendable> sendables = new ArrayList<>();
-		sendables.add(new SendableConfirmation(EConfirmationType.LOGIN_SUCCESSFUL));
+		//		sendables.add(new SendableConfirmation(EConfirmationType.LOGIN_SUCCESSFUL));
+		//		sendables.add(new SendableMessage(account.getUuid(), account.getUuid(), "Hi!"));
+		sendables.add(new SendableLogin(username, "PW"));
 		
 		for (Sendable s : sendables)
 			user.enqueueSendable(s);
