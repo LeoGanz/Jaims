@@ -2,6 +2,10 @@ package jaims_development_studio.jaims.client.gui;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,12 +47,10 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 			list.add(cp);
 		}
 
-		List<ContactPanel> list2 = Collections.synchronizedList(new ArrayList<ContactPanel>());
-		for (ContactPanel cp : list)
-			list2.add();
-
 		pc = new PanelContacts(list);
-		pcwu = new PanelChatWithUsers(list);
+		pcwu = new PanelChatWithUsers(list, this);
+		
+
 
 		Thread thread = new Thread(pc);
 		thread.start();
@@ -63,10 +65,15 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 			LOG.error("Failed to join Thread");
 		}
 
-		JScrollPane scrollpane2 = new JScrollPane(pc);
-		scrollpane2.getVerticalScrollBar().addAdjustmentListener(e -> scrollpane2.getViewport().repaint());
 
-		pcwu.initGUI();
+		JScrollPane scrollpane2 = new JScrollPane(pc);
+		scrollpane2.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+			
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				scrollpane2.getViewport().repaint();				
+			}
+		});
 
 		setFont(new Font("Calibri", Font.BOLD, 15));
 
@@ -77,10 +84,37 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 
 		// revalidate();
 		repaint();
+
+		setPreferredSize(new Dimension(250, frame.getHeight()-120));
+		
+		addComponentListener(new ComponentAdapter() {
+			
+			@Override
+			public void componentResized(ComponentEvent e) {
+				revalidate();
+				repaint();				
+			}
+			
+		});
+		frame.addComponentListener(new ComponentAdapter() {
+			
+			@Override
+			public void componentResized(ComponentEvent e) {
+				setPreferredSize(new Dimension(250, frame.getHeight()-120));
+				revalidate();
+				repaint();
+			}
+		});
+
 		// setPreferredSize(new Dimension(250, 400));
 		setPreferredSize(new Dimension(250, frame.getHeight() - 120));
+
 	}
 
+	public ClientMain getClientMain() {
+		return cm;
+	}
+	
 	@Override
 	public void run() {
 		initGUI();

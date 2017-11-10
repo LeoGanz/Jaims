@@ -1,17 +1,14 @@
 package jaims_development_studio.jaims.client.logic;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.sql.Timestamp;
 
 import javax.swing.Box;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +18,7 @@ import jaims_development_studio.jaims.client.gui.ContactPanel;
 import jaims_development_studio.jaims.client.gui.JaimsFrame;
 import jaims_development_studio.jaims.client.gui.LoginPanel;
 import jaims_development_studio.jaims.client.gui.PanelAccount;
+import jaims_development_studio.jaims.client.gui.PanelChat;
 import jaims_development_studio.jaims.client.gui.PanelContactsAndChats;
 
 public class ClientMain {
@@ -32,7 +30,7 @@ public class ClientMain {
 	Timestamp ts;
 	Rectangle r = new Rectangle(150, 150, 500, 500);
 	ContactPanel activeContactPanel;
-	
+	PanelChat activePanelChat;
 	
 	Thread threadDatabaseManagement, threadPCC;
 	DatabaseConnection dc;
@@ -94,7 +92,7 @@ public class ClientMain {
 		}
 		jf.getContentPane().removeAll();
 		
-		JPanel panel = new JPanel();
+		panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		panel.add(pa, BorderLayout.PAGE_START);
 		panel.add(Box.createRigidArea(new Dimension(0, 20)), BorderLayout.CENTER);
@@ -104,18 +102,25 @@ public class ClientMain {
 		panel.repaint();
 		jf.getContentPane().revalidate();
 		jf.getContentPane().repaint();
+		jf.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		
+	}
+	
+	public void setMessagePanel(PanelChat pc) {
+		if (activePanelChat != null) {
+			jf.getContentPane().remove(activePanelChat);
+			jf.getContentPane().revalidate();
+		}
+		jf.getContentPane().add(pc, BorderLayout.CENTER);
+		jf.getContentPane().revalidate();
+		jf.getContentPane().repaint();
 		
-		jf.addComponentListener(new ComponentAdapter() {
-			
-			@Override
-			public void componentResized(ComponentEvent e) {
-				pcc.setPreferredSize(new Dimension(250, jf.getHeight()-120));
-				//panel.repaint();
-				jf.getContentPane().repaint();		
-			}
-		});
-		
+		activePanelChat = pc;
+	}
+	
+	public void repaintPanelLeft() {
+		panel.repaint();
+		jf.getContentPane().repaint();
 	}
 	
 	public void setAcvtiveContactPanel(ContactPanel cp) {

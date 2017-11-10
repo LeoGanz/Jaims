@@ -58,6 +58,8 @@ public class PanelAccount extends JPanel implements Runnable{
 		
 		add(Box.createHorizontalGlue());
 		
+		add(new SettingDots());
+		
 		//setPreferredSize(new Dimension(250, 60));
 	}
 

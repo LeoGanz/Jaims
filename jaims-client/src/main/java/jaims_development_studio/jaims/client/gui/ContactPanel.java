@@ -33,14 +33,20 @@ public class ContactPanel extends JPanel{
 	private static final Logger LOG = LoggerFactory.getLogger(ContactPanel.class);
 	ChatObjects co;
 	PanelChatMessages pcm;
+	PanelChat pc;
+	JaimsFrame jf;
+	ClientMain cm;
 	
 	public ContactPanel(ChatObjects co, JaimsFrame jf, ClientMain cm) {
 		this.co = co;
+		this.jf = jf;
+		this.cm = cm;
 		initGUI(co.getProfileContact(), jf, cm);
 	}
 	
 	private void initGUI(Profile pf, JaimsFrame jf, ClientMain cm) {
 		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+		setCursor(new Cursor(Cursor.HAND_CURSOR));
 		add(Box.createRigidArea(new Dimension(10, 0)));
 		try {
 			if (pf.getProfilePicture() != null) {
@@ -74,22 +80,34 @@ public class ContactPanel extends JPanel{
 		lbl.setFont(new Font("Calibri", Font.PLAIN, 15));
 		add(lbl);
 		add(Box.createHorizontalGlue());
-		setBorder(new LineBorder(new Color(191, 191, 191)));
+		setBorder(new LineBorder(Color.BLACK));
 		
 		ContactPanel cp = this;
 		
+		
 		pcm = new PanelChatMessages(jf, pf, co);
+		Thread thread = new Thread(pcm);
+		thread.start();
+		pc = new PanelChat(pf, pcm);
+		Thread thread2 = new Thread(pc);
+		thread2.start();
 		addMouseListener(new MouseAdapter() {
 			
 			@Override
 			public void mousePressed(MouseEvent e) {
-				jf.getContentPane().add(pcm, BorderLayout.CENTER);
-				jf.getContentPane().revalidate();
-				jf.getContentPane().repaint();
 				
-				cm.setAcvtiveContactPanel(cp);				
+				cm.setAcvtiveContactPanel(cp);
+				cm.setMessagePanel(pc);
 			}
 		});
+	}
+	
+	public void setPanel(ContactPanel cp) {
+		
+		cm.setAcvtiveContactPanel(cp);
+		cm.setMessagePanel(pc);
+		
+		System.out.println(pc.getSize().getWidth());
 	}
 	
 	public ChatObjects getChatObject() {
