@@ -2,13 +2,14 @@ package jaims_development_studio.jaims.client.gui;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -55,7 +56,12 @@ public class PanelContacts extends JPanel implements Runnable{
 		};
 		panels.sort(comp);
 		for (int i = 0; i < panels.size(); i++) {
-			add(panels.get(i));
+			try {
+				add(new Panel(ImageIO.read(new ByteArrayInputStream(panels.get(i).getChatObject().getProfileContact().getProfilePicture())), panels.get(i).getChatObject().getProfileContact().getNickname()));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			add(Box.createRigidArea(new Dimension(0, 5)));
 		}
 	}

@@ -4,37 +4,26 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.Toolkit;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.geom.RoundRectangle2D;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
-import org.hibernate.loader.plan.exec.process.spi.ScrollableResultSetProcessor;
+import jaims_development_studio.jaims.client.logic.ClientMain;
 
 public class PanelAccount extends JPanel implements Runnable{
 	
 	String username;
+	ClientMain cm;
 	
-	public PanelAccount(String name) {
+	public PanelAccount(String name, ClientMain cm) {
 		username = name;
+		this.cm = cm;
 	}
 	
 	public void initGUI() {
@@ -58,7 +47,7 @@ public class PanelAccount extends JPanel implements Runnable{
 		
 		add(Box.createHorizontalGlue());
 		
-		add(new SettingDots());
+		add(new SettingDots(cm));
 		
 		//setPreferredSize(new Dimension(250, 60));
 	}

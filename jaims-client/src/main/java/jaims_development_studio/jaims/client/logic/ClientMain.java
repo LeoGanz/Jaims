@@ -80,7 +80,7 @@ public class ClientMain {
 		}
 		PanelAccount pa;
 		
-		Thread threadPanelAccount = new Thread(pa = new PanelAccount(username));
+		Thread threadPanelAccount = new Thread(pa = new PanelAccount(username, this));
 		threadPanelAccount.start();
 		
 		threadPCC = new Thread(pcc = new PanelContactsAndChats(jf, this));

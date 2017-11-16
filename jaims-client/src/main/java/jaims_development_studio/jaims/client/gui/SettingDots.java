@@ -28,7 +28,7 @@ public class SettingDots extends JPanel {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				
-				
+				pf = new PreviewFrame(cm);
 			}
 
 		});
