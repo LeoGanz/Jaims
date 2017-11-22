@@ -1,14 +1,19 @@
 package jaims_development_studio.jaims.client.logic;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.io.IOException;
 import java.sql.Timestamp;
 
+import javax.imageio.ImageIO;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +25,7 @@ import jaims_development_studio.jaims.client.gui.LoginPanel;
 import jaims_development_studio.jaims.client.gui.PanelAccount;
 import jaims_development_studio.jaims.client.gui.PanelChat;
 import jaims_development_studio.jaims.client.gui.PanelContactsAndChats;
+import jaims_development_studio.jaims.client.gui.SettingDots;
 import jaims_development_studio.jaims.client.networking.ServerConnection;
 
 public class ClientMain {
@@ -28,7 +34,6 @@ public class ClientMain {
 	public static boolean confirmationRecieved = false;
 	Point p = new Point(10, 5);
 	JPanel panel = new JPanel();
-	Timestamp ts;
 	Rectangle r = new Rectangle(150, 150, 500, 500);
 	ContactPanel activeContactPanel;
 	PanelChat activePanelChat;
@@ -78,17 +83,25 @@ public class ClientMain {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		PanelAccount pa;
-		
-		Thread threadPanelAccount = new Thread(pa = new PanelAccount(username, this));
-		threadPanelAccount.start();
+		PanelAccount pa = null;
+		try {
+			pa = new PanelAccount(ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_Penguin.png")),username);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		JPanel p = new JPanel();
+		p.setBorder(new LineBorder(Color.BLACK));
+		p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
+		p.add(pa);
+		p.add(Box.createHorizontalGlue());
+		p.add(new SettingDots(this));
 		
 		threadPCC = new Thread(pcc = new PanelContactsAndChats(jf, this));
 		threadPCC.start();
 		
 		try {
 			threadPCC.join();
-			threadPanelAccount.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -96,11 +109,13 @@ public class ClientMain {
 		jf.getContentPane().removeAll();
 		
 		panel = new JPanel();
+		panel.setBackground(Color.WHITE);
 		panel.setLayout(new BorderLayout());
-		panel.add(pa, BorderLayout.PAGE_START);
+		panel.add(p, BorderLayout.PAGE_START);
 		panel.add(Box.createRigidArea(new Dimension(0, 20)), BorderLayout.CENTER);
 		panel.add(pcc, BorderLayout.PAGE_END);
 		jf.getContentPane().add(panel, BorderLayout.LINE_START);
+		jf.getContentPane().setBackground(Color.WHITE);
 		panel.revalidate();
 		panel.repaint();
 		jf.getContentPane().revalidate();

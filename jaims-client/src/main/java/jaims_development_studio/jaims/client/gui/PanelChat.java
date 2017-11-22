@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
@@ -63,6 +65,7 @@ public class PanelChat extends JPanel implements Runnable{
 					if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 						pcm.addMessageFromUser(jta.getText().replaceAll("\n", " "));
 						jta.setText("");
+						jsp.getVerticalScrollBar().setValue(jsp.getVerticalScrollBar().getMaximum());
 					}
 				}
 			});
@@ -101,31 +104,32 @@ public class PanelChat extends JPanel implements Runnable{
 			});
 			panelPageEnd.add(jta, BorderLayout.CENTER);
 			
-			ImageIcon ii = new ImageIcon();
-			Image i = null;
-			try {
-				i = ImageIO.read(new File("C:/Users/Programming/Desktop/Send.png"));
-				i = i.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			ii.setImage(i);
-			JLabel lbl = new JLabel(ii);
-			lbl.setCursor(new Cursor(Cursor.HAND_CURSOR));
-			lbl.addMouseListener(new MouseAdapter() {
+			
+			PanelSend ps = new PanelSend();
+			ps.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			ps.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mousePressed(MouseEvent arg0) {
 					pcm.addMessageFromUser(jta.getText().replaceAll("\n" , " "));
 					jta.setText("");
+					jsp.getVerticalScrollBar().setValue(jsp.getVerticalScrollBar().getMaximum()+50);
 				}
 			});
-			panelPageEnd.add(lbl, BorderLayout.LINE_END);
+			panelPageEnd.add(ps, BorderLayout.LINE_END);
 		}
 		add(panelPageEnd, BorderLayout.PAGE_END);
 		
 		jsp = new JScrollPane(pcm, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		jsp.setOpaque(false);
+		jsp.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+			
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				pcm.repaint();
+				jsp.getViewport().repaint();
+				
+			}
+		});
 		add(jsp, BorderLayout.CENTER);
 		
 		pcwt = new PanelChatWindowTop(userProfile);

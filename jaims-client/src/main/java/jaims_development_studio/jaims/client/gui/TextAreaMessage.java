@@ -1,6 +1,7 @@
 package jaims_development_studio.jaims.client.gui;
 
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -18,36 +19,38 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.LineBorder;
 
-public class TextAreaMessage extends JTextArea {
+public class TextAreaMessage extends JPanel {
 	
 	JaimsFrame jf;
 	String longestLine = "";
 	boolean multipleLines = false;
 	ArrayList<String> lineStrings = new ArrayList<>();
+	JTextArea jta;
 	
 	public TextAreaMessage(String message, JaimsFrame jf, JPanel panel) {
 		super();
 		this.jf = jf;
+		setLayout(new BorderLayout());
 		initGUI(message, panel);
 	}
 	
 	private void initGUI(String message, JPanel panel) {
 		//setBackground(new Color(191, 225, 148));
-		setMargin(new Insets(5, 5, 5, 5));
-		setOpaque(false);
+		jta = new JTextArea();
+		jta.setOpaque(false);
+		//jta.setMargin(new Insets(5, 5, 5, 5));
 		
-		setFont(new Font("Calibri", Font.PLAIN, 14));
+		jta.setFont(new Font("Calibri", Font.PLAIN, 14));
 		
-		int height = getStringHeight(message, this)+7;
-		int width = getStringWidth(message, this) + 15;
+		int height = getStringHeight(message, jta)+10;
+		int width = getStringWidth(message, jta) + 15;
 		
-		setPreferredSize(new Dimension(width, height));
-		setMaximumSize(getPreferredSize());
-		setEditable(false);
+		jta.setPreferredSize(new Dimension(width, height));
+		jta.setMaximumSize(getPreferredSize());
+		jta.setEditable(false);
 		setCursor(new Cursor(Cursor.TEXT_CURSOR));
 		setBorder(new RoundBorder(width, height, Color.GRAY));
 		//setBorder(new LineBorder(Color.BLACK));
-		JTextArea jta = this;
 		if (multipleLines) {
 			panel.addComponentListener(new ComponentAdapter() {
 				
@@ -80,6 +83,7 @@ public class TextAreaMessage extends JTextArea {
 		setPreferredSize(new Dimension(width, (int) lineStrings.size()*19+15));
 		setMaximumSize(getPreferredSize());
 		
+		add(jta, BorderLayout.CENTER);
 	}
 	
 	private int countLines(String s, FontMetrics fm, JTextArea jta) {
@@ -174,11 +178,11 @@ public class TextAreaMessage extends JTextArea {
 	        
 	        int x = 8;
 	        int y = (int) getLocation().getY()+inset;
-	        for (int i = 0; i < lineStrings.size(); i++) {
-	        	
-	        	g2d.drawString(lineStrings.get(i), x, y);
-	        	y += g2d.getFontMetrics(g2d.getFont()).getHeight()+1;
-	        }
+//	        for (int i = 0; i < lineStrings.size(); i++) {
+//	        	
+//	        	g2d.drawString(lineStrings.get(i), x, y);
+//	        	y += g2d.getFontMetrics(g2d.getFont()).getHeight()+1;
+//	        }
 	        g2d.dispose();
 	    }
 

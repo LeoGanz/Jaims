@@ -65,7 +65,7 @@ public class LoginPanel extends JPanel{
 	
 	private void initGUI(JFrame caller, ClientMain cm) {
 		try {
-			image = ImageIO.read(new File("C:/Users/josef/Pictures/speech-md.png"));
+			image = ImageIO.read(getClass().getResourceAsStream("/images/speech-md.png"));
 			image = image.getScaledInstance(200, 120, Image.SCALE_SMOOTH);
 			lblImg = new JLabel(new ImageIcon(image));
 			lblImg.setPreferredSize(new Dimension(202, 130));

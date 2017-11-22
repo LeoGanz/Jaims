@@ -1,13 +1,17 @@
 package jaims_development_studio.jaims.client.gui;
 
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Image;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -15,11 +19,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import jaims_development_studio.jaims.client.chatObjects.ChatObjects;
+import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.chatObjects.Profile;
+import jaims_development_studio.jaims.client.database.DatabaseConnection;
 
 public class PanelChatMessages extends JPanel implements Runnable{
 	
@@ -40,20 +45,45 @@ public class PanelChatMessages extends JPanel implements Runnable{
 		setOpaque(false);
 		setBorder(new CompoundBorder(new LineBorder(Color.BLACK), new LineBorder(getBackground(), 3)));
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		for (int i = 0; i < co.getList().size(); i++) {
-			if (co.getList().get(i).getSender() == userProfile.getUuid()) {
+		
+		ResultSet rs;
+		Connection con = DatabaseConnection.getConnection();
+		PreparedStatement ps;
+		ArrayList<Message> listCo = null;
+		try {
+			ps = con.prepareStatement(co.getList());
+			ps.setObject(1, co.getProfileContact().getUuid());
+			rs = ps.executeQuery();
+			con.commit();
+			rs.next();
+			ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(rs.getBytes(1)));
+			listCo = (ArrayList<Message>) ois.readObject();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		for (int i = 0; i < listCo.size(); i++) {
+			if (listCo.get(i).getSender() == userProfile.getUuid()) {
 				//Case Sender = User
 				
 				JPanel p = new JPanel();
 				p.setOpaque(false);
 				p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
-				if (co.getList().get(i).getMessageObject() instanceof String) {
-					TextAreaMessage tam = new TextAreaMessage((String) co.getList().get(i).getMessageObject(), jf, this);
+				if (listCo.get(i).getMessageObject() instanceof String) {
+					TextAreaMessage tam = new TextAreaMessage((String) listCo.get(i).getMessageObject(), jf, this);
 					
 					p.add(tam);
 					p.add(Box.createHorizontalGlue());
 					
-				}else if (co.getList().get(i).getMessageObject() instanceof Image) {
+				}else if (listCo.get(i).getMessageObject() instanceof Image) {
 					
 				}else {
 					
@@ -67,13 +97,13 @@ public class PanelChatMessages extends JPanel implements Runnable{
 				JPanel p = new JPanel();
 				p.setOpaque(false);
 				p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));				
-				if (co.getList().get(i).getMessageObject() instanceof String) {
-					TextAreaMessage tam = new TextAreaMessage((String) co.getList().get(i).getMessageObject(), jf, this); 
+				if (listCo.get(i).getMessageObject() instanceof String) {
+					TextAreaMessage tam = new TextAreaMessage((String) listCo.get(i).getMessageObject(), jf, this); 
 					
 					p.add(Box.createHorizontalGlue());
 					p.add(tam);
 					
-				}else if (co.getList().get(i).getMessageObject() instanceof Image) {
+				}else if (listCo.get(i).getMessageObject() instanceof Image) {
 					
 				}else {
 					

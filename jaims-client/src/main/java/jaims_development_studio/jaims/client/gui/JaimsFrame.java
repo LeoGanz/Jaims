@@ -47,14 +47,14 @@ public class JaimsFrame extends JFrame {
 		frame.setUndecorated(true);
 		frame.setBackground(new Color(0, 0, 0, 0));
 		try {
-			frame.setIconImage(ImageIO.read(new File("C:/Users/josef/Pictures/JAIMS_Penguin.png")));
+			frame.setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_Penguin.png")));
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		Image img = null;		
 		try {
-			img = ImageIO.read(new File("C:/Users/josef/Pictures/JAIMS_Penguin.png"));
+			img = ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_Penguin.png"));
 			img = img.getScaledInstance(370, 473, Image.SCALE_SMOOTH);
 		} catch (IOException e) {
 			LOG.error("Failed to create image");
@@ -78,6 +78,12 @@ public class JaimsFrame extends JFrame {
 			setIconImage(ImageIO.read(new File("C:/Users/josef/Pictures/JAIMS_Penguin.png")));
 		} catch (IOException e) {
 			LOG.error("Failed to create IconImage");
+			try {
+				setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_Penguin.png")));
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

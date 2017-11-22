@@ -1,15 +1,15 @@
 package jaims_development_studio.jaims.client.gui;
 
-import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.ImageObserver;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,14 +18,15 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.LineBorder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jaims_development_studio.jaims.client.chatObjects.ChatObjects;
+import jaims_development_studio.jaims.client.chatObjects.Message;
+import jaims_development_studio.jaims.client.chatObjects.Profile;
+import jaims_development_studio.jaims.client.database.DatabaseConnection;
 
 public class PanelChatWithUsers extends JPanel implements Runnable{
 	
@@ -53,9 +54,9 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 
 			@Override
 			public int compare(ContactPanel o1, ContactPanel o2) {
-				if (o1.getChatObject().getList().get(o1.getChatObject().getList().size()-1).getTimestampRecieved().compareTo(o2.getChatObject().getList().get(o2.getChatObject().getList().size()-1).getTimestampRecieved()) > 0) {
+				if (getMessageList(o1.getChatObject()).get(getMessageList(o1.getChatObject()).size()-1).getTimestampRecieved().compareTo(getMessageList(o2.getChatObject()).get(getMessageList(o2.getChatObject()).size()-1).getTimestampRecieved()) > 0) {
 					return 1;
-				}else if (o1.getChatObject().getList().get(o1.getChatObject().getList().size()-1).getTimestampRecieved().compareTo(o2.getChatObject().getList().get(o2.getChatObject().getList().size()-1).getTimestampRecieved()) < 0 ) {
+				}else if (getMessageList(o1.getChatObject()).get(getMessageList(o1.getChatObject()).size()-1).getTimestampRecieved().compareTo(getMessageList(o2.getChatObject()).get(getMessageList(o2.getChatObject()).size()-1).getTimestampRecieved()) < 0 ) {
 					return -1;
 				}else {
 					return 0;
@@ -66,56 +67,21 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 		panels.sort(comp);
 
 		for (ContactPanel panel: panels) {
-			JPanel jp = new JPanel();
-			jp.setBorder(new LineBorder(Color.BLACK));
-			jp.setCursor(new Cursor(Cursor.HAND_CURSOR));
-			{
-				jp.setLayout(new BoxLayout(jp, BoxLayout.LINE_AXIS));
-				jp.add(Box.createRigidArea(new Dimension(10, 0)));
-				try {
-					if (panel.getChatObject().getProfileContact().getProfilePicture() != null) {
-						//lbl = new ProfileImage(ImageIO.read(new ByteArrayInputStream(panel.getChatObject().getProfileContact().getProfilePicture())));
-						
-						Image image = ImageIO.read(new ByteArrayInputStream(panel.getChatObject().getProfileContact().getProfilePicture()));
-						ImageObserver io = this;
-						Image bimage = image.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-						JLabel lbl = new JLabel(new ImageIcon(bimage));
-						lbl.addMouseListener(new MouseAdapter() {
-						
-							@Override
-							public void mousePressed(MouseEvent arg0) {
-								JFrame frame = new JFrame();
-								frame.setSize(image.getWidth(io), image.getHeight(io));
-								frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-								frame.add(new JLabel(new ImageIcon(image)));
-								frame.setVisible(true);
-							}
-						});
-						lbl.setCursor(new Cursor(Cursor.HAND_CURSOR));
-						
-						jp.add(lbl);
-					}else {
-						Image image = ImageIO.read(getClass().getClassLoader().getResource("images/JAIMS_Penguin.png"));
-						image = image.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
-						jp.add(new JLabel(new ImageIcon(image)));
-					}
-				}catch (IOException ioe) {
-					LOG.error("Failed to create image");
-				}
-				jp.add(Box.createRigidArea(new Dimension(10, 0)));
-				JLabel lbl = new JLabel(panel.getChatObject().getProfileContact().getNickname());
-				lbl.setFont(new Font("Calibri", Font.PLAIN, 15));
-				jp.add(lbl);
-				jp.add(Box.createHorizontalGlue());
-				jp.addMouseListener(new MouseAdapter() {
+			Panel p = null;
+			try {
+				p = new Panel(ImageIO.read(new ByteArrayInputStream(getPicture(panel.getChatObject().getProfileContact()))), getUsername(panel.getChatObject().getProfileContact()));
+				p.addMouseListener(new MouseAdapter() {
 					
 					@Override
 					public void mousePressed(MouseEvent e) {
 						panel.setPanel(panel);			
 					}
 				});
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			add(jp);
+			add(p);
 			add(Box.createRigidArea(new Dimension(0, 5)));
 		}
 	}
@@ -128,6 +94,79 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 	
 	public List<ContactPanel> getList() {
 		return panels;
+	}
+	
+	private ArrayList<Message> getMessageList(ChatObjects co) {
+		ResultSet rs;
+		Connection con = DatabaseConnection.getConnection();
+		PreparedStatement ps;
+		ArrayList<Message> listCo = null;
+		try {
+			ps = con.prepareStatement(co.getList());
+			ps.setObject(1, co.getProfileContact().getUuid());
+			rs = ps.executeQuery();
+			con.commit();
+			
+			rs.next();
+			
+			ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(rs.getBytes(1)));
+			listCo = (ArrayList<Message>) ois.readObject();
+			
+			return listCo;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	private byte[] getPicture(Profile pu) {
+		ResultSet rs;
+		Connection con = DatabaseConnection.getConnection();
+		PreparedStatement ps;
+		try {
+			ps = con.prepareStatement(pu.getProfilePicture());
+			ps.setObject(1, pu.getUuid());
+			rs = ps.executeQuery();
+			con.commit();
+			
+			rs.next();
+						
+			return rs.getBytes(1);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	private String getUsername(Profile pu) {
+		ResultSet rs;
+		Connection con = DatabaseConnection.getConnection();
+		PreparedStatement ps;
+		try {
+			ps = con.prepareStatement(pu.getNickname());
+			ps.setObject(1, pu.getUuid());
+			rs = ps.executeQuery();
+			con.commit();
+			
+			rs.next();
+			
+			return rs.getString(1);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return "";
 	}
 
 }

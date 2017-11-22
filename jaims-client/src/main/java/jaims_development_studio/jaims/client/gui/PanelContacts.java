@@ -2,8 +2,14 @@ package jaims_development_studio.jaims.client.gui;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,6 +22,9 @@ import javax.swing.JPanel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jaims_development_studio.jaims.client.chatObjects.Profile;
+import jaims_development_studio.jaims.client.database.DatabaseConnection;
 
 public class PanelContacts extends JPanel implements Runnable{
 
@@ -57,7 +66,16 @@ public class PanelContacts extends JPanel implements Runnable{
 		panels.sort(comp);
 		for (int i = 0; i < panels.size(); i++) {
 			try {
-				add(new Panel(ImageIO.read(new ByteArrayInputStream(panels.get(i).getChatObject().getProfileContact().getProfilePicture())), panels.get(i).getChatObject().getProfileContact().getNickname()));
+				Panel p;
+				add(p = new Panel(ImageIO.read(new ByteArrayInputStream(getPicture(panels.get(i).getChatObject().getProfileContact()))), panels.get(i).getChatObject().getProfileContact().getNickname()));
+				int z = i;
+				p.addMouseListener(new MouseAdapter() {
+					
+					@Override
+					public void mousePressed(MouseEvent e) {
+						panels.get(z).setPanel(panels.get(z));			
+					}
+				});
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -66,6 +84,26 @@ public class PanelContacts extends JPanel implements Runnable{
 		}
 	}
 	
+	private byte[] getPicture(Profile up) {
+		ResultSet rs;
+		Connection con = DatabaseConnection.getConnection();
+		PreparedStatement ps;
+		try {
+			ps = con.prepareStatement(up.getProfilePicture());
+			ps.setObject(1, up.getUuid());
+			rs = ps.executeQuery();
+			con.commit();
+			
+			rs.next();
+			
+			return rs.getBytes(1);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 
 	
 	@Override
