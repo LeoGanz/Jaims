@@ -32,7 +32,6 @@ public class ReadFromDatabase implements Runnable {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ReadFromDatabase.class);
 	public static List<ChatObjects> chatObjectsList = Collections.synchronizedList(new ArrayList<ChatObjects>());
-	static UUID user = UUID.randomUUID();
 	
 	
 	String tablename;
@@ -96,99 +95,99 @@ public class ReadFromDatabase implements Runnable {
 	    	
 	    }
 		
-		try {
-			
-			
-			
-			UUID user1 = UUID.randomUUID();
-			UUID user2 = UUID.randomUUID();
-			UUID user3 = UUID.randomUUID();
-			ArrayList<Message> list1 = new ArrayList<>();
-			ArrayList<Message> list2 = new ArrayList<>();
-			ArrayList<Message> list3 = new ArrayList<>();
-			list1.add(new Message(user1, user, "Nachricht 1 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis()-561423)));
-			list1.add(new Message(user, user1, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-235645), new Timestamp(System.currentTimeMillis()-55413)));
-			list1.add(new Message(user1, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-586105), new Timestamp(System.currentTimeMillis()-65148)));
-			list2.add(new Message(user2, user, "Nachricht 1 an User", new Timestamp(System.currentTimeMillis()-32654), new Timestamp(System.currentTimeMillis()-3214489)));
-			list2.add(new Message(user, user2, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-665987), new Timestamp(System.currentTimeMillis()-54496987)));
-			list2.add(new Message(user2, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-213456), new Timestamp(System.currentTimeMillis()-200)));
-			list3.add(new Message(user3, user, "Nachricht 1 an User", new Timestamp(System.currentTimeMillis()-2256), new Timestamp(System.currentTimeMillis())));
-			list3.add(new Message(user, user3, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-1234879), new Timestamp(System.currentTimeMillis()-99456)));
-			list3.add(new Message(user3, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-6549998), new Timestamp(System.currentTimeMillis()-623154)));
-			list3.add(new Message(user3, user, "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.", new Timestamp(System.currentTimeMillis()-105943), new Timestamp(System.currentTimeMillis()-33648)));
-		
-			
-			try {
-				PreparedStatement ps = con.prepareStatement("INSERT INTO " + tablename.toUpperCase() + "(ID,NICKNAME,DESCRIPTION,STATUS,PROFILE_PICTURE,TIMESTAMP,MESSAGE_ARRAY) VALUES (?,?,?,?,?,?,?)");
-				ps.setObject(1, user1);
-				ps.setString(2, "Echo-Test");
-				ps.setString(3,  "Test");
-				ps.setString(4, "Test");
-				ps.setBytes(5, IOUtils.toByteArray(getClass().getResourceAsStream("/images/JAIMS_Penguin.png")));
-				ps.setTimestamp(6, new Timestamp(new Date(System.currentTimeMillis()).getTime()));
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				ObjectOutputStream oos = new ObjectOutputStream(bos);
-				oos.writeObject(list1);
-				ps.setBytes(7, bos.toByteArray());
-				bos.close();
-				oos.close();
-				
-				ps.executeUpdate();
-				con.commit();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			try {
-				PreparedStatement ps = con.prepareStatement("INSERT INTO " + tablename.toUpperCase() + "(ID,NICKNAME,DESCRIPTION,STATUS,PROFILE_PICTURE,TIMESTAMP,MESSAGE_ARRAY) VALUES (?,?,?,?,?,?,?)");
-				ps.setObject(1, user2);
-				ps.setString(2, "Sebi");
-				ps.setString(3,  "Test");
-				ps.setString(4, "Test");
-				ps.setBytes(5, IOUtils.toByteArray(getClass().getResourceAsStream("/images/JAIMS_Penguin.png")));
-				ps.setTimestamp(6, new Timestamp(new Date(System.currentTimeMillis()).getTime()));
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				ObjectOutputStream oos = new ObjectOutputStream(bos);
-				oos.writeObject(list2);
-				ps.setBytes(7, bos.toByteArray());
-				bos.close();
-				oos.close();
-				
-				ps.executeUpdate();
-				con.commit();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			try {
-				PreparedStatement ps = con.prepareStatement("INSERT INTO " + tablename.toUpperCase() + "(ID,NICKNAME,DESCRIPTION,STATUS,PROFILE_PICTURE,TIMESTAMP,MESSAGE_ARRAY) VALUES (?,?,?,?,?,?,?)");
-				ps.setObject(1, user3);
-				ps.setString(2, "Leo");
-				ps.setString(3,  "Test");
-				ps.setString(4, "Test");
-				ps.setBytes(5, IOUtils.toByteArray(getClass().getResourceAsStream("/images/JAIMS_Penguin.png")));
-				ps.setTimestamp(6, new Timestamp(new Date(System.currentTimeMillis()).getTime()));
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				ObjectOutputStream oos = new ObjectOutputStream(bos);
-				oos.writeObject(list3);
-				ps.setBytes(7, bos.toByteArray());
-				bos.close();
-				oos.close();
-				
-				ps.executeUpdate();
-				con.commit();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			
+//			
+//			
+//			UUID user1 = UUID.randomUUID();
+//			UUID user2 = UUID.randomUUID();
+//			UUID user3 = UUID.randomUUID();
+//			ArrayList<Message> list1 = new ArrayList<>();
+//			ArrayList<Message> list2 = new ArrayList<>();
+//			ArrayList<Message> list3 = new ArrayList<>();
+//			list1.add(new Message(user1, user, "Nachricht 1 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis()-561423)));
+//			list1.add(new Message(user, user1, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-235645), new Timestamp(System.currentTimeMillis()-55413)));
+//			list1.add(new Message(user1, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-586105), new Timestamp(System.currentTimeMillis()-65148)));
+//			list2.add(new Message(user2, user, "Nachricht 1 an User", new Timestamp(System.currentTimeMillis()-32654), new Timestamp(System.currentTimeMillis()-3214489)));
+//			list2.add(new Message(user, user2, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-665987), new Timestamp(System.currentTimeMillis()-54496987)));
+//			list2.add(new Message(user2, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-213456), new Timestamp(System.currentTimeMillis()-200)));
+//			list3.add(new Message(user3, user, "Nachricht 1 an User", new Timestamp(System.currentTimeMillis()-2256), new Timestamp(System.currentTimeMillis())));
+//			list3.add(new Message(user, user3, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-1234879), new Timestamp(System.currentTimeMillis()-99456)));
+//			list3.add(new Message(user3, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-6549998), new Timestamp(System.currentTimeMillis()-623154)));
+//			list3.add(new Message(user3, user, "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.", new Timestamp(System.currentTimeMillis()-105943), new Timestamp(System.currentTimeMillis()-33648)));
+//		
+//			
+//			try {
+//				PreparedStatement ps = con.prepareStatement("INSERT INTO " + tablename.toUpperCase() + "(ID,NICKNAME,DESCRIPTION,STATUS,PROFILE_PICTURE,TIMESTAMP,MESSAGE_ARRAY) VALUES (?,?,?,?,?,?,?)");
+//				ps.setObject(1, user1);
+//				ps.setString(2, "Echo-Test");
+//				ps.setString(3,  "Test");
+//				ps.setString(4, "Test");
+//				ps.setBytes(5, IOUtils.toByteArray(getClass().getResourceAsStream("/images/JAIMS_Penguin.png")));
+//				ps.setTimestamp(6, new Timestamp(new Date(System.currentTimeMillis()).getTime()));
+//				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//				ObjectOutputStream oos = new ObjectOutputStream(bos);
+//				oos.writeObject(list1);
+//				ps.setBytes(7, bos.toByteArray());
+//				bos.close();
+//				oos.close();
+//				
+//				ps.executeUpdate();
+//				con.commit();
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			
+//			try {
+//				PreparedStatement ps = con.prepareStatement("INSERT INTO " + tablename.toUpperCase() + "(ID,NICKNAME,DESCRIPTION,STATUS,PROFILE_PICTURE,TIMESTAMP,MESSAGE_ARRAY) VALUES (?,?,?,?,?,?,?)");
+//				ps.setObject(1, user2);
+//				ps.setString(2, "Sebi");
+//				ps.setString(3,  "Test");
+//				ps.setString(4, "Test");
+//				ps.setBytes(5, IOUtils.toByteArray(getClass().getResourceAsStream("/images/JAIMS_Penguin.png")));
+//				ps.setTimestamp(6, new Timestamp(new Date(System.currentTimeMillis()).getTime()));
+//				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//				ObjectOutputStream oos = new ObjectOutputStream(bos);
+//				oos.writeObject(list2);
+//				ps.setBytes(7, bos.toByteArray());
+//				bos.close();
+//				oos.close();
+//				
+//				ps.executeUpdate();
+//				con.commit();
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			try {
+//				PreparedStatement ps = con.prepareStatement("INSERT INTO " + tablename.toUpperCase() + "(ID,NICKNAME,DESCRIPTION,STATUS,PROFILE_PICTURE,TIMESTAMP,MESSAGE_ARRAY) VALUES (?,?,?,?,?,?,?)");
+//				ps.setObject(1, user3);
+//				ps.setString(2, "Leo");
+//				ps.setString(3,  "Test");
+//				ps.setString(4, "Test");
+//				ps.setBytes(5, IOUtils.toByteArray(getClass().getResourceAsStream("/images/JAIMS_Penguin.png")));
+//				ps.setTimestamp(6, new Timestamp(new Date(System.currentTimeMillis()).getTime()));
+//				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//				ObjectOutputStream oos = new ObjectOutputStream(bos);
+//				oos.writeObject(list3);
+//				ps.setBytes(7, bos.toByteArray());
+//				bos.close();
+//				oos.close();
+//				
+//				ps.executeUpdate();
+//				con.commit();
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 	@Override

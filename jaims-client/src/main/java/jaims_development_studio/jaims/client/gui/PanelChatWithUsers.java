@@ -69,7 +69,7 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 		for (ContactPanel panel: panels) {
 			Panel p = null;
 			try {
-				p = new Panel(ImageIO.read(new ByteArrayInputStream(getPicture(panel.getChatObject().getProfileContact()))), getUsername(panel.getChatObject().getProfileContact()));
+				p = new Panel(ImageIO.read(new ByteArrayInputStream(getPicture(panel.getChatObject().getProfileContact()))), panel.getChatObject().getProfileContact().getNickname());
 				p.addMouseListener(new MouseAdapter() {
 					
 					@Override
@@ -146,27 +146,6 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 		}
 		
 		return null;
-	}
-	
-	private String getUsername(Profile pu) {
-		ResultSet rs;
-		Connection con = DatabaseConnection.getConnection();
-		PreparedStatement ps;
-		try {
-			ps = con.prepareStatement(pu.getNickname());
-			ps.setObject(1, pu.getUuid());
-			rs = ps.executeQuery();
-			con.commit();
-			
-			rs.next();
-			
-			return rs.getString(1);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return "";
 	}
 
 }

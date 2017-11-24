@@ -29,6 +29,7 @@ public class SettingDots extends JPanel {
 			public void mouseReleased(MouseEvent e) {
 				
 				pf = new PreviewFrame(cm);
+				cm.setSettingPanel(new PanelSettings(cm));
 			}
 
 		});

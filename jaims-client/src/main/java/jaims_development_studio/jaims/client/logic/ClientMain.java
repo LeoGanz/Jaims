@@ -25,6 +25,7 @@ import jaims_development_studio.jaims.client.gui.LoginPanel;
 import jaims_development_studio.jaims.client.gui.PanelAccount;
 import jaims_development_studio.jaims.client.gui.PanelChat;
 import jaims_development_studio.jaims.client.gui.PanelContactsAndChats;
+import jaims_development_studio.jaims.client.gui.PanelSettings;
 import jaims_development_studio.jaims.client.gui.SettingDots;
 import jaims_development_studio.jaims.client.networking.ServerConnection;
 
@@ -134,6 +135,12 @@ public class ClientMain {
 		jf.getContentPane().repaint();
 		
 		activePanelChat = pc;
+	}
+	
+	public void setSettingPanel(PanelSettings ps) {
+		jf.getContentPane().add(ps, BorderLayout.CENTER);
+		jf.getContentPane().revalidate();
+		jf.getContentPane().repaint();
 	}
 	
 	public void repaintPanelLeft() {
