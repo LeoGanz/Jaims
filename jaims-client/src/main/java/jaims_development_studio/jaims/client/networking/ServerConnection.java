@@ -27,7 +27,6 @@ public class ServerConnection implements Runnable {
 	public static void initConnection() {
 		try {
 			//opens up a connection to the server
-			LOG.info("Connected to Server");
 			server = new Socket("188.194.21.33", 6000);
 		} catch (IOException e) {
 			LOG.error("Couldn't connect to server", e);

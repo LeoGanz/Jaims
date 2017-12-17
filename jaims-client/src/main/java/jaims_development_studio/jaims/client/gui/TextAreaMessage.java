@@ -19,6 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.LineBorder;
 
+import jaims_development_studio.jaims.client.settings.Settings;
+
 public class TextAreaMessage extends JPanel {
 	
 	JaimsFrame jf;
@@ -26,21 +28,24 @@ public class TextAreaMessage extends JPanel {
 	boolean multipleLines = false;
 	ArrayList<String> lineStrings = new ArrayList<>();
 	JTextArea jta;
+	boolean own;
 	
-	public TextAreaMessage(String message, JaimsFrame jf, JPanel panel) {
+	public TextAreaMessage(String message, JaimsFrame jf, JPanel panel, boolean own) {
 		super();
 		this.jf = jf;
+		this.own = own;
 		setLayout(new BorderLayout());
 		initGUI(message, panel);
 	}
 	
 	private void initGUI(String message, JPanel panel) {
-		//setBackground(new Color(191, 225, 148));
 		jta = new JTextArea();
 		jta.setOpaque(false);
-		//jta.setMargin(new Insets(5, 5, 5, 5));
 		
-		jta.setFont(new Font("Calibri", Font.PLAIN, 14));
+		if (own)
+			jta.setFont(new Font(Settings.ownFontName, Settings.ownFontStyle, Settings.ownFontSize));
+		else
+			jta.setFont(new Font(Settings.contactFontName, Settings.contactFontStyle, Settings.contactFontSize));
 		
 		int height = getStringHeight(message, jta)+10;
 		int width = getStringWidth(message, jta) + 15;
@@ -49,13 +54,22 @@ public class TextAreaMessage extends JPanel {
 		jta.setMaximumSize(getPreferredSize());
 		jta.setEditable(false);
 		setCursor(new Cursor(Cursor.TEXT_CURSOR));
-		setBorder(new RoundBorder(width, height, Color.GRAY));
+		if (own)
+			setBorder(new RoundBorder(width, height, Settings.colorOwnMessageBorder));
+		else
+			setBorder(new RoundBorder(width, height, Settings.colorContactMessageBorder));
 		//setBorder(new LineBorder(Color.BLACK));
 		if (multipleLines) {
 			panel.addComponentListener(new ComponentAdapter() {
 				
 				@Override
 				public void componentShown(ComponentEvent e) {
+					if (own)
+						jta.setFont(new Font(Settings.ownFontName, Settings.ownFontStyle, Settings.ownFontSize));
+					else
+						jta.setFont(new Font(Settings.contactFontName, Settings.contactFontStyle, Settings.contactFontSize));
+					
+					
 					int height = getStringHeight(message, jta)+5;
 					int width = getStringWidth(message, jta)+10;
 					
@@ -159,31 +173,21 @@ public class TextAreaMessage extends JPanel {
 	 }
 	 
 	 @Override
-	    public void paintComponent(Graphics g) {
-	        Graphics2D g2d = (Graphics2D) g.create();
-	        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-	        
-	       	g2d.setColor(new Color(191, 225, 148));
-	        g2d.fillRoundRect(0, 0, (int) getPreferredSize().getWidth(), (int) getPreferredSize().getHeight(), 20, 20);
-	        g2d.setColor(Color.black);
-	        g2d.setFont(getFont());
-	        g2d.setStroke(new BasicStroke(1.0F));
-	        
-	        int inset;
-	        if (lineStrings.size() == 1) {
-	        	inset = (int) ((getHeight() - (lineStrings.size() * (g2d.getFontMetrics(g2d.getFont()).getHeight()-3))));
-	        }else {
-	        	inset = (int) ((getHeight() - (lineStrings.size() * (g2d.getFontMetrics(g2d.getFont()).getHeight()-1)))/2);
-	        }
-	        
-	        int x = 8;
-	        int y = (int) getLocation().getY()+inset;
-//	        for (int i = 0; i < lineStrings.size(); i++) {
-//	        	
-//	        	g2d.drawString(lineStrings.get(i), x, y);
-//	        	y += g2d.getFontMetrics(g2d.getFont()).getHeight()+1;
-//	        }
-	        g2d.dispose();
+	 public void paintComponent(Graphics g) {
+	 
+	    Graphics2D g2d = (Graphics2D) g.create();
+	    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	      
+	   	if (own) {
+	   		g2d.setColor(Settings.colorOwnMessages);
+	        g2d.fillRoundRect(0, 1, (int) getPreferredSize().getWidth()-1, (int) getPreferredSize().getHeight()-2, 20, 20);
+		    g2d.dispose();
+	    }else {
+	    	g2d.setColor(Settings.colorContactMessages);
+		    g2d.fillRoundRect(0, 1, (int) getPreferredSize().getWidth()-1, (int) getPreferredSize().getHeight()-2, 20, 20);
+
+		    g2d.dispose();
 	    }
+	}
 
 }

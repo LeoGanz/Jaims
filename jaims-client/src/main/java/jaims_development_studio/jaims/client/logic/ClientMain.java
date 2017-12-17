@@ -1,13 +1,19 @@
 package jaims_development_studio.jaims.client.logic;
 
+import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.IOException;
-import java.sql.Timestamp;
+import java.util.Date;
+import java.util.UUID;
 
 import javax.imageio.ImageIO;
 import javax.swing.Box;
@@ -19,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
+import jaims_development_studio.jaims.client.gui.AddSign;
 import jaims_development_studio.jaims.client.gui.ContactPanel;
 import jaims_development_studio.jaims.client.gui.JaimsFrame;
 import jaims_development_studio.jaims.client.gui.LoginPanel;
@@ -26,6 +33,7 @@ import jaims_development_studio.jaims.client.gui.PanelAccount;
 import jaims_development_studio.jaims.client.gui.PanelChat;
 import jaims_development_studio.jaims.client.gui.PanelContactsAndChats;
 import jaims_development_studio.jaims.client.gui.PanelSettings;
+import jaims_development_studio.jaims.client.gui.RecordingFrame;
 import jaims_development_studio.jaims.client.gui.SettingDots;
 import jaims_development_studio.jaims.client.networking.ServerConnection;
 
@@ -38,11 +46,14 @@ public class ClientMain {
 	Rectangle r = new Rectangle(150, 150, 500, 500);
 	ContactPanel activeContactPanel;
 	PanelChat activePanelChat;
+	PanelSettings ps;
 	
 	Thread threadDatabaseManagement, threadPCC;
 	DatabaseConnection dc;
 	PanelContactsAndChats pcc;
 	JaimsFrame jf;
+	
+	public static Profile userProfile;
 	
 	public static void main(String[] args) {
 		new ClientMain();
@@ -77,6 +88,9 @@ public class ClientMain {
 	
 	public void startCreatingChatWindow(String username) {
 		
+		userProfile = new Profile("Bu88le", "Test", "Test", null, new Date(System.currentTimeMillis()));
+		userProfile.setUUID(UUID.randomUUID());
+		
 		Thread thread = dc.readFromDatabase(username);
 		try {
 			thread.join();
@@ -86,16 +100,18 @@ public class ClientMain {
 		}
 		PanelAccount pa = null;
 		try {
-			pa = new PanelAccount(ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_Penguin.png")),username);
+			pa = new PanelAccount(ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_Penguin.png")), username);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		JPanel p = new JPanel();
-		p.setBorder(new LineBorder(Color.BLACK));
+		p.setBorder(new LineBorder(Color.GRAY));
 		p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
 		p.add(pa);
 		p.add(Box.createHorizontalGlue());
+		p.add(new AddSign(this));
+		p.add(Box.createRigidArea(new Dimension(3, 0)));
 		p.add(new SettingDots(this));
 		
 		threadPCC = new Thread(pcc = new PanelContactsAndChats(jf, this));
@@ -126,6 +142,11 @@ public class ClientMain {
 	}
 	
 	public void setMessagePanel(PanelChat pc) {
+		if (ps != null) {
+			jf.getContentPane().remove(ps);
+			ps.getPF().dispose();
+			jf.revalidate();
+		}
 		if (activePanelChat != null) {
 			jf.getContentPane().remove(activePanelChat);
 			jf.getContentPane().revalidate();
@@ -138,9 +159,47 @@ public class ClientMain {
 	}
 	
 	public void setSettingPanel(PanelSettings ps) {
+		if (activePanelChat != null) {
+			jf.getContentPane().remove(activePanelChat);
+			jf.revalidate();
+		}
 		jf.getContentPane().add(ps, BorderLayout.CENTER);
 		jf.getContentPane().revalidate();
 		jf.getContentPane().repaint();
+		
+		this.ps = ps;
+	}
+	
+	public void showRecordFrame() {	
+		JPanel panel = new JPanel() {
+			@Override
+			public void paintComponent(Graphics g) {
+				g.setColor(getBackground());
+				g.fillRect(0, 0, getWidth(), getHeight());
+				
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5F));
+				g2.setColor(Color.LIGHT_GRAY);
+				g2.fillRect(0, 0, getWidth(), getHeight());
+			}
+		};
+		
+		RecordingFrame rf = new RecordingFrame(activePanelChat);
+		rf.setLocationRelativeTo(activePanelChat);
+		rf.addComponentListener(new ComponentAdapter() {
+			
+			@Override
+			public void componentHidden(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		jf.getContentPane().setEnabled(false);
+		jf.getContentPane().add(panel, BorderLayout.CENTER);
+		jf.getContentPane().repaint();
+		rf.setVisible(true);
+		
+		
 	}
 	
 	public void repaintPanelLeft() {

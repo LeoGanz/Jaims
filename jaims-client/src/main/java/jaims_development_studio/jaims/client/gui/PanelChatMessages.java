@@ -4,6 +4,14 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Image;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -25,6 +33,7 @@ import jaims_development_studio.jaims.client.chatObjects.ChatObjects;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.chatObjects.Profile;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
+import jaims_development_studio.jaims.client.logic.ClientMain;
 
 public class PanelChatMessages extends JPanel implements Runnable{
 	
@@ -33,12 +42,13 @@ public class PanelChatMessages extends JPanel implements Runnable{
 	ChatObjects co;
 	JLabel lbl;
 	JTextArea jta;
+	ContactPanel cp;
 	
-	public PanelChatMessages(JaimsFrame jf, Profile userProfile, ChatObjects co) {
+	public PanelChatMessages(JaimsFrame jf, Profile userProfile, ChatObjects co, ContactPanel cp) {
 		this.jf = jf;
 		this.userProfile = userProfile;
 		this.co = co;
-	
+		this.cp = cp;
 	}
 	
 	private void initGUI() {
@@ -71,14 +81,17 @@ public class PanelChatMessages extends JPanel implements Runnable{
 		
 		
 		for (int i = 0; i < listCo.size(); i++) {
-			if (listCo.get(i).getSender() == userProfile.getUuid()) {
-				//Case Sender = User
+			System.out.println(listCo.get(i).getSender());
+			System.out.println(userProfile.getUuid());
+			if (listCo.get(i).getSender() != ClientMain.userProfile.getUUID()) {
+				//Case Sender = Contact
 				
 				JPanel p = new JPanel();
 				p.setOpaque(false);
 				p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
 				if (listCo.get(i).getMessageObject() instanceof String) {
-					TextAreaMessage tam = new TextAreaMessage((String) listCo.get(i).getMessageObject(), jf, this);
+					TextAreaMessage tam = new TextAreaMessage((String) listCo.get(i).getMessageObject(), jf, this, false);
+					
 					
 					p.add(tam);
 					p.add(Box.createHorizontalGlue());
@@ -92,13 +105,13 @@ public class PanelChatMessages extends JPanel implements Runnable{
 				add(p);
 				add(Box.createRigidArea(new Dimension(0, 10)));
 			}else {
-				//Case Sender = Contact
+				//Case Sender = User
 				
 				JPanel p = new JPanel();
 				p.setOpaque(false);
 				p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));				
 				if (listCo.get(i).getMessageObject() instanceof String) {
-					TextAreaMessage tam = new TextAreaMessage((String) listCo.get(i).getMessageObject(), jf, this); 
+					TextAreaMessage tam = new TextAreaMessage((String) listCo.get(i).getMessageObject(), jf, this, true); 
 					
 					p.add(Box.createHorizontalGlue());
 					p.add(tam);
@@ -190,7 +203,7 @@ public class PanelChatMessages extends JPanel implements Runnable{
 	 public void addMessageFromUser(String s) {
 		 	JPanel p = new JPanel();
 			p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
-			TextAreaMessage tam = new TextAreaMessage(s, jf, this);
+			TextAreaMessage tam = new TextAreaMessage(s.trim(), jf, this, true);
 			
 			p.add(Box.createHorizontalGlue());
 			p.add(tam);			
@@ -198,6 +211,20 @@ public class PanelChatMessages extends JPanel implements Runnable{
 			add(Box.createRigidArea(new Dimension(0, 10)));
 			revalidate();
 			repaint();
+	 }
+	 
+	 public void addVoiceMessageFromUser(String path) {
+		 JPanel p = new JPanel();
+		 p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
+		 
+		 VoiceMessage vm = new VoiceMessage(userProfile, path, true);
+		 p.add(Box.createHorizontalGlue());
+		 p.add(vm);
+		 add(p);
+		 add(Box.createRigidArea(new Dimension(0, 10)));
+		 revalidate();
+		 repaint();
+		 
 	 }
 	 
 	 public int getFrameWidth() {
@@ -210,6 +237,14 @@ public class PanelChatMessages extends JPanel implements Runnable{
 	 
 	 public void repaintFrame() {
 		 jf.getContentPane().repaint();
+	 }
+	 
+	 public ContactPanel getContactPanel() {
+		 return cp;
+	 }
+	 
+	 public JaimsFrame getFrame() {
+		 return jf;
 	 }
 	
 

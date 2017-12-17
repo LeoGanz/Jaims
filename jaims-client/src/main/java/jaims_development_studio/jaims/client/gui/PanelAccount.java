@@ -44,38 +44,6 @@ public class PanelAccount extends JPanel{
 		setCursor(new Cursor(Cursor.HAND_CURSOR));
 	}
 	
-	public void initGUI() {
-		
-//		Image image = null;
-//		try {
-//			image = ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_Penguin.png"));
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		image = image.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-//        
-//		setBorder(new LineBorder(Color.black));
-//        setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-//		add(Box.createRigidArea(new Dimension(10, 0)));
-//		
-//		JLabel lbl = new JLabel(new ImageIcon(image));
-//		lbl.setCursor(new Cursor(Cursor.HAND_CURSOR));
-//		add(lbl);
-//		
-//		add(Box.createRigidArea(new Dimension(10, 0)));
-//		
-//		JLabel lbl2 = new JLabel(username);
-//		lbl2.setFont(new Font("Calibri", Font.PLAIN, 15));
-//		add(lbl2);
-//		
-//		add(Box.createHorizontalGlue());
-//		
-//		
-		
-		//setPreferredSize(new Dimension(250, 60));
-	}
-	
 	private Image scaleMaintainAspectRatio(Image image) {
         float ratio = (float) image.getHeight(this)/ (float)image.getWidth(this);
         Image returnImg = image.getScaledInstance( 55, 55, Image.SCALE_SMOOTH);
@@ -97,6 +65,4 @@ public class PanelAccount extends JPanel{
 		g2d.dispose();
 		
 	}
-
-
 }

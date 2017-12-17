@@ -1,5 +1,6 @@
 package jaims_development_studio.jaims.client.gui;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
@@ -19,6 +20,7 @@ import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +78,7 @@ public class PanelContacts extends JPanel implements Runnable{
 						panels.get(z).setPanel(panels.get(z));			
 					}
 				});
+				add(new LinePanel());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

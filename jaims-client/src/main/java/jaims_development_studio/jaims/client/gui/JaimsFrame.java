@@ -4,12 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -17,7 +13,6 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -42,7 +37,7 @@ public class JaimsFrame extends JFrame {
 	
 	private void initLoadingFrame() {
 		frame = new JFrame();
-		frame.setSize(700, 500);
+		frame.setSize(705, 505);
 		frame.setLocationRelativeTo(null);
 		frame.setUndecorated(true);
 		frame.setBackground(new Color(0, 0, 0, 0));
@@ -70,8 +65,8 @@ public class JaimsFrame extends JFrame {
 		
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(700, 500);
-		setMinimumSize(new Dimension(700,500));
+		setSize(705, 505);
+		setMinimumSize(new Dimension(705,505));
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout(10,0));
 		try {

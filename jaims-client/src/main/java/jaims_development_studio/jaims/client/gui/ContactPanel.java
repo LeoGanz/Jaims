@@ -46,55 +46,10 @@ public class ContactPanel extends JPanel{
 	
 	private void initGUI(Profile pf, JaimsFrame jf, ClientMain cm) {
 		
-//		try {
-//			PaintedChatPanel pcp = new PaintedChatPanel(ImageIO.read(new ByteArrayInputStream(pf.getProfilePicture())), pf.getNickname());
-//			add(pcp);
-//		} catch (IOException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
-//		
-//		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-//		setCursor(new Cursor(Cursor.HAND_CURSOR));
-//		add(Box.createRigidArea(new Dimension(10, 0)));
-//		try {
-//			if (pf.getProfilePicture() != null) {
-//				Image image = ImageIO.read(new ByteArrayInputStream(pf.getProfilePicture()));
-//				ImageObserver io = this;
-//				Image bimage = image.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-//				JLabel lbl = new JLabel(new ImageIcon(bimage));
-//				lbl.addMouseListener(new MouseAdapter() {
-//				
-//					@Override
-//					public void mousePressed(MouseEvent arg0) {
-//						JFrame frame = new JFrame();
-//						frame.setSize(image.getWidth(io), image.getHeight(io));
-//						frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-//						frame.add(new JLabel(new ImageIcon(image)));
-//						frame.setVisible(true);
-//					}
-//				});
-//				lbl.setCursor(new Cursor(Cursor.HAND_CURSOR));
-//				add(lbl);
-//			}else {
-//				Image image = ImageIO.read(getClass().getClassLoader().getResource("images/JAIMS_Penguin.png"));
-//				image = image.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
-//				add(new JLabel(new ImageIcon(image)));
-//			}
-//		}catch (IOException ioe) {
-//			LOG.error("Failed to create image");
-//		}
-//		add(Box.createRigidArea(new Dimension(10, 0)));
-//		JLabel lbl = new JLabel(pf.getNickname());
-//		lbl.setFont(new Font("Calibri", Font.PLAIN, 15));
-//		add(lbl);
-//		add(Box.createHorizontalGlue());
-//		setBorder(new LineBorder(Color.BLACK));
-		
 		ContactPanel cp = this;
 		
 		
-		pcm = new PanelChatMessages(jf, pf, co);
+		pcm = new PanelChatMessages(jf, pf, co, this);
 		Thread thread = new Thread(pcm);
 		thread.start();
 		pc = new PanelChat(pf, pcm);
@@ -123,4 +78,7 @@ public class ContactPanel extends JPanel{
 		return co;
 	}
 	
+	public ClientMain getClientMain() {
+		return cm;
+	}
 }

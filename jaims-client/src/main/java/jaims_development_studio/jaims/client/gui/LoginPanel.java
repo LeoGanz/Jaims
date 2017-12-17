@@ -173,7 +173,7 @@ public class LoginPanel extends JPanel{
 				btLogin.setPreferredSize(new Dimension(120, 40));
 				btLogin.addActionListener(arg0 -> {
 					if ((pwField == true) && (tField == true)) {
-						//sendLogin(tfUsername.getText(), pw);
+						
 						
 						
 					}
@@ -183,6 +183,7 @@ public class LoginPanel extends JPanel{
 					
 					@Override
 					public void actionPerformed(ActionEvent e) {
+						sendLogin(tfUsername.getText(), pw);
 						caller.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 						cm.startCreatingChatWindow(tfUsername.getText());
 					}
@@ -199,10 +200,12 @@ public class LoginPanel extends JPanel{
 		
 		panelSouth = new JPanel();
 		panelSouth.setBorder(new EmptyBorder(10, 0, 5, 0));
-		panelSouth.setLayout(new BorderLayout());
+		panelSouth.setLayout(new BoxLayout(panelSouth, BoxLayout.LINE_AXIS));
 		{
 			lblRegistrationLink = new JLabel("", SwingConstants.CENTER);
 			lblRegistrationLink.setText("<html><u><font color = #0000FF> Noch kein Konto? Hier gehts zur Anmeldung</html>");
+			lblRegistrationLink.setMaximumSize(new Dimension(lblRegistrationLink.getFontMetrics(lblRegistrationLink.getFont()).stringWidth(lblRegistrationLink.getText()), 20));
+			lblRegistrationLink.setPreferredSize(lblRegistrationLink.getMaximumSize());
 			lblRegistrationLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
 			lblRegistrationLink.addMouseListener(new MouseAdapter() {
 				
@@ -218,7 +221,9 @@ public class LoginPanel extends JPanel{
 				}
 				
 			});
-			panelSouth.add(lblRegistrationLink, BorderLayout.CENTER);
+			panelSouth.add(Box.createHorizontalGlue());
+			panelSouth.add(lblRegistrationLink);
+			panelSouth.add(Box.createHorizontalGlue());
 		}
 		add(panelSouth, BorderLayout.SOUTH);
 	
@@ -238,7 +243,7 @@ public class LoginPanel extends JPanel{
 	
 	private void sendLogin(String username, String pw) {
 		SendableLogin sl = new SendableLogin(username, pw);
-		ServerConnection.sendSendable(sl);
+		//ServerConnection.sendSendable(sl);
 	}
 	
 

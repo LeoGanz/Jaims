@@ -49,40 +49,45 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 	}
 
 	public void initGUI() {
-
-		Comparator<ContactPanel> comp = new Comparator<ContactPanel>() {
-
-			@Override
-			public int compare(ContactPanel o1, ContactPanel o2) {
-				if (getMessageList(o1.getChatObject()).get(getMessageList(o1.getChatObject()).size()-1).getTimestampRecieved().compareTo(getMessageList(o2.getChatObject()).get(getMessageList(o2.getChatObject()).size()-1).getTimestampRecieved()) > 0) {
-					return 1;
-				}else if (getMessageList(o1.getChatObject()).get(getMessageList(o1.getChatObject()).size()-1).getTimestampRecieved().compareTo(getMessageList(o2.getChatObject()).get(getMessageList(o2.getChatObject()).size()-1).getTimestampRecieved()) < 0 ) {
-					return -1;
-				}else {
-					return 0;
-				}
-			}
-			
-		};
-		panels.sort(comp);
-
-		for (ContactPanel panel: panels) {
-			Panel p = null;
-			try {
-				p = new Panel(ImageIO.read(new ByteArrayInputStream(getPicture(panel.getChatObject().getProfileContact()))), panel.getChatObject().getProfileContact().getNickname());
-				p.addMouseListener(new MouseAdapter() {
-					
-					@Override
-					public void mousePressed(MouseEvent e) {
-						panel.setPanel(panel);			
+		try {
+			Comparator<ContactPanel> comp = new Comparator<ContactPanel>() {
+	
+				@Override
+				public int compare(ContactPanel o1, ContactPanel o2) {
+					if (getMessageList(o1.getChatObject()).get(getMessageList(o1.getChatObject()).size()-1).getTimestampRecieved().compareTo(getMessageList(o2.getChatObject()).get(getMessageList(o2.getChatObject()).size()-1).getTimestampRecieved()) > 0) {
+						return 1;
+					}else if (getMessageList(o1.getChatObject()).get(getMessageList(o1.getChatObject()).size()-1).getTimestampRecieved().compareTo(getMessageList(o2.getChatObject()).get(getMessageList(o2.getChatObject()).size()-1).getTimestampRecieved()) < 0 ) {
+						return -1;
+					}else {
+						return 0;
 					}
-				});
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			add(p);
-			add(Box.createRigidArea(new Dimension(0, 5)));
+				}
+				
+			};
+			panels.sort(comp);
+		}catch(NullPointerException e) {
+			LOG.info("ContactPanel had no chat history");
+		}
+		for (ContactPanel panel: panels) {
+			if (messageListExists(panel.getChatObject())) {
+				Panel p = null;
+				try {
+					p = new Panel(ImageIO.read(new ByteArrayInputStream(getPicture(panel.getChatObject().getProfileContact()))), panel.getChatObject().getProfileContact().getNickname());
+					p.addMouseListener(new MouseAdapter() {
+						
+						@Override
+						public void mousePressed(MouseEvent e) {
+							panel.setPanel(panel);			
+						}
+					});
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				add(p);
+				add(new LinePanel());
+				add(Box.createRigidArea(new Dimension(0, 5)));
+			}			
 		}
 	}
 	
@@ -146,6 +151,32 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 		}
 		
 		return null;
+	}
+	
+	private boolean messageListExists(ChatObjects co) {
+		ResultSet rs;
+		Connection con = DatabaseConnection.getConnection();
+		PreparedStatement ps;
+		try {
+			ps = con.prepareStatement(co.getList());
+			ps.setObject(1, co.getProfileContact().getUuid());
+			rs = ps.executeQuery();
+			con.commit();
+			
+			rs.next();
+			
+			if (rs.getBytes(1) != null)
+				return true;
+			else
+				return false;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		
+		
 	}
 
 }

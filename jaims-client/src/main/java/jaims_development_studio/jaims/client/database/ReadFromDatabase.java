@@ -99,7 +99,7 @@ public class ReadFromDatabase implements Runnable {
 //			
 //			
 //			
-//			UUID user1 = UUID.randomUUID();
+//		UUID user1 = UUID.randomUUID();
 //			UUID user2 = UUID.randomUUID();
 //			UUID user3 = UUID.randomUUID();
 //			ArrayList<Message> list1 = new ArrayList<>();
@@ -128,7 +128,7 @@ public class ReadFromDatabase implements Runnable {
 //				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 //				ObjectOutputStream oos = new ObjectOutputStream(bos);
 //				oos.writeObject(list1);
-//				ps.setBytes(7, bos.toByteArray());
+//				ps.setBytes(7, null);
 //				bos.close();
 //				oos.close();
 //				

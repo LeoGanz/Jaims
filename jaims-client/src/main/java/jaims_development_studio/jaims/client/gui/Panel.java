@@ -24,13 +24,12 @@ public class Panel extends JPanel{
 		setPreferredSize(new Dimension(250, 55));
 		setMaximumSize(getPreferredSize());
 		setCursor(new Cursor(Cursor.HAND_CURSOR));
-		//setBorder(new LineBorder(Color.black));
 	}
 
 	@Override
 	public void paintComponent(Graphics g) {
 		g.setColor(getBackground());
-		g.fillRect(0, 0, getWidth(), getHeight());
+		g.fillRect(1, 1, getWidth()-1, getHeight()-1);
 		
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -39,12 +38,6 @@ public class Panel extends JPanel{
 		g2d.setFont(new Font("Calibri", Font.BOLD, 15));
 		g2d.drawString(username, 75, 30);
 		g2d.drawRoundRect(9, 2, 51, 51, 15, 15);
-		
-		g2d.setStroke(new BasicStroke(1.2F));
-		g2d.drawLine(0, 0, getWidth(), 0);
-		g2d.drawLine(0, getHeight()-2, 0, 0);
-		//g2d.drawLine(0, getHeight()-2, getWidth(), getHeight()-2);
-		//g2d.drawLine(getWidth()-2, 0, getWidth(), getHeight()-2);
 	
 		g2d.dispose();
 		
