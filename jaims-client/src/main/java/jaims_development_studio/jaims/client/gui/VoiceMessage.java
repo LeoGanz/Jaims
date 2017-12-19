@@ -2,6 +2,7 @@ package jaims_development_studio.jaims.client.gui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -9,7 +10,11 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.geom.GeneralPath;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -24,7 +29,9 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -34,6 +41,7 @@ import javax.swing.plaf.basic.BasicSliderUI;
 
 import jaims_development_studio.jaims.client.chatObjects.Profile;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
+import jaims_development_studio.jaims.client.logic.PlayAudio;
 import jaims_development_studio.jaims.client.settings.Settings;
 
 public class VoiceMessage extends JPanel{
@@ -41,7 +49,9 @@ public class VoiceMessage extends JPanel{
 	String path;
 	JLabel currentTime;
 	Profile contactProfile;
-	boolean own;
+	boolean own, paused = true;
+	Image img;
+	PlayAudio pa;
 	
 	public VoiceMessage(Profile contactProfile, String pathToFile, boolean own) {
 		path = pathToFile;
@@ -52,26 +62,96 @@ public class VoiceMessage extends JPanel{
 	
 	private void initGUI(Profile contactProfile) {
 		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-		setPreferredSize(new Dimension(250, 50));
+		setPreferredSize(new Dimension(320, 50));
 		setMaximumSize(getPreferredSize());
 		if (own)
-			setBorder(new RoundBorder(250, 50, Settings.colorOwnMessageBorder));
+			setBorder(new RoundBorder(320, 50, Settings.colorOwnMessageBorder));
 		else
-			setBorder(new RoundBorder(250, 50, Settings.colorContactMessageBorder));
+			setBorder(new RoundBorder(320, 50, Settings.colorContactMessageBorder));
 		
 		
-		add(Box.createRigidArea(new Dimension(55, 0)));
+		add(Box.createRigidArea(new Dimension(65, 0)));
 		long length = getAudioFileLength();
 		
-		JSlider slider = new JSlider(0, (int) (length/1000), 0);
-		slider.setPreferredSize(new Dimension(150, 40));
-		slider.setBorder(new RoundBorder((int) slider.getPreferredSize().getWidth(), (int) slider.getPreferredSize().getHeight(), Color.BLACK));
-		slider.setUI(new CustomSliderUI(slider));
+		JPanel p = new JPanel() {
+			@Override
+			public void paintComponent(Graphics g) {
+				g.setColor(getBackground());
+				g.fillRect(0, 0, getWidth(), getHeight());
+				
+				Graphics2D g2d = (Graphics2D) g;
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				
+				g2d.setColor(Color.BLACK);
+				g2d.drawRoundRect(1, 1, getWidth()-2, getHeight()-2, 20, 20);
+				g2d.setColor(Color.WHITE);
+				g2d.fillRoundRect(2, 2, getWidth()-3, getHeight()-3, 20, 20);
+			}
+		};
+		p.setOpaque(false);
 		if (own)
-			slider.setBackground(Settings.colorOwnMessages);
+			p.setBackground(Settings.colorOwnMessages);
 		else
-			slider.setBackground(Settings.colorContactMessages);
-		add(slider);
+			p.setBackground(Settings.colorContactMessages);
+		p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
+		p.setPreferredSize(new Dimension(176, 42));
+		p.setMaximumSize(p.getPreferredSize());
+		{
+			p.add(Box.createRigidArea(new Dimension(5, 42)));
+			JPanel start = new JPanel() {
+				@Override
+				public void paintComponent(Graphics g) {
+					g.setColor(getBackground());
+					g.fillRect(0, 0, getWidth(), getHeight());
+					
+					Graphics2D g2d = (Graphics2D) g;
+					g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+					g2d.setColor(Color.GRAY);
+					if (paused) {
+						int[] x = {1, 1, 13};
+						int[] y = {1,16, 8};
+						
+						g2d.fillPolygon(x, y, 3);
+					}else {
+						g2d.fillRect(1, 1, 4, 16);
+						g2d.fillRect(8, 1, 5, 16);
+					}
+				}
+			};
+			start.setOpaque(false);
+			start.setPreferredSize(new Dimension(13, 16));
+			start.setMaximumSize(start.getPreferredSize());
+			start.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			start.addMouseListener(new MouseAdapter() {
+				
+				@Override
+				public void mouseReleased(MouseEvent arg0) {
+					if(paused) {
+						paused = false;
+						start.repaint();
+						
+						Thread thread = new Thread(pa = new PlayAudio(path, currentTime));
+						thread.start();
+						while (thread.isAlive()) {}
+						paused = true;
+						start.repaint();
+					}else {
+						paused = true;
+						start.repaint();
+					}
+				}
+			});
+			p.add(start);
+			p.add(Box.createRigidArea(new Dimension(5, 0)));
+			
+			JSlider slider = new JSlider(0, (int) (length/1000), 0);
+			slider.setPreferredSize(new Dimension(150, 40));
+			slider.setUI(new CustomSliderUI(slider));
+			slider.setOpaque(false);
+			p.add(slider);
+			p.add(Box.createRigidArea(new Dimension(5, 0)));
+		}
+		add(p);		
 		
 		add(Box.createHorizontalGlue());
 		
@@ -84,6 +164,8 @@ public class VoiceMessage extends JPanel{
 		d.setTime(length);
 		JLabel maxTime = new JLabel(sdf.format(d));
 		add(maxTime);
+		
+		img = scaleMaintainAspectRatio(Toolkit.getDefaultToolkit().createImage(getPicture(contactProfile)));
 		
 	}
 	
@@ -123,9 +205,7 @@ public class VoiceMessage extends JPanel{
 	}
 	
 	private Image scaleMaintainAspectRatio(Image image) {
-        float ratio = (float) image.getHeight(this)/ (float)image.getWidth(this);
-        Image returnImg = image.getScaledInstance( 40, 40, Image.SCALE_SMOOTH);
-        return returnImg;
+        return image.getScaledInstance( 40, 40, Image.SCALE_SMOOTH);
     }
 	
 	@Override
@@ -143,9 +223,10 @@ public class VoiceMessage extends JPanel{
 			g2d.fillRoundRect(0, 1, getWidth()-1, getHeight()-1, 20, 20);
 		}
 		
-		g2d.drawImage(scaleMaintainAspectRatio(Toolkit.getDefaultToolkit().createImage(getPicture(contactProfile))), 5, 5, this);
+		
+		g2d.drawImage(img, 10, 5, this);
 		g2d.setColor(Color.BLACK);
-		g2d.drawRoundRect(4, 4, 41, 41, 8, 8);
+		g2d.drawRoundRect(9, 3, img.getWidth(this)+1, img.getHeight(this)+2, 8, 8);
 	}
 	
 	
