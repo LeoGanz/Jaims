@@ -1,6 +1,5 @@
 package jaims_development_studio.jaims.client.gui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.AdjustmentEvent;
@@ -16,11 +15,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.border.LineBorder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,32 +57,36 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 
 	private void initGUI() {
 		List<ContactPanel> list = Collections.synchronizedList(new ArrayList<ContactPanel>());
-
-		for (int i = 0; i < ReadFromDatabase.chatObjectsList.size(); i++) {
-			ContactPanel cp = new ContactPanel(ReadFromDatabase.chatObjectsList.get(i), frame, cm);
-			list.add(cp);
+		for (ChatObjects co:ReadFromDatabase.chatObjectsList) {
+			list.add(new ContactPanel(co, frame, cm));
 		}
+		list.sort(new Comparator<ContactPanel>() {
 
-		pc = new PanelContacts(list);
-		pcwu = new PanelChatWithUsers(list);
+			@Override
+			public int compare(ContactPanel o1, ContactPanel o2) {
+				if (o1.getChatObject().getProfileContact().getNickname().compareTo(o2.getChatObject().getProfileContact().getNickname()) > 0) {
+					return 1;
+				}else if (o1.getChatObject().getProfileContact().getNickname().compareTo(o2.getChatObject().getProfileContact().getNickname()) < 0 ) {
+					return -1;
+				}else {
+					return 0;
+				}
+			}
+			
+		});
 		
-
-
-		Thread thread = new Thread(pc);
-		thread.start();
-
-		Thread thread2 = new Thread(pcwu);
-		thread2.start();
-
-		try {
-			thread.join();
-			thread2.join();
-		} catch (InterruptedException ise) {
-			LOG.error("Failed to join Thread");
+		JPanel p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
+		{
+			p.add(Box.createRigidArea(new Dimension(0, 3)));
+			for (ContactPanel cp:list) {
+				p.add(cp.getContactPanel());
+				p.add(new LinePanel());
+				p.add(Box.createRigidArea(new Dimension(0, 5)));
+			}
 		}
 
-
-		JScrollPane scrollpane2 = new JScrollPane(pc, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrollPane scrollpane2 = new JScrollPane(p, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollpane2.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
 			
 			@Override
@@ -88,16 +94,46 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 				scrollpane2.getViewport().repaint();				
 			}
 		});
+		
+		ArrayList<ContactPanel> listCp = new ArrayList();
+		for (ContactPanel cp:list) {
+			if (cp.chatExists())
+				listCp.add(cp);
+		}
+		listCp.sort(new Comparator<ContactPanel>() {
+	
+			@Override
+			public int compare(ContactPanel o1, ContactPanel o2) {
+				if (getMessageList(o1.getChatObject()).get(getMessageList(o1.getChatObject()).size()-1).getTimestampRecieved().compareTo(getMessageList(o2.getChatObject()).get(getMessageList(o2.getChatObject()).size()-1).getTimestampRecieved()) > 0) {
+					return 1;
+				}else if (getMessageList(o1.getChatObject()).get(getMessageList(o1.getChatObject()).size()-1).getTimestampRecieved().compareTo(getMessageList(o2.getChatObject()).get(getMessageList(o2.getChatObject()).size()-1).getTimestampRecieved()) < 0 ) {
+					return -1;
+				}else {
+					return 0;
+				}
+			}
+			
+		});
+		JPanel q = new JPanel();
+		q.setLayout(new BoxLayout(q, BoxLayout.PAGE_AXIS));
+		{
+			q.add(Box.createRigidArea(new Dimension(0, 3)));
+			for (ContactPanel cp:listCp) {
+				q.add(cp.getChatPanel());
+				q.add(new LinePanel());
+				q.add(Box.createRigidArea(new Dimension(0, 5)));
+			}
+		}
 
-		setFont(new Font("Calibri", Font.BOLD, 15));
-
-		JScrollPane scrollpane = new JScrollPane(pcwu, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrollPane scrollpane = new JScrollPane(q, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollpane.getVerticalScrollBar().addAdjustmentListener(e -> scrollpane.getViewport().repaint());
 		addTab(html1 + "Chats" + html2, scrollpane);
 		addTab(html1 + "Contacts" + html2, scrollpane2);
 
 		revalidate();
 		repaint();
+		
+		setFont(new Font("Sans Serif", Font.BOLD, 15));
 		
 		addComponentListener(new ComponentAdapter() {
 			
@@ -119,7 +155,39 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 		});
 		
 		setPreferredSize(new Dimension(250, frame.getHeight() - 120));
-
+		ReadFromDatabase.chatObjectsList = null;
+		list = null;
+	}
+	
+	private ArrayList<Message> getMessageList(ChatObjects co) {
+		ResultSet rs;
+		Connection con = DatabaseConnection.getConnection();
+		PreparedStatement ps;
+		ArrayList<Message> listCo = null;
+		try {
+			ps = con.prepareStatement(co.getList());
+			ps.setObject(1, co.getProfileContact().getUuid());
+			rs = ps.executeQuery();
+			con.commit();
+			
+			rs.next();
+			
+			ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(rs.getBytes(1)));
+			listCo = (ArrayList<Message>) ois.readObject();
+			
+			return listCo;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 
 	public ClientMain getClientMain() {

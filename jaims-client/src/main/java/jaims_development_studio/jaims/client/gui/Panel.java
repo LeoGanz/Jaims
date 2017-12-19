@@ -9,6 +9,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
@@ -33,11 +35,12 @@ public class Panel extends JPanel{
 		
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2d.drawImage(img, 10, 29 - (img.getHeight(this) / 2), this);
 		g2d.setColor(Color.BLACK);
 		g2d.setFont(new Font("Calibri", Font.BOLD, 15));
 		g2d.drawString(username, 75, 30);
 		g2d.drawRoundRect(9, 2, 51, 51, 15, 15);
+		g2d.setClip(new RoundRectangle2D.Double(0,0,img.getWidth(this), img.getHeight(this), 20,20));
+		g2d.drawImage(img, 10, 3, this);
 	
 		g2d.dispose();
 		

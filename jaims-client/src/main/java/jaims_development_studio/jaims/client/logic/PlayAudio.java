@@ -11,6 +11,8 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
 
 public class PlayAudio implements Runnable{
 
@@ -19,10 +21,15 @@ public class PlayAudio implements Runnable{
 	JLabel actualTime;
 	SimpleDateFormat sdf;
 	Date d;
+	JSlider slider;
+	JPanel p, vm;
 	
-	public PlayAudio(String file, JLabel actualTime) {
+	public PlayAudio(String file, JLabel actualTime, JSlider slider, JPanel p, JPanel vm) {
 		this.file = file;
 		this.actualTime = actualTime;
+		this.slider = slider;
+		this.p = p;
+		this.vm = vm;
 	}
 	
 	private void initPlayback( ) {
@@ -37,15 +44,23 @@ public class PlayAudio implements Runnable{
 			Thread thread = new Thread() {
 				@Override
 				public void run() {
-					d.setTime(clip.getMicrosecondPosition()*100);
-					actualTime.setText(sdf.format(d) + " / ");
-					actualTime.repaint();
-					
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					while (clip.isActive()) {
+						d.setTime(clip.getMicrosecondPosition()*100);
+						System.out.println(clip.getMicrosecondPosition()*100);
+						System.out.println(clip.getMicrosecondPosition()*100000);
+						actualTime.setText(sdf.format(d) + " / ");
+						actualTime.repaint();
+						
+						slider.setValue((int) (clip.getMicrosecondPosition()*100000));
+						slider.revalidate();
+						p.repaint();
+						vm.repaint();
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
 			};

@@ -52,6 +52,7 @@ public class VoiceMessage extends JPanel{
 	boolean own, paused = true;
 	Image img;
 	PlayAudio pa;
+	JSlider slider;
 	
 	public VoiceMessage(Profile contactProfile, String pathToFile, boolean own) {
 		path = pathToFile;
@@ -130,7 +131,7 @@ public class VoiceMessage extends JPanel{
 						paused = false;
 						start.repaint();
 						
-						Thread thread = new Thread(pa = new PlayAudio(path, currentTime));
+						Thread thread = new Thread(pa);
 						thread.start();
 						while (thread.isAlive()) {}
 						paused = true;
@@ -144,7 +145,7 @@ public class VoiceMessage extends JPanel{
 			p.add(start);
 			p.add(Box.createRigidArea(new Dimension(5, 0)));
 			
-			JSlider slider = new JSlider(0, (int) (length/1000), 0);
+			slider = new JSlider(0, (int) (length/1000), 0);
 			slider.setPreferredSize(new Dimension(150, 40));
 			slider.setUI(new CustomSliderUI(slider));
 			slider.setOpaque(false);
@@ -166,7 +167,7 @@ public class VoiceMessage extends JPanel{
 		add(maxTime);
 		
 		img = scaleMaintainAspectRatio(Toolkit.getDefaultToolkit().createImage(getPicture(contactProfile)));
-		
+		pa = new PlayAudio(path, currentTime, slider, p, this);
 	}
 	
 	private long getAudioFileLength() {

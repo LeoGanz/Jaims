@@ -26,7 +26,7 @@ public class RecordAudio implements Runnable{
 	private void createFile() {
 		SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss");
 		Date dt = new Date(System.currentTimeMillis());
-		f = new File("C:/Users/Programming/Documents/VoiceMessage"+df.format(dt) + ".wav");
+		f = new File("C:/Jaims/VoiceMessages/VoiceMessage"+df.format(dt) + ".wav");
 		ais = new AudioInputStream(line);
 		
 	}

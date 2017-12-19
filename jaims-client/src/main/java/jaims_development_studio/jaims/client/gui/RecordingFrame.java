@@ -26,8 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JWindow;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-
+import javax.swing.border.LineBorder;import jaims_development_studio.jaims.client.logic.PlayAudio;
 import jaims_development_studio.jaims.client.logic.RecordAudio;
 import jaims_development_studio.jaims.client.settings.Settings;
 
@@ -187,6 +186,7 @@ public class RecordingFrame extends JWindow{
 					window.dispose();
 				}
 			});
+			ps.setCursor(new Cursor(Cursor.HAND_CURSOR));
 			panel.add(ps);
 			
 		}

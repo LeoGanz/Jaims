@@ -98,10 +98,11 @@ public class ReadFromDatabase implements Runnable {
 //		try {
 //			
 //			
-//			
-//		UUID user1 = UUID.randomUUID();
+//			UUID user = UUID.randomUUID();
+//			UUID user1 = UUID.randomUUID();
 //			UUID user2 = UUID.randomUUID();
 //			UUID user3 = UUID.randomUUID();
+//			UUID user4 = UUID.randomUUID();
 //			ArrayList<Message> list1 = new ArrayList<>();
 //			ArrayList<Message> list2 = new ArrayList<>();
 //			ArrayList<Message> list3 = new ArrayList<>();
@@ -174,6 +175,22 @@ public class ReadFromDatabase implements Runnable {
 //				ps.setBytes(7, bos.toByteArray());
 //				bos.close();
 //				oos.close();
+//				
+//				ps.executeUpdate();
+//				con.commit();
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			try {
+//				PreparedStatement ps = con.prepareStatement("INSERT INTO " + tablename.toUpperCase() + "(ID,NICKNAME,DESCRIPTION,STATUS,PROFILE_PICTURE,TIMESTAMP,MESSAGE_ARRAY) VALUES (?,?,?,?,?,?,?)");
+//				ps.setObject(1, user4);
+//				ps.setString(2, "Bene");
+//				ps.setString(3,  "Test");
+//				ps.setString(4, "Test");
+//				ps.setBytes(5, IOUtils.toByteArray(getClass().getResourceAsStream("/images/JAIMS_Penguin.png")));
+//				ps.setTimestamp(6, new Timestamp(new Date(System.currentTimeMillis()).getTime()));
+//				ps.setBytes(7, null);
 //				
 //				ps.executeUpdate();
 //				con.commit();

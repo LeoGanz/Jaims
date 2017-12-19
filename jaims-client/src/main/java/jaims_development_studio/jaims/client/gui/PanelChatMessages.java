@@ -49,13 +49,13 @@ public class PanelChatMessages extends JPanel implements Runnable{
 		this.userProfile = userProfile;
 		this.co = co;
 		this.cp = cp;
-	}
-	
-	private void initGUI() {
+		
 		setOpaque(false);
 		setBorder(new CompoundBorder(new LineBorder(Color.BLACK), new LineBorder(getBackground(), 3)));
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		
+	}
+	
+	private void initGUI() {
 		ResultSet rs;
 		Connection con = DatabaseConnection.getConnection();
 		PreparedStatement ps;
@@ -81,9 +81,7 @@ public class PanelChatMessages extends JPanel implements Runnable{
 		
 		
 		for (int i = 0; i < listCo.size(); i++) {
-			System.out.println(listCo.get(i).getSender());
-			System.out.println(userProfile.getUuid());
-			if (listCo.get(i).getSender() != ClientMain.userProfile.getUUID()) {
+			if (listCo.get(i).getSender() != ClientMain.userProfile.getUUID() && listCo != null) {
 				//Case Sender = Contact
 				
 				JPanel p = new JPanel();
@@ -106,24 +104,25 @@ public class PanelChatMessages extends JPanel implements Runnable{
 				add(Box.createRigidArea(new Dimension(0, 10)));
 			}else {
 				//Case Sender = User
-				
-				JPanel p = new JPanel();
-				p.setOpaque(false);
-				p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));				
-				if (listCo.get(i).getMessageObject() instanceof String) {
-					TextAreaMessage tam = new TextAreaMessage((String) listCo.get(i).getMessageObject(), jf, this, true); 
+				if (listCo != null) {
+					JPanel p = new JPanel();
+					p.setOpaque(false);
+					p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));				
+					if (listCo.get(i).getMessageObject() instanceof String) {
+						TextAreaMessage tam = new TextAreaMessage((String) listCo.get(i).getMessageObject(), jf, this, true); 
+						
+						p.add(Box.createHorizontalGlue());
+						p.add(tam);
+						
+					}else if (listCo.get(i).getMessageObject() instanceof Image) {
+						
+					}else {
+						
+					}
 					
-					p.add(Box.createHorizontalGlue());
-					p.add(tam);
-					
-				}else if (listCo.get(i).getMessageObject() instanceof Image) {
-					
-				}else {
-					
-				}
-				
-				add(p);
-				add(Box.createRigidArea(new Dimension(0, 10)));
+					add(p);
+					add(Box.createRigidArea(new Dimension(0, 10)));
+				}				
 			}
 		}
 		
@@ -132,8 +131,8 @@ public class PanelChatMessages extends JPanel implements Runnable{
 
 	@Override
 	public void run() {
-		initGUI();
-		
+		if(messageListExists(co))
+			initGUI();
 	}
 	
 	 private int countLines(String s, FontMetrics fm, JTextArea lbl) {
@@ -226,6 +225,32 @@ public class PanelChatMessages extends JPanel implements Runnable{
 		 repaint();
 		 
 	 }
+	 
+	 private boolean messageListExists(ChatObjects co) {
+			ResultSet rs;
+			Connection con = DatabaseConnection.getConnection();
+			PreparedStatement ps;
+			try {
+				ps = con.prepareStatement(co.getList());
+				ps.setObject(1, co.getProfileContact().getUuid());
+				rs = ps.executeQuery();
+				con.commit();
+				
+				rs.next();
+				
+				if (rs.getBytes(1) != null)
+					return true;
+				else
+					return false;
+
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+			}
+			
+			
+		}
 	 
 	 public int getFrameWidth() {
 		 return jf.getWidth();
