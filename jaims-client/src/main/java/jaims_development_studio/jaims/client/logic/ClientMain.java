@@ -24,6 +24,7 @@ import javax.swing.border.LineBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.client.chatObjects.Profile;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
 import jaims_development_studio.jaims.client.gui.AddSign;
 import jaims_development_studio.jaims.client.gui.ContactPanel;
@@ -70,7 +71,8 @@ public class ClientMain {
 		dc.initConnection();
 		dc.writeToDatabase();
 		
-		ServerConnection.initConnection();
+		Thread thread = new Thread(new ServerConnection());
+		thread.start();
 		
 		try {
 			Thread.sleep(1800);
@@ -88,8 +90,7 @@ public class ClientMain {
 	
 	public void startCreatingChatWindow(String username) {
 		
-		userProfile = new Profile("Bu88le", "Test", "Test", null, new Date(System.currentTimeMillis()));
-		userProfile.setUUID(UUID.randomUUID());
+		userProfile = new Profile(UUID.randomUUID(), "Bu88le", "Test", "Test", null, new Date(System.currentTimeMillis()));
 		
 		Thread thread = dc.readFromDatabase(username);
 		try {

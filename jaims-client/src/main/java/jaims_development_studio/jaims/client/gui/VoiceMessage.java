@@ -12,10 +12,9 @@ import java.awt.Stroke;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.geom.GeneralPath;
-import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,14 +28,11 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicSliderUI;
 
 import jaims_development_studio.jaims.client.chatObjects.Profile;
@@ -62,6 +58,8 @@ public class VoiceMessage extends JPanel{
 	}
 	
 	private void initGUI(Profile contactProfile) {
+		
+		
 		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 		setPreferredSize(new Dimension(320, 50));
 		setMaximumSize(getPreferredSize());

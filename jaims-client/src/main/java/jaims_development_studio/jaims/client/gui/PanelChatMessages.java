@@ -81,18 +81,26 @@ public class PanelChatMessages extends JPanel implements Runnable{
 		
 		
 		for (int i = 0; i < listCo.size(); i++) {
-			if (listCo.get(i).getSender() != ClientMain.userProfile.getUUID() && listCo != null) {
+			if (listCo.get(i).getSender() != ClientMain.userProfile.getUuid() && listCo != null) {
 				//Case Sender = Contact
 				
 				JPanel p = new JPanel();
 				p.setOpaque(false);
 				p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
 				if (listCo.get(i).getMessageObject() instanceof String) {
-					TextAreaMessage tam = new TextAreaMessage((String) listCo.get(i).getMessageObject(), jf, this, false);
+					if (listCo.get(i).getVoiceMessage() == false) {
+						TextAreaMessage tam = new TextAreaMessage((String) listCo.get(i).getMessageObject(), jf, this, false);
+						
+						
+						p.add(tam);
+						p.add(Box.createHorizontalGlue());
+					}else if (listCo.get(i).getVoiceMessage() == true) {
+						VoiceMessage vm = new VoiceMessage(userProfile, (String) listCo.get(i).getMessageObject(), false);
+						
+						p.add(vm);
+						p.add(Box.createHorizontalGlue());
+					}
 					
-					
-					p.add(tam);
-					p.add(Box.createHorizontalGlue());
 					
 				}else if (listCo.get(i).getMessageObject() instanceof Image) {
 					
@@ -109,10 +117,17 @@ public class PanelChatMessages extends JPanel implements Runnable{
 					p.setOpaque(false);
 					p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));				
 					if (listCo.get(i).getMessageObject() instanceof String) {
-						TextAreaMessage tam = new TextAreaMessage((String) listCo.get(i).getMessageObject(), jf, this, true); 
-						
-						p.add(Box.createHorizontalGlue());
-						p.add(tam);
+						if (listCo.get(i).getVoiceMessage() == false) {
+							TextAreaMessage tam = new TextAreaMessage((String) listCo.get(i).getMessageObject(), jf, this, true); 
+							
+							p.add(Box.createHorizontalGlue());
+							p.add(tam);
+						}else if (listCo.get(i).getVoiceMessage() == true) {
+							VoiceMessage vm = new VoiceMessage(ClientMain.userProfile, (String) listCo.get(i).getMessageObject(), true);
+							
+							p.add(Box.createHorizontalGlue());
+							p.add(vm);
+						}
 						
 					}else if (listCo.get(i).getMessageObject() instanceof Image) {
 						

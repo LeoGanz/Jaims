@@ -10,23 +10,25 @@ public class Message implements Serializable{
 	String message;
 	Image image;
 	Date timestampRecieved, timestampSent;
+	boolean voiceMessage;
 
-	public Message(UUID sender, UUID recipient, String message, Date timestampSent, Date timestampRecieved) {
-		this(sender, recipient, message, null, timestampSent, timestampRecieved);
+	public Message(UUID sender, UUID recipient, String message, Date timestampSent, Date timestampRecieved, boolean voiceMessage) {
+		this(sender, recipient, message, null, timestampSent, timestampRecieved, voiceMessage);
 	}
 
-	public Message(UUID sender, UUID recipient, Image image, Date timestampSend, Date timestampRecieved) {
-		this(sender, recipient, null, image, timestampSend, timestampRecieved);
+	public Message(UUID sender, UUID recipient, Image image, Date timestampSend, Date timestampRecieved, boolean voiceMessage) {
+		this(sender, recipient, null, image, timestampSend, timestampRecieved, voiceMessage);
 	}
 
 	public Message(UUID sender, UUID recipient, String message, Image image, Date timestampSent,
-			Date timestampRecieved) {
+			Date timestampRecieved, boolean voiceMessage) {
 		this.sender = sender;
 		this.recipient = recipient;
 		this.message = message;
 		this.image = image;
 		this.timestampSent = timestampSent;
 		this.timestampRecieved = timestampRecieved;
+		this.voiceMessage = voiceMessage;
 	}
 
 	public UUID getSender() {
@@ -51,6 +53,10 @@ public class Message implements Serializable{
 	
 	public Date getTimestampRecieved() {
 		return timestampRecieved;
+	}
+	
+	public boolean getVoiceMessage() {
+		return voiceMessage;
 	}
 	
 	public Object getMessageObject() {

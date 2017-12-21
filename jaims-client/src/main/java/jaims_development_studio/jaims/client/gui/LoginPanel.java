@@ -91,7 +91,7 @@ public class LoginPanel extends JPanel{
 				tfUsername.addKeyListener(new KeyAdapter() {
 					
 					@Override
-					public void keyPressed(KeyEvent arg0) {
+					public void keyReleased(KeyEvent arg0) {
 						if (verifyUsername(tfUsername.getText())) {
 							tfUsername.setBorder(new LineBorder(Color.black, 1));
 							tField = true;
@@ -116,7 +116,7 @@ public class LoginPanel extends JPanel{
 				jpPassword.addKeyListener(new KeyAdapter() {
 					
 					@Override
-					public void keyPressed(KeyEvent arg0) {
+					public void keyReleased(KeyEvent arg0) {
 						pw = "";
 						for (int i = 0; i < jpPassword.getPassword().length; i++)
 							pw += jpPassword.getPassword()[i];
@@ -243,7 +243,7 @@ public class LoginPanel extends JPanel{
 	
 	private void sendLogin(String username, String pw) {
 		SendableLogin sl = new SendableLogin(username, pw);
-		//ServerConnection.sendSendable(sl);
+		ServerConnection.sendSendable(sl);
 	}
 	
 

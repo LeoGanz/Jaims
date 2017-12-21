@@ -45,23 +45,24 @@ public class PlayAudio implements Runnable{
 				@Override
 				public void run() {
 					while (clip.isActive()) {
-						d.setTime(clip.getMicrosecondPosition()*100);
-						System.out.println(clip.getMicrosecondPosition()*100);
-						System.out.println(clip.getMicrosecondPosition()*100000);
+						d.setTime(clip.getMicrosecondPosition()/1000);
+						System.out.println(clip.getMicrosecondPosition()/1000);
+						System.out.println(clip.getMicrosecondPosition()/1000000);
 						actualTime.setText(sdf.format(d) + " / ");
 						actualTime.repaint();
 						
-						slider.setValue((int) (clip.getMicrosecondPosition()*100000));
+						slider.setValue((int) (clip.getMicrosecondPosition()/1000000));
 						slider.revalidate();
 						p.repaint();
 						vm.repaint();
 						try {
-							Thread.sleep(1000);
+							Thread.sleep(300);
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
+					slider.setValue((int) clip.getMicrosecondLength()/1000000);
 				}
 			};
 			thread.start();
