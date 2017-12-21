@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class ChatObjects {
 	
 	Profile profileContact;
-	ArrayList<Message> messageObjects = new ArrayList<>();
+	String messageObjects;
 	
 	public ChatObjects(Profile profile) {
 		profileContact = profile;
@@ -15,11 +15,7 @@ public class ChatObjects {
 		this.profileContact = profile;
 	}
 	
-	public void addMessageObject(Message messageObject) {
-		messageObjects.add(messageObject);
-	}
-	
-	public void setMessageObjectsArray(ArrayList<Message> list) {
+	public void setMessageObjectsArray(String list) {
 		messageObjects = list;
 	}
 	
@@ -27,7 +23,7 @@ public class ChatObjects {
 		return profileContact;
 	}
 	
-	public ArrayList<Message> getList() {
+	public String getList() {
 		return messageObjects;
 	}
 

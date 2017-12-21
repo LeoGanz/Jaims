@@ -8,6 +8,12 @@ import java.awt.Font;
 import java.awt.Image;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.Box;
@@ -16,7 +22,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
+import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.chatObjects.Profile;
+import jaims_development_studio.jaims.client.database.DatabaseConnection;
 
 public class PanelChatWindowTop extends JPanel {
 	
@@ -32,7 +40,7 @@ public class PanelChatWindowTop extends JPanel {
 		
 		ImageIcon ii = null;
 		try {
-			Image i = ImageIO.read(new ByteArrayInputStream(userProfile.getProfilePicture()));
+			Image i = ImageIO.read(new ByteArrayInputStream(getPicture(userProfile)));
 			i = i.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
 			ii = new ImageIcon(i);
 		} catch (IOException e) {
@@ -48,6 +56,28 @@ public class PanelChatWindowTop extends JPanel {
 		add(lbl2, BorderLayout.CENTER);
 		
 		add(Box.createRigidArea(new Dimension(0,40)), BorderLayout.LINE_END);
+	}
+	
+	private byte[] getPicture(Profile up) {
+		ResultSet rs;
+		Connection con = DatabaseConnection.getConnection();
+		PreparedStatement ps;
+		try {
+			ps = con.prepareStatement(up.getProfilePicture());
+			ps.setObject(1, up.getUuid());
+			rs = ps.executeQuery();
+			con.commit();
+			
+			rs.next();
+			byte[] arr = rs.getBytes(1);
+			
+			return arr;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 
 }

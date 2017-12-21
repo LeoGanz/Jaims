@@ -13,10 +13,10 @@ public class Profile implements Serializable {
 	private String				nickname;
 	private String				description;
 	private String				status;
-	private byte[]				profilePicture;
+	private String				profilePicture;
 	private Date				lastUpdated;
 	
-	public Profile(UUID uuid, String nickname, String description, String status, byte[] profilePicture, Date lastUpdated) {
+	public Profile(UUID uuid, String nickname, String description, String status, String profilePicture, Date lastUpdated) {
 		this.uuid = uuid;
 		this.nickname = nickname;
 		this.description = description;
@@ -24,7 +24,15 @@ public class Profile implements Serializable {
 		this.profilePicture = profilePicture;
 		this.lastUpdated = lastUpdated;
 	}
+	
+	public Profile() {
+		this(null, null, null, null, null, null);
+	}
 
+	public void setUUID(UUID uuid) {
+		this.uuid = uuid;
+	}
+	
 	public UUID getUuid() {
 		return uuid;
 	}
@@ -53,11 +61,11 @@ public class Profile implements Serializable {
 		this.status = status;
 	}
 	
-	public byte[] getProfilePicture() {
+	public String getProfilePicture() {
 		return profilePicture;
 	}
 	
-	public void setProfilePicture(byte[] profilePicture) {
+	public void setProfilePicture(String profilePicture) {
 		this.profilePicture = profilePicture;
 	}
 	

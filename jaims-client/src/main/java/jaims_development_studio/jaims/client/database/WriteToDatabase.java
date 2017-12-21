@@ -38,23 +38,23 @@ public class WriteToDatabase implements Runnable{
 	private void write() {
 		//try {
 			///con.setAutoCommit(false);
-			UUID user = UUID.randomUUID();
-			UUID user1 = UUID.randomUUID();
-			UUID user2 = UUID.randomUUID();
-			UUID user3 = UUID.randomUUID();
-			ArrayList<Message> list1 = new ArrayList<>();
-			ArrayList<Message> list2 = new ArrayList<>();
-			ArrayList<Message> list3 = new ArrayList<>();
-			list1.add(new Message(user1, user, "Nachricht 1 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
-			list1.add(new Message(user, user1, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
-			list1.add(new Message(user1, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
-			list2.add(new Message(user2, user, "Nachricht 1 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
-			list2.add(new Message(user, user2, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
-			list2.add(new Message(user2, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
-			list3.add(new Message(user3, user, "Nachricht 1 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
-			list3.add(new Message(user, user3, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
-			list3.add(new Message(user3, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
-			
+//			UUID user = UUID.randomUUID();
+//			UUID user1 = UUID.randomUUID();
+//			UUID user2 = UUID.randomUUID();
+//			UUID user3 = UUID.randomUUID();
+//			ArrayList<Message> list1 = new ArrayList<>();
+//			ArrayList<Message> list2 = new ArrayList<>();
+//			ArrayList<Message> list3 = new ArrayList<>();
+//			list1.add(new Message(user1, user, "Nachricht 1 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
+//			list1.add(new Message(user, user1, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
+//			list1.add(new Message(user1, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
+//			list2.add(new Message(user2, user, "Nachricht 1 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
+//			list2.add(new Message(user, user2, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
+//			list2.add(new Message(user2, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
+//			list3.add(new Message(user3, user, "Nachricht 1 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
+//			list3.add(new Message(user, user3, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
+//			list3.add(new Message(user3, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
+//			
 //			
 //			ps = con.prepareStatement("TRUNCATE TABLE BU88LE");
 //			ps.executeUpdate();

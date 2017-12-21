@@ -15,12 +15,13 @@ public class DatabaseConnection {
 	private static final Logger LOG = LoggerFactory.getLogger(DatabaseConnection.class);
 
 	String username;
-	private Connection con;
+	private static Connection con;
 
 	public void initConnection() {
 		try {
-			con = DriverManager.getConnection("jdbc:hsqldb:file:c:/database/", "root", "");
+			con = DriverManager.getConnection("jdbc:hsqldb:file:c:/database/jaims/", "JAIMS_Client", "LBOgHFk0HOOcDVDL1oOW");
 		} catch (SQLException e) {
+			e.printStackTrace();
 			LOG.error("Failed to connect to database");
 			JOptionPane.showMessageDialog(null, "Couldn't connect to Database", "Databaseconnection error", JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
@@ -33,5 +34,8 @@ public class DatabaseConnection {
 	
 	public Thread writeToDatabase() {
 		return WriteToDatabase.writeToDatabase(username, con);
+	}
+	public static Connection getConnection() {
+		return con;
 	}
 }
