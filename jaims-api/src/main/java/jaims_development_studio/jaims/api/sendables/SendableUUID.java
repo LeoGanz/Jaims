@@ -7,26 +7,26 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity(name = "SendableUUID")
-@DiscriminatorValue(value = ESendableType.Values.UUID)
+@DiscriminatorValue(value = ESendableType.Values.STORED_UUID)
 public class SendableUUID extends Sendable {
-	
+
 	private static final long	serialVersionUID	= 1L;
-
+	
 	@Column(name = "STORED_UUID", columnDefinition = "BINARY(16)")
-	private final UUID			uuid;
-
+	private final UUID			stored_uuid;
+	
 	@SuppressWarnings("unused")
 	private SendableUUID() {
 		this(null);
 	}
-
+	
 	public SendableUUID(UUID uuid) {
-		super(ESendableType.UUID, 3);
-		this.uuid = uuid;
-	}
-
-	public UUID getStoredUuid() {
-		return uuid;
+		super(ESendableType.STORED_UUID, 3);
+		stored_uuid = uuid;
 	}
 	
+	public UUID getStoredUuid() {
+		return stored_uuid;
+	}
+
 }

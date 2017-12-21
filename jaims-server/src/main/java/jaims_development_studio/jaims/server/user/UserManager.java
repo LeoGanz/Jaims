@@ -19,11 +19,11 @@ import jaims_development_studio.jaims.server.account.AccountManager;
 
 public class UserManager implements Serializable {
 
-	private final transient Logger	LOG					= LoggerFactory.getLogger(UserManager.class);
+	private final Logger			LOG					= LoggerFactory.getLogger(UserManager.class);
 	private static final long		serialVersionUID	= 1L;
 	private final AccountManager	accountManager;
 	private final UserDAO			userDAO				= new UserDAO();
-	private transient Server		server;
+	private final Server			server;
 
 	public UserManager(Server server) {
 		this.server = server;
@@ -42,7 +42,7 @@ public class UserManager implements Serializable {
 		Account account = accountManager.createNewAccount(username, password, email);
 		User user = new User(account);
 
-		userDAO.saveOrUpdate(user);
+		//		userDAO.saveOrUpdate(user);
 
 		//		users.put(account.getUuid(), user);
 
@@ -61,18 +61,21 @@ public class UserManager implements Serializable {
 		
 		boolean correctPassword = account.validatePassword(login.getPassword());
 		if (!correctPassword)
-			throw new IncorrectPasswordException("Invalid password for account" + account);
+			throw new IncorrectPasswordException("Invalid password for account " + account);
 
 		return user;
 	}
 	
 	public void deleteUserAndAccount(UUID uuid) {
 		LOG.info("Deleting User " + uuid);
-		accountManager.deleteAccount(uuid); //accountDAO in AccountManager will also delete user object
+		accountManager.deleteAccount(uuid); //accountDAO in AccountManager will delete both user and account objects
 	}
 	
 	public void save(User user) {
-		userDAO.saveOrUpdate(user);
+		if (user != null) {
+			user.updateLastSeen();
+			userDAO.saveOrUpdate(user);
+		}
 	}
 	
 

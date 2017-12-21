@@ -29,7 +29,7 @@ import jaims_development_studio.jaims.api.sendables.SendableMessage;
 @Entity(name = "User")
 @Table(name = "USERS")
 public class User implements Serializable, ICommandSender {
-
+	
 	private static final long				serialVersionUID	= 1L;
 	@Column(name = "ACCOUNT_UUID", columnDefinition = "BINARY(16)")
 	@Id
@@ -45,17 +45,17 @@ public class User implements Serializable, ICommandSender {
 	//	@Transient
 	//	private final Collection<Sendable>	sendables			= new LinkedBlockingDeque<>();	//(with a deque) it will be possible to delete messages that aren't yet delivered
 	private final List<Sendable>	sendables			= new LinkedList<>();
-	
+
 	public User() {
-		
-	}
-	
-	public User(Account account) {
-		this.account = account;
-		
-		//		sendables.sort((o1, o2) -> Integer.compare(o1.getPriority(), o2.getPriority()));
+
 	}
 
+	public User(Account account) {
+		this.account = account;
+
+		//		sendables.sort((o1, o2) -> Integer.compare(o1.getPriority(), o2.getPriority()));
+	}
+	
 	public synchronized void enqueueSendable(Sendable sendable) {
 		sendables.add(sendable);
 		//		((LinkedBlockingDeque<Sendable>) sendables).addLast(sendable);
@@ -63,14 +63,14 @@ public class User implements Serializable, ICommandSender {
 		sendable.setUser(this);
 		notify();
 	}
-	
+
 	public synchronized void enqueueAsFirstElement(Sendable sendable) {
 		enqueueSendable(sendable);
 		//		((LinkedBlockingDeque<Sendable>) sendables).addFirst(sendable);
 		//		sendable.setUser(this);
 		//		notify();
 	}
-
+	
 	public synchronized Sendable takeSendable() {
 		Sendable sendable = sendables.stream().sorted((o1, o2) -> Integer.compare(o1.getPriority(), o2.getPriority())).findFirst().get();
 		//			Sendable sendable = ((LinkedBlockingDeque<Sendable>) sendables).takeFirst();
@@ -80,24 +80,24 @@ public class User implements Serializable, ICommandSender {
 		//		}
 		return sendable;
 	}
-
+	
 	public Account getAccount() {
 		return account;
 	}
-
+	
 	public Date getLastSeen() {
 		return lastSeen;
 	}
-
-	public void setLastSeen() {
+	
+	public void updateLastSeen() {
 		lastSeen = new Date();
 	}
-
+	
 	@Override
 	public String toString() {
 		return account.toStringName();
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -113,7 +113,7 @@ public class User implements Serializable, ICommandSender {
 				//				.append(sendables, other.sendables) TODO uncomment when sendable saving is implmented
 				.isEquals();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder(17, 31)
@@ -122,32 +122,32 @@ public class User implements Serializable, ICommandSender {
 				//				.append(sendables)
 				.toHashCode();
 	}
-	
+
 	public boolean noSendableQueued() {
 		return sendables.isEmpty();
 	}
-
+	
 	@Override
 	public String getName() {
 		return account.getUsername();
 	}
-
+	
 	@Override
 	public void sendMessage(String msg) {
 		SendableMessage sendableMessage = new SendableMessage(UUID.fromString("SERVER"), account.getUuid(), msg);
 		enqueueSendable(sendableMessage);
 	}
-
+	
 	@Override
 	public boolean canUseCommand(int permLevel, String commandName) {
 		// TODO different users can get different command levels
 		return permLevel <= 1;
 	}
-
+	
 	@Override
 	public boolean sendCommandFeedback() {
 		// TODO User setting
 		return true; //for now
 	}
-
+	
 }

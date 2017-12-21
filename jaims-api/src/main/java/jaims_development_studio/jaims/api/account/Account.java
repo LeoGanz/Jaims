@@ -19,9 +19,11 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity(name = "Account")
 @Table(name = "ACCOUNTS")
 public class Account implements Serializable {
-	
+
 	private static final long	serialVersionUID	= 1L;
-	
+	//	@Transient
+	//	private final Logger		LOG					= LoggerFactory.getLogger(Account.class);
+
 	@GeneratedValue(generator = "uuid2")
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
 	@Column(name = "UUID", columnDefinition = "BINARY(16)")
@@ -36,75 +38,76 @@ public class Account implements Serializable {
 	@Column(name = "REGISTRATION_DATE", columnDefinition = "TIMESTAMP")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date				registrationDate;
-	
+
 	public Account() {
-
+		
 	}
-
+	
 	public Account(String username, String password, String email) {
 		this.username = username;
 		this.password = password;
 		this.email = email;
 	}
-
-
+	
+	
 	public String getPassword() {
 		return password;
 	}
-	
 
+	
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
 
+	
 	public Date getRegistrationDate() {
 		return registrationDate;
 	}
-	
 
+	
 	public void setRegistrationDate(Date registrationDate) {
 		this.registrationDate = registrationDate;
 	}
-	
+
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	
 
+	
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
+
 	public UUID getUuid() {
 		return uuid;
 	}
-	
+
 	public String getUsername() {
 		return username;
 	}
-
+	
 	public String getEmail() {
 		return email;
 	}
-	
+
 	public boolean validatePassword(@SuppressWarnings("hiding") String password) {
+		//		LOG.debug("Comparing passwords: '" + this.password + "' and '" + password + "' Equal: " + this.password.equals(password));
 		return this.password.equals(password);
 	}
-	
+
 	@Override
 	public String toString() {
 		return toStringUuid();
 	}
-
+	
 	public String toStringName() {
 		return username;
 	}
-	
+
 	public String toStringUuid() {
 		return uuid.toString();
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -122,7 +125,7 @@ public class Account implements Serializable {
 				.append(registrationDate, other.registrationDate)
 				.isEquals();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder(17, 31)
@@ -133,5 +136,5 @@ public class Account implements Serializable {
 				.append(registrationDate)
 				.toHashCode();
 	}
-	
+
 }

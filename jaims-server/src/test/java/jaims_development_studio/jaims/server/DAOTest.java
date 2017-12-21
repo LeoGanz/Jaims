@@ -76,7 +76,7 @@ public class DAOTest {
 			Assert.assertEquals("Saved and fetched users should be equal!", user, fetchedUser);
 		}
 
-		user.setLastSeen();
+		user.updateLastSeen();
 		userDao.saveOrUpdate(user);
 	}
 	
