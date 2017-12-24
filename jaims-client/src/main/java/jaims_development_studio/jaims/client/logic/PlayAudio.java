@@ -62,7 +62,7 @@ public class PlayAudio implements Runnable{
 							e.printStackTrace();
 						}
 					}
-					slider.setValue((int) clip.getMicrosecondLength()/1000000);
+					slider.setValue(0);
 				}
 			};
 			thread.start();

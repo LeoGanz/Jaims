@@ -4,14 +4,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Image;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -20,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -33,10 +26,15 @@ import jaims_development_studio.jaims.client.chatObjects.ChatObjects;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.chatObjects.Profile;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
+import jaims_development_studio.jaims.client.database.WriteToDatabase;
 import jaims_development_studio.jaims.client.logic.ClientMain;
 
 public class PanelChatMessages extends JPanel implements Runnable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	JaimsFrame jf;
 	Profile userProfile;
 	ChatObjects co;
@@ -78,7 +76,6 @@ public class PanelChatMessages extends JPanel implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 		
 		for (int i = 0; i < listCo.size(); i++) {
 			if (listCo.get(i).getSender() != ClientMain.userProfile.getUuid() && listCo != null) {
@@ -214,7 +211,7 @@ public class PanelChatMessages extends JPanel implements Runnable{
 		 }
 	 }
 	 
-	 public void addMessageFromUser(String s) {
+	 public void addMessageFromUser(String s, UUID profileUUID) {
 		 	JPanel p = new JPanel();
 			p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
 			TextAreaMessage tam = new TextAreaMessage(s.trim(), jf, this, true);
@@ -225,9 +222,13 @@ public class PanelChatMessages extends JPanel implements Runnable{
 			add(Box.createRigidArea(new Dimension(0, 10)));
 			revalidate();
 			repaint();
+			
+			PanelChat.jsp.getVerticalScrollBar().setValue(PanelChat.jsp.getVerticalScrollBar().getMaximum());			
+			Message m = new Message(ClientMain.userProfile.getUuid(), profileUUID, s, null, null, false);
+			WriteToDatabase.writeMessage(m, profileUUID);
 	 }
 	 
-	 public void addVoiceMessageFromUser(String path) {
+	 public void addVoiceMessageFromUser(String path, UUID profileUUID) {
 		 JPanel p = new JPanel();
 		 p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
 		 
@@ -239,6 +240,9 @@ public class PanelChatMessages extends JPanel implements Runnable{
 		 revalidate();
 		 repaint();
 		 
+		 PanelChat.jsp.getVerticalScrollBar().setValue(PanelChat.jsp.getVerticalScrollBar().getMaximum());
+		 Message m = new Message(ClientMain.userProfile.getUuid(), profileUUID, path, null, null, true);
+		 WriteToDatabase.writeMessage(m, profileUUID);
 	 }
 	 
 	 private boolean messageListExists(ChatObjects co) {
@@ -285,6 +289,10 @@ public class PanelChatMessages extends JPanel implements Runnable{
 	 
 	 public JaimsFrame getFrame() {
 		 return jf;
+	 }
+	 
+	 public Profile getUserProfile() {
+		 return userProfile;
 	 }
 	
 

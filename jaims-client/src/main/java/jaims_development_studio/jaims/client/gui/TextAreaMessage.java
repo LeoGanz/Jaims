@@ -23,6 +23,10 @@ import jaims_development_studio.jaims.client.settings.Settings;
 
 public class TextAreaMessage extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	JaimsFrame jf;
 	String longestLine = "";
 	boolean multipleLines = false;

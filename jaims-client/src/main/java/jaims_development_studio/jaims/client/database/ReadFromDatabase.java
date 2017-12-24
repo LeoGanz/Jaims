@@ -43,6 +43,8 @@ public class ReadFromDatabase implements Runnable {
 	public ReadFromDatabase(String tablename, Connection con) {
 		this.tablename = tablename;
 		this.con = con;
+		
+		new WriteToDatabase(tablename, con);
 	}
 
 	private void read() {			    
@@ -98,6 +100,9 @@ public class ReadFromDatabase implements Runnable {
 		
 //		try {
 //			
+//			Statement s = con.createStatement();
+//			s.execute("TRUNCATE TABLE BU88LE");
+//			con.commit();
 //			
 //			UUID user = ClientMain.userProfile.getUuid();
 //			UUID user1 = UUID.randomUUID();
@@ -205,6 +210,9 @@ public class ReadFromDatabase implements Runnable {
 //		} catch (IOException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
+//		} catch (SQLException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
 //		}
 	}
 

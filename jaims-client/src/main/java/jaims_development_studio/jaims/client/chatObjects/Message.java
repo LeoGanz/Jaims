@@ -6,6 +6,10 @@ import java.util.Date;
 import java.util.UUID;
 
 public class Message implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	UUID sender, recipient;
 	String message;
 	Image image;
@@ -49,6 +53,10 @@ public class Message implements Serializable{
 	
 	public Date getTimestampSent() {
 		return timestampSent;
+	}
+	
+	public void setTimestampSent(Date sent) {
+		timestampSent = sent;
 	}
 	
 	public Date getTimestampRecieved() {

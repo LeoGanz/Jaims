@@ -1,65 +1,69 @@
 package jaims_development_studio.jaims.client.database;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.sql.Array;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.UUID;
-
-import org.apache.commons.io.IOUtils;
 
 import jaims_development_studio.jaims.client.chatObjects.Message;
 
 public class WriteToDatabase implements Runnable{
 	
-	String tablename;
-	Connection con;
-	PreparedStatement ps;
+	static String tablename;
+	static Connection con;
+	static Statement s;
+	static PreparedStatement ps;
+	static ResultSet rs;
 	
 	public WriteToDatabase(String tablename, Connection con) {
-		this.tablename = tablename;
-		this.con = con;
-		//CREATE TABLE BU88LE(
-		//USER_ID UUID NOT NULL PRIMARY KEY,
-		//NICKNAME VARCHAR(256) NOT NULL,
-		//DESCRIPTION VARCHAR(4096),
-		//STATUS VARCHAR(4096),
-		//BYTE_ARRAY BLOB,
-		//LAST_UPDATED TIMESTAMP NOT NULL,
-		//MESSAGE_OBJECTS ARRAY);
-
+		WriteToDatabase.tablename = tablename;
+		WriteToDatabase.con = con;
 	}
 
-	private void write() {
-		//try {
-			///con.setAutoCommit(false);
-//			UUID user = UUID.randomUUID();
-//			UUID user1 = UUID.randomUUID();
-//			UUID user2 = UUID.randomUUID();
-//			UUID user3 = UUID.randomUUID();
-//			ArrayList<Message> list1 = new ArrayList<>();
-//			ArrayList<Message> list2 = new ArrayList<>();
-//			ArrayList<Message> list3 = new ArrayList<>();
-//			list1.add(new Message(user1, user, "Nachricht 1 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
-//			list1.add(new Message(user, user1, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
-//			list1.add(new Message(user1, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
-//			list2.add(new Message(user2, user, "Nachricht 1 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
-//			list2.add(new Message(user, user2, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
-//			list2.add(new Message(user2, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
-//			list3.add(new Message(user3, user, "Nachricht 1 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
-//			list3.add(new Message(user, user3, "Nachricht 2 von User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
-//			list3.add(new Message(user3, user, "Nachricht 3 an User", new Timestamp(System.currentTimeMillis()-100000), new Timestamp(System.currentTimeMillis())));
-//			
-//			
-//			ps = con.prepareStatement("TRUNCATE TABLE BU88LE");
-//			ps.executeUpdate();
-//			con.commit();
-//			
+	public static void writeMessage(Message m,  UUID uuid) {
+
+			try {
+				ps = con.prepareStatement("SELECT * FROM " + tablename.toUpperCase() + " WHERE ID=?");
+				ps.setObject(1, uuid);
+				rs = ps.executeQuery();
+				
+				rs.next();
+				System.out.println(uuid);
+				System.out.println((UUID) rs.getObject(1));
+				byte[] arr = rs.getBytes(7);
+				ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(arr));
+				ArrayList<Message> list = (ArrayList<Message>) ois.readObject();
+				m.setTimestampSent(new Date(System.currentTimeMillis()));
+				list.add(m);
+				ps.close();
+				
+				ps = con.prepareStatement("UPDATE " + tablename.toUpperCase() + " SET MESSAGE_ARRAY=? WHERE ID=?");
+		
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ObjectOutputStream oos = new ObjectOutputStream(bos);
+				oos.writeObject(list);
+				ps.setBytes(1, bos.toByteArray());
+				ps.setObject(2, uuid);
+				bos.close();
+				oos.close();
+				
+				ps.executeUpdate();
+				con.commit();
+			} catch (SQLException | IOException | ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
 //			ps = con.prepareStatement("INSERT INTO BU88LE (USER_ID, NICKNAME, DESCRIPTION, STATUS, BYTE_ARRAY, LAST_UPDATED, MESSAGE_OBJECTS) VALUES(?,?,?,?,?,?,?)");
 //			ps.setObject(1, UUID.randomUUID());
 //			ps.setString(2, "Echo-Test");
@@ -111,7 +115,6 @@ public class WriteToDatabase implements Runnable{
 	
 	@Override
 	public void run() {
-		write();
 		
 	}
 

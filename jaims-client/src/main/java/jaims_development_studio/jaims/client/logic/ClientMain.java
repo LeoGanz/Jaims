@@ -48,6 +48,7 @@ public class ClientMain {
 	ContactPanel activeContactPanel;
 	PanelChat activePanelChat;
 	PanelSettings ps;
+	ServerConnection sc;
 	
 	Thread threadDatabaseManagement, threadPCC;
 	DatabaseConnection dc;
@@ -57,7 +58,11 @@ public class ClientMain {
 	public static Profile userProfile;
 	
 	public static void main(String[] args) {
-		new ClientMain();
+		try {
+			new ClientMain();
+		}catch(Exception e) {
+			LOG.error("Fatal error!", e);
+		}
 	}
 	
 	public ClientMain() {
@@ -71,7 +76,7 @@ public class ClientMain {
 		dc.initConnection();
 		dc.writeToDatabase();
 		
-		Thread thread = new Thread(new ServerConnection());
+		Thread thread = new Thread(sc = new ServerConnection());
 		thread.start();
 		
 		try {
@@ -86,6 +91,8 @@ public class ClientMain {
 		jf.getContentPane().add(lp, BorderLayout.CENTER);
 		jf.getContentPane().revalidate();
 		
+		if(sc.getSocket().isClosed() || sc.getSocket().isConnected() == false)
+			lp.addConnectionError(sc);
 	}
 	
 	public void startCreatingChatWindow(String username) {

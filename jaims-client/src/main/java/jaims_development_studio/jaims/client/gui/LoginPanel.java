@@ -17,6 +17,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 
 import javax.imageio.ImageIO;
 import javax.swing.Box;
@@ -32,8 +34,12 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jaims_development_studio.jaims.api.sendables.SendableLogin;
 import jaims_development_studio.jaims.client.logic.ClientMain;
+import jaims_development_studio.jaims.client.networking.ListenForInput;
 import jaims_development_studio.jaims.client.networking.ServerConnection;
 
 public class LoginPanel extends JPanel{
@@ -42,6 +48,7 @@ public class LoginPanel extends JPanel{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(LoginPanel.class);
 	
 	private Image image;
 	private boolean tField, pwField;
@@ -52,6 +59,7 @@ public class LoginPanel extends JPanel{
 	private JTextField tfUsername;
 	private JPasswordField jpPassword;
 	private JPanel panelCenter, panelSouth;
+	private JPanel panel;
 	private JButton btLogin;
 	private GridBagConstraints c = new GridBagConstraints();
 	
@@ -139,7 +147,7 @@ public class LoginPanel extends JPanel{
 					}
 				});
 				
-				JPanel panel = new JPanel();
+				panel = new JPanel();
 				panel.setLayout(new GridBagLayout());
 				{
 					c.insets = new Insets(5, 8, 10, 8);
@@ -227,6 +235,46 @@ public class LoginPanel extends JPanel{
 		}
 		add(panelSouth, BorderLayout.SOUTH);
 	
+	}
+	
+	public void addConnectionError(ServerConnection sc) {
+		btLogin.setEnabled(false);
+		lblRegistrationLink.setEnabled(false);
+		
+		c.gridy = 3;
+		c.gridx = 0;
+		c.gridwidth = 2;		
+		ConnectionErrorPanel cep = new ConnectionErrorPanel();
+		panel.add(cep, c);
+		panel.revalidate();
+		panel.repaint();
+		
+		Thread thread = new Thread() {
+			@Override
+			public void run() {
+				Socket s = new Socket();
+				while (s.isConnected() == false) {
+					try {
+						s = new Socket();
+						s.connect(new InetSocketAddress("localhost", 6000), 0);
+						Thread.sleep(600);
+					} catch (InterruptedException | IOException e) {
+
+					}
+				}
+				LOG.info("Connected");
+				btLogin.setEnabled(true);
+				lblRegistrationLink.setEnabled(true);
+				panel.remove(cep);
+				panel.repaint();
+				sc.setSocket(s);
+				
+				Thread t  = new Thread(new ListenForInput(s));
+				t.start();
+			}
+		};
+		thread.start();
+		
 	}
 	
 	private Boolean verifyUsername(String username) {
