@@ -18,6 +18,7 @@ import jaims_development_studio.jaims.api.sendables.SendableRegistration;
 import jaims_development_studio.jaims.api.sendables.SendableUUID;
 import jaims_development_studio.jaims.api.user.User;
 import jaims_development_studio.jaims.api.user.UserNotFoundException;
+import jaims_development_studio.jaims.api.util.ObservableList;
 import jaims_development_studio.jaims.server.ITickable;
 import jaims_development_studio.jaims.server.Server;
 import jaims_development_studio.jaims.server.user.UserManager;
@@ -32,7 +33,7 @@ public class ClientManager implements ITickable {
 	private boolean							terminatingAll;
 
 	public ClientManager(Server server) {
-		connections = new LinkedList<>();
+		connections = new ObservableList<>(new LinkedList<>());
 		userManager = new UserManager(server);
 		server.subscribeToTicker(this);
 	}
@@ -54,6 +55,7 @@ public class ClientManager implements ITickable {
 			connections.remove(clientConnection);
 		nrConnections--;
 		userManager.save(clientConnection.getUser());
+		userManager.logoutUser(clientConnection.getUser());
 	}
 
 	public void terminateAllConnections() {

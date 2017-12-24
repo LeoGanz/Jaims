@@ -47,13 +47,20 @@ public class ServerGui extends JComponent {
 	 * Creates the server GUI and sets it visible for the user.
 	 */
 	public static void createServerGui(Server server) {
+		if (SwingUtilities.isEventDispatchThread())
+			initServerGui(server);
+		else
+			SwingUtilities.invokeLater(() -> initServerGui(server));
+	}
+	
+	public static void initServerGui(Server server) {
 		
 		LOG.info("Creating server gui...");
 		
 		try {
 			UIManager.setLookAndFeel(new NimbusLookAndFeel());
 		} catch (UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
+			LOG.warn("Could not update LookAndFeel", e);
 		}
 		
 		ServerGui serverGui = new ServerGui(server);
@@ -165,7 +172,7 @@ public class ServerGui extends JComponent {
 		
 		JPanel statsPanel = new JPanel(new BorderLayout());
 		statsPanel.add(new StatsComponent(server), BorderLayout.NORTH);
-		statsPanel.add(getUserListComponent(), BorderLayout.CENTER);
+		SwingUtilities.invokeLater(() -> statsPanel.add(getUserListComponent(), BorderLayout.CENTER));
 		statsPanel.setBorder(new TitledBorder(new EtchedBorder(), "Stats"));
 		
 		return statsPanel;

@@ -31,6 +31,8 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 	private static final Logger			LOG					= LoggerFactory.getLogger(Server.class);
 	/** A reference to the server's main thread. */
 	private Thread						serverThread;
+	/** Indicates that server is in start up process */
+	private boolean						serverStarting		= true;
 	/** Indicates whether the server is running or not. Set to false to initiate a shutdown. */
 	private boolean						serverRunning		= true;
 	/** Indicates to other classes that the server is safely stopped. */
@@ -52,6 +54,65 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 	/** A set that contains all subscribers for ticking */
 	private final Set<ITickable>		tickables			= Sets.newHashSet(this);
 
+	public static void main(String[] args) {
+		boolean gui = true;
+		int port = -1;
+		int maxClients = -2;
+		int tickRate = -1;
+
+		for (int i = 0; i < args.length; i++) {
+			String param = args[i];
+			String nextParam = i == (args.length - 1) ? null : args[i + 1];
+			boolean skipParam = false;
+
+			if (param.equalsIgnoreCase("nogui") || param.equalsIgnoreCase("--nogui"))
+				gui = false;
+			else if ((param.equalsIgnoreCase("--serverPort") || param.equalsIgnoreCase("--port")) && (nextParam != null)) {
+				skipParam = true;
+				try {
+					port = Integer.parseInt(nextParam);
+				} catch (NumberFormatException e) {
+					LOG.warn("Couldn't parse port", e);
+				}
+			} else if (param.equalsIgnoreCase("--maxClients") && (nextParam != null)) {
+				skipParam = true;
+				try {
+					maxClients = Integer.parseInt(nextParam);
+				} catch (NumberFormatException e) {
+					LOG.warn("Couldn't parse maxClients", e);
+				}
+			} else if (param.equalsIgnoreCase("--tickRate") && (nextParam != null)) {
+				skipParam = true;
+				try {
+					tickRate = Integer.parseInt(nextParam);
+				} catch (NumberFormatException e) {
+					LOG.warn("Couldn't parse tickRate", e);
+				}
+			} else
+				LOG.warn("Invalid parameter: " + param);
+			//help or ?
+
+			if (skipParam)
+				i++;
+		}
+
+		final Server server = new Server();
+
+		if (port >= 0)
+			server.setServerPort(port);
+
+		if (maxClients >= -1)
+			server.setMaxClients(maxClients);
+
+		if (gui && !GraphicsEnvironment.isHeadless())
+			server.setGuiEnabled();
+
+		if (tickRate >= 0)
+			server.setTickRate(tickRate);
+
+		server.startServerThread();
+	}
+	
 	@Override
 	public void run() {
 
@@ -59,7 +120,11 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 			if (!init())
 				//Log error and terminate
 				return;
+			serverStarting = false;
 			LOG.info("Server running");
+			synchronized (this) {
+				notifyAll(); //used in UserList for example
+			}
 			while (serverRunning)
 				//accept clients here or in extra class?
 				Thread.sleep(50);
@@ -136,65 +201,6 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 		tickables.remove(subscriber);
 	}
 
-	public static void main(String[] args) {
-		boolean gui = true;
-		int port = -1;
-		int maxClients = -2;
-		int tickRate = -1;
-
-		for (int i = 0; i < args.length; i++) {
-			String param = args[i];
-			String nextParam = i == (args.length - 1) ? null : args[i + 1];
-			boolean skipParam = false;
-
-			if (param.equalsIgnoreCase("nogui") || param.equalsIgnoreCase("--nogui"))
-				gui = false;
-			else if (param.equalsIgnoreCase("--serverPort") && (nextParam != null)) {
-				skipParam = true;
-				try {
-					port = Integer.parseInt(nextParam);
-				} catch (NumberFormatException e) {
-					LOG.warn("Couldn't parse port", e);
-				}
-			} else if (param.equalsIgnoreCase("--maxClients") && (nextParam != null)) {
-				skipParam = true;
-				try {
-					maxClients = Integer.parseInt(nextParam);
-				} catch (NumberFormatException e) {
-					LOG.warn("Couldn't parse maxClients", e);
-				}
-			} else if (param.equalsIgnoreCase("--tickRate") && (nextParam != null)) {
-				skipParam = true;
-				try {
-					tickRate = Integer.parseInt(nextParam);
-				} catch (NumberFormatException e) {
-					LOG.warn("Couldn't parse tickRate", e);
-				}
-			} else
-				LOG.warn("Invalid parameter: " + param);
-			//help or ?
-
-			if (skipParam)
-				i++;
-		}
-
-		final Server server = new Server();
-
-		if (port >= 0)
-			server.setServerPort(port);
-
-		if (maxClients >= -1)
-			server.setMaxClients(maxClients);
-
-		if (gui && !GraphicsEnvironment.isHeadless())
-			server.setGuiEnabled();
-
-		if (tickRate >= 0)
-			server.setTickRate(tickRate);
-
-		server.startServerThread();
-	}
-
 	/**
 	 * Sets the serverRunning variable to false, in order to get the server to shut down.
 	 */
@@ -252,6 +258,10 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 		}
 
 	}
+	
+	public boolean isServerStarting() {
+		return serverStarting;
+	}
 
 	public boolean isServerStopped() {
 		return serverStopped;
@@ -267,6 +277,10 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 
 	public int getTickRate() {
 		return tickRate;
+	}
+	
+	public NetworkSystem getNetworkSystem() {
+		return networkSystem;
 	}
 
 	@Override

@@ -213,13 +213,16 @@ public class ClientConnection implements Runnable {
 	}
 	
 	private void manageSendSendable(Sendable sendable) {
+		LOG.debug("Sending sendable of type: " + sendable.getType());
+		
 		if (sendable.getType() == ESendableType.MESSAGE)
 			((SendableMessage) sendable).setTimestampServerSent();
 		else if (sendable.getType() == ESendableType.MESSAGE_RESPONSE) {
-		} else if (sendable.getTimestampSent() == null)
+		} else if (sendable.getType() == ESendableType.EXCEPTION)
+			LOG.debug("Sendable Exception: " + ((SendableException) sendable).getException().getClass()
+					+ ": " + ((SendableException) sendable).getException().getMessage());
+		else if (sendable.getTimestampSent() == null)
 			sendable.setTimestampSent();
-		
-		LOG.debug("Sending sendable of type:" + sendable.getType());
 		
 		try {
 			out.writeObject(sendable);

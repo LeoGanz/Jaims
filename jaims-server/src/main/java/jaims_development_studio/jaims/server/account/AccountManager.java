@@ -10,7 +10,7 @@ import jaims_development_studio.jaims.api.account.UserNameNotAvailableException;
 
 public class AccountManager implements Serializable {
 
-	private static final long			serialVersionUID	= 1L;
+	private static final long	serialVersionUID	= 1L;
 	private final AccountDAO	accountDAO			= new AccountDAO();
 
 	public boolean isUsernameAvailable(String userName) {
@@ -21,7 +21,8 @@ public class AccountManager implements Serializable {
 		return true;
 	}
 
-	public Account createNewAccount(String userName, String password, String email) throws UserNameNotAvailableException {
+	public Account createNewAccount(String userName, String password, String email)
+			throws UserNameNotAvailableException {
 		if (!isUsernameAvailable(userName))
 			throw new UserNameNotAvailableException("Username '" + userName + "' is not available!");
 
@@ -29,7 +30,7 @@ public class AccountManager implements Serializable {
 
 		Account account = new Account(userName, password, email);
 		account.setRegistrationDate(new Date());
-		
+
 		accountDAO.saveOrUpdate(account);
 
 		return account;
