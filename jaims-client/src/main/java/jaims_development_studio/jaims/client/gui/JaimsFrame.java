@@ -70,7 +70,7 @@ public class JaimsFrame extends JFrame {
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout(10,0));
 		try {
-			setIconImage(ImageIO.read(new File("C:/Users/josef/Pictures/JAIMS_Penguin.png")));
+			setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_Penguin.png")));
 		} catch (IOException e) {
 			LOG.error("Failed to create IconImage");
 			try {

@@ -182,7 +182,7 @@ public class RecordingFrame extends JWindow{
 							e1.printStackTrace();
 						}
 					}
-					activePanelChat.getPCM().addVoiceMessageFromUser(ra.getPath());
+					activePanelChat.getPCM().addVoiceMessageFromUser(ra.getPath(), activePanelChat.getPCM().getUserProfile().getUuid());
 					window.dispose();
 				}
 			});

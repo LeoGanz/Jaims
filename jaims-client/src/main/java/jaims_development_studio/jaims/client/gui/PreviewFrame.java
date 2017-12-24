@@ -37,7 +37,7 @@ public class PreviewFrame extends JFrame{
 			setUndecorated(true);
 			setLocation(cm.getJaimsFrame().getX()+cm.getJaimsFrame().getWidth(), cm.getJaimsFrame().getY());
 			getContentPane().setLayout(new BorderLayout());
-			
+			setAlwaysOnTop(true);
 			
 			contentPane = new JPanel();
 			contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.PAGE_AXIS));

@@ -32,7 +32,7 @@ public class PanelChat extends JPanel implements Runnable{
 	
 	private static final Logger			LOG					= LoggerFactory.getLogger(PanelChat.class);
 	JPanel panelPageEnd;
-	JScrollPane jsp, jsp2;
+	public static JScrollPane jsp, jsp2;
 	JTextField jtf;
 	JTextArea jta;
 	PanelChatMessages pcm;
@@ -69,7 +69,7 @@ public class PanelChat extends JPanel implements Runnable{
 						}else {
 							if (jta.getText().equals("") || jta.getText().equals("[\\s]*") || jta.getText().equals("[\\n]*") || jta.getText().trim().isEmpty()) {
 							}else {
-								pcm.addMessageFromUser(jta.getText().replaceAll("\n" , " "));
+								pcm.addMessageFromUser(jta.getText().replaceAll("\n" , " "), userProfile.getUuid());
 								jta.setText("");
 								jsp.getVerticalScrollBar().setValue(jsp.getVerticalScrollBar().getMaximum()+50);
 							}
@@ -173,7 +173,7 @@ public class PanelChat extends JPanel implements Runnable{
 					public void mouseReleased(MouseEvent arg0) {
 						if (jta.getText().equals("")) {
 						}else {
-							pcm.addMessageFromUser(jta.getText().replaceAll("\n" , " "));
+							pcm.addMessageFromUser(jta.getText().replaceAll("\n" , " "), userProfile.getUuid());
 							jta.setText("");
 							jsp.getVerticalScrollBar().setValue(jsp.getVerticalScrollBar().getMaximum()+50);
 						}
@@ -217,6 +217,10 @@ public class PanelChat extends JPanel implements Runnable{
 	
 	public PanelChatMessages getPCM() {
 		return pcm;
+	}
+	
+	public JScrollPane getSP() {
+		return jsp;
 	}
 
 }

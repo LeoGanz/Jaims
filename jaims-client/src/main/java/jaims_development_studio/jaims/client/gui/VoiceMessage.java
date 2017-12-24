@@ -42,6 +42,10 @@ import jaims_development_studio.jaims.client.settings.Settings;
 
 public class VoiceMessage extends JPanel{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	String path;
 	JLabel currentTime;
 	Profile contactProfile;
