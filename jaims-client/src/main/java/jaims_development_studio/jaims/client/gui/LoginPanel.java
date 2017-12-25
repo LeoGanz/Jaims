@@ -92,7 +92,7 @@ public class LoginPanel extends JPanel{
 			{
 				//panelCenterCenter.add(Box.createVerticalGlue(), BorderLayout.CENTER);
 				lblUsername = new JLabel("<html><b><font size = 4><font color = #000000>Username</html>", SwingConstants.CENTER);
-				lblPassword = new JLabel("<html><b><font size =4><font color = #000000>Password</html>", SwingConstants.CENTER);
+				lblPassword = new JLabel("<html><b><font size = 4><font color = #000000>Password</html>", SwingConstants.CENTER);
 				
 				tfUsername = new JTextField();
 				tfUsername.setPreferredSize(new Dimension(200, 25));
@@ -238,8 +238,8 @@ public class LoginPanel extends JPanel{
 	}
 	
 	public void addConnectionError(ServerConnection sc) {
-		btLogin.setEnabled(false);
-		lblRegistrationLink.setEnabled(false);
+		//btLogin.setEnabled(false);
+		//lblRegistrationLink.setEnabled(false);
 		
 		c.gridy = 3;
 		c.gridx = 0;

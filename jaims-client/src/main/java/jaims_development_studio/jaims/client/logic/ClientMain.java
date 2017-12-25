@@ -24,8 +24,10 @@ import javax.swing.border.LineBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.client.chatObjects.ChatObjects;
 import jaims_development_studio.jaims.client.chatObjects.Profile;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
+import jaims_development_studio.jaims.client.database.WriteToDatabase;
 import jaims_development_studio.jaims.client.gui.AddSign;
 import jaims_development_studio.jaims.client.gui.ContactPanel;
 import jaims_development_studio.jaims.client.gui.JaimsFrame;
@@ -49,6 +51,7 @@ public class ClientMain {
 	PanelChat activePanelChat;
 	PanelSettings ps;
 	ServerConnection sc;
+	WriteToDatabase wtd;
 	
 	Thread threadDatabaseManagement, threadPCC;
 	DatabaseConnection dc;
@@ -74,7 +77,6 @@ public class ClientMain {
 		
 		dc = new DatabaseConnection();
 		dc.initConnection();
-		dc.writeToDatabase();
 		
 		Thread thread = new Thread(sc = new ServerConnection());
 		thread.start();
@@ -96,6 +98,7 @@ public class ClientMain {
 	}
 	
 	public void startCreatingChatWindow(String username) {
+		wtd = dc.getWTD(username);		
 		
 		userProfile = new Profile(UUID.randomUUID(), "Bu88le", "Test", "Test", null, new Date(System.currentTimeMillis()));
 		
@@ -178,7 +181,7 @@ public class ClientMain {
 		this.ps = ps;
 	}
 	
-	public void showRecordFrame() {	
+	public void showRecordFrame(ChatObjects co) {	
 		JPanel panel = new JPanel() {
 			@Override
 			public void paintComponent(Graphics g) {
@@ -192,7 +195,7 @@ public class ClientMain {
 			}
 		};
 		
-		RecordingFrame rf = new RecordingFrame(activePanelChat);
+		RecordingFrame rf = new RecordingFrame(activePanelChat, co);
 		rf.setLocationRelativeTo(activePanelChat);
 		rf.addComponentListener(new ComponentAdapter() {
 			
@@ -221,5 +224,9 @@ public class ClientMain {
 	
 	public JaimsFrame getJaimsFrame() {
 		return jf;
+	}
+	
+	public WriteToDatabase getWTD() {
+		return wtd;
 	}
 }

@@ -26,6 +26,7 @@ import javax.swing.border.LineBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.client.chatObjects.ChatObjects;
 import jaims_development_studio.jaims.client.chatObjects.Profile;
 
 public class PanelChat extends JPanel implements Runnable{
@@ -38,13 +39,15 @@ public class PanelChat extends JPanel implements Runnable{
 	PanelChatMessages pcm;
 	PanelChatWindowTop pcwt;
 	Profile userProfile;
+	ChatObjects co;
 	int jtaWidth = 0, countLinesOld = 1;
 	boolean jspActive = false;
 	boolean shiftPressed = false;
 	
-	public PanelChat(Profile userProfile, PanelChatMessages pcm) {
+	public PanelChat(Profile userProfile, PanelChatMessages pcm, ChatObjects co) {
 		this.userProfile = userProfile;
 		this.pcm = pcm;
+		this.co = co;
 	}
 	
 	private void initGUI() {
@@ -69,7 +72,7 @@ public class PanelChat extends JPanel implements Runnable{
 						}else {
 							if (jta.getText().equals("") || jta.getText().equals("[\\s]*") || jta.getText().equals("[\\n]*") || jta.getText().trim().isEmpty()) {
 							}else {
-								pcm.addMessageFromUser(jta.getText().replaceAll("\n" , " "), userProfile.getUuid());
+								pcm.addMessageFromUser(jta.getText().replaceAll("\n" , " "), userProfile.getUuid(), co);
 								jta.setText("");
 								jsp.getVerticalScrollBar().setValue(jsp.getVerticalScrollBar().getMaximum()+50);
 							}
@@ -158,7 +161,7 @@ public class PanelChat extends JPanel implements Runnable{
 					
 					@Override
 					public void mouseReleased(MouseEvent e) {
-						pcm.getContactPanel().getClientMain().showRecordFrame();
+						pcm.getContactPanel().getClientMain().showRecordFrame(co);
 						
 					}
 				});
@@ -173,7 +176,7 @@ public class PanelChat extends JPanel implements Runnable{
 					public void mouseReleased(MouseEvent arg0) {
 						if (jta.getText().equals("")) {
 						}else {
-							pcm.addMessageFromUser(jta.getText().replaceAll("\n" , " "), userProfile.getUuid());
+							pcm.addMessageFromUser(jta.getText().replaceAll("\n" , " "), userProfile.getUuid(), co);
 							jta.setText("");
 							jsp.getVerticalScrollBar().setValue(jsp.getVerticalScrollBar().getMaximum()+50);
 						}

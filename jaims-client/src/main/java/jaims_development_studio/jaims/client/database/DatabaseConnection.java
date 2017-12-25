@@ -16,14 +16,15 @@ public class DatabaseConnection {
 
 	String username;
 	private static Connection con;
-
+	private WriteToDatabase wtd;
+	
 	public void initConnection() {
 		try {
 			con = DriverManager.getConnection("jdbc:hsqldb:file:c:/database/jaims/", "JAIMS_Client", "LBOgHFk0HOOcDVDL1oOW");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			LOG.error("Failed to connect to database");
-			JOptionPane.showMessageDialog(null, "Couldn't connect to Database", "Databaseconnection error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Couldn't connect to Database", "Database connection error", JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
 		}
 	}
@@ -34,6 +35,10 @@ public class DatabaseConnection {
 	
 	public Thread writeToDatabase() {
 		return WriteToDatabase.writeToDatabase(username, con);
+	}
+	
+	public WriteToDatabase getWTD(String username) {
+		return wtd = new WriteToDatabase(username, con);
 	}
 	public static Connection getConnection() {
 		return con;

@@ -26,7 +26,9 @@ import javax.swing.JPanel;
 import javax.swing.JWindow;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;import jaims_development_studio.jaims.client.logic.PlayAudio;
+import javax.swing.border.LineBorder;
+
+import jaims_development_studio.jaims.client.chatObjects.ChatObjects;
 import jaims_development_studio.jaims.client.logic.RecordAudio;
 import jaims_development_studio.jaims.client.settings.Settings;
 
@@ -44,12 +46,12 @@ public class RecordingFrame extends JWindow{
 	RecordAudio ra = null;
 	
 	
-	public RecordingFrame(PanelChat activePanelChat) {
+	public RecordingFrame(PanelChat activePanelChat, ChatObjects co) {
 		super();
-		initGUI(activePanelChat);
+		initGUI(activePanelChat, co);
 	}
 	
-	private void initGUI(PanelChat activePanelChat) {
+	private void initGUI(PanelChat activePanelChat, ChatObjects co) {
 		setSize(new Dimension(400, 200));
 		setMinimumSize(getSize());
 		setMaximumSize(getSize());
@@ -182,7 +184,7 @@ public class RecordingFrame extends JWindow{
 							e1.printStackTrace();
 						}
 					}
-					activePanelChat.getPCM().addVoiceMessageFromUser(ra.getPath(), activePanelChat.getPCM().getUserProfile().getUuid());
+					activePanelChat.getPCM().addVoiceMessageFromUser(ra.getPath(), activePanelChat.getPCM().getUserProfile().getUuid(), co);
 					window.dispose();
 				}
 			});

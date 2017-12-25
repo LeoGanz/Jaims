@@ -42,6 +42,7 @@ public class ListenForInput implements Runnable{
 					LOG.error("Socket isn't connected", se);
 				}catch (IOException ie) {
 					LOG.error("IO Exception", ie);
+					break;
 				}
 				
 			}
@@ -93,6 +94,7 @@ public class ListenForInput implements Runnable{
 	
 	@Override
 	public void run() {
+		LOG.info("Started to listen for Input");
 		readConnection();
 		
 	}

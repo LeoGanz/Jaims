@@ -72,6 +72,12 @@ public class ServerConnection implements Runnable {
 	
 	public void setSocket(Socket s) {
 		server = s;
+		try {
+			oos = new ObjectOutputStream(server.getOutputStream());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

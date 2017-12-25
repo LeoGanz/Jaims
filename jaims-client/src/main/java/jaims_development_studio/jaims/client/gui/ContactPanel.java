@@ -43,7 +43,7 @@ public class ContactPanel{
 		Thread thread = new Thread(pcm);
 		thread.start();
 		
-		pc = new PanelChat(pf, pcm);
+		pc = new PanelChat(pf, pcm, co);
 		Thread thread2 = new Thread(pc);
 		thread2.start();
 		
@@ -63,6 +63,7 @@ public class ContactPanel{
 				@Override
 				public void mouseReleased(MouseEvent arg0) {
 					setPanel(cp);
+					System.out.println("shown");
 				}
 			});
 		}

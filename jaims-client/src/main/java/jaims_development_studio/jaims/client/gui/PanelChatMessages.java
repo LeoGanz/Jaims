@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.swing.Box;
@@ -22,12 +23,16 @@ import javax.swing.JTextArea;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jaims_development_studio.jaims.client.chatObjects.ChatObjects;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.chatObjects.Profile;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
 import jaims_development_studio.jaims.client.database.WriteToDatabase;
 import jaims_development_studio.jaims.client.logic.ClientMain;
+import jaims_development_studio.jaims.client.networking.ListenForInput;
 
 public class PanelChatMessages extends JPanel implements Runnable{
 	
@@ -35,6 +40,8 @@ public class PanelChatMessages extends JPanel implements Runnable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(PanelChatMessages.class);
+	
 	JaimsFrame jf;
 	Profile userProfile;
 	ChatObjects co;
@@ -211,7 +218,7 @@ public class PanelChatMessages extends JPanel implements Runnable{
 		 }
 	 }
 	 
-	 public void addMessageFromUser(String s, UUID profileUUID) {
+	 public void addMessageFromUser(String s, UUID profileUUID, ChatObjects co) {
 		 	JPanel p = new JPanel();
 			p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
 			TextAreaMessage tam = new TextAreaMessage(s.trim(), jf, this, true);
@@ -224,11 +231,11 @@ public class PanelChatMessages extends JPanel implements Runnable{
 			repaint();
 			
 			PanelChat.jsp.getVerticalScrollBar().setValue(PanelChat.jsp.getVerticalScrollBar().getMaximum());			
-			Message m = new Message(ClientMain.userProfile.getUuid(), profileUUID, s, null, null, false);
-			WriteToDatabase.writeMessage(m, profileUUID);
+			Message m = new Message(ClientMain.userProfile.getUuid(), profileUUID, s, null,new Date(System.currentTimeMillis()), false);
+			cp.getClientMain().getWTD().writeMessage(m, profileUUID, co, getMessageList(co));
 	 }
 	 
-	 public void addVoiceMessageFromUser(String path, UUID profileUUID) {
+	 public void addVoiceMessageFromUser(String path, UUID profileUUID, ChatObjects co) {
 		 JPanel p = new JPanel();
 		 p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
 		 
@@ -241,8 +248,8 @@ public class PanelChatMessages extends JPanel implements Runnable{
 		 repaint();
 		 
 		 PanelChat.jsp.getVerticalScrollBar().setValue(PanelChat.jsp.getVerticalScrollBar().getMaximum());
-		 Message m = new Message(ClientMain.userProfile.getUuid(), profileUUID, path, null, null, true);
-		 WriteToDatabase.writeMessage(m, profileUUID);
+		 Message m = new Message(ClientMain.userProfile.getUuid(), profileUUID, path, null, new Date(System.currentTimeMillis()), true);
+		 cp.getClientMain().getWTD().writeMessage(m, profileUUID, co, getMessageList(co));
 	 }
 	 
 	 private boolean messageListExists(ChatObjects co) {
@@ -264,11 +271,42 @@ public class PanelChatMessages extends JPanel implements Runnable{
 
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOG.error("SQL-Error", e);
 				return false;
 			}
 			
 			
+	}
+	 
+	 private ArrayList<Message> getMessageList(ChatObjects co) {
+			ResultSet rs;
+			Connection con = DatabaseConnection.getConnection();
+			PreparedStatement ps;
+			ArrayList<Message> listCo = null;
+			try {
+				ps = con.prepareStatement(co.getList());
+				ps.setObject(1, co.getProfileContact().getUuid());
+				rs = ps.executeQuery();
+				con.commit();
+				
+				rs.next();
+				
+				ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(rs.getBytes(1)));
+				listCo = (ArrayList<Message>) ois.readObject();
+				
+				return listCo;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return null;
 		}
 	 
 	 public int getFrameWidth() {
