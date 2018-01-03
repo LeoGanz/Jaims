@@ -23,7 +23,7 @@ import javax.swing.JPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jaims_development_studio.jaims.client.chatObjects.ChatObjects;
+import jaims_development_studio.jaims.client.chatObjects.ChatObject;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.chatObjects.Profile;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
@@ -101,7 +101,7 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 		return panels;
 	}
 	
-	private ArrayList<Message> getMessageList(ChatObjects co) {
+	private ArrayList<Message> getMessageList(ChatObject co) {
 		ResultSet rs;
 		Connection con = DatabaseConnection.getConnection();
 		PreparedStatement ps;
@@ -153,7 +153,7 @@ public class PanelChatWithUsers extends JPanel implements Runnable{
 		return null;
 	}
 	
-	private boolean messageListExists(ChatObjects co) {
+	private boolean messageListExists(ChatObject co) {
 		ResultSet rs;
 		Connection con = DatabaseConnection.getConnection();
 		PreparedStatement ps;

@@ -14,7 +14,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import jaims_development_studio.jaims.client.chatObjects.ChatObjects;
+import jaims_development_studio.jaims.client.chatObjects.ChatObject;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 
 public class WriteToDatabase implements Runnable{
@@ -30,7 +30,7 @@ public class WriteToDatabase implements Runnable{
 		WriteToDatabase.con = con;
 	}
 
-	public void writeMessage(Message m,  UUID uuid, ChatObjects co, ArrayList<Message> list) {
+	public void writeMessage(Message m,  UUID uuid, ChatObject co, ArrayList<Message> list) {
 
 			try {
 				m.setTimestampSent(new Date(System.currentTimeMillis()));
@@ -59,7 +59,7 @@ public class WriteToDatabase implements Runnable{
 		
 	}
 	
-	private ArrayList<Message> getMessageList(ChatObjects co) {
+	private ArrayList<Message> getMessageList(ChatObject co) {
 		ResultSet rs;
 		Connection con = DatabaseConnection.getConnection();
 		PreparedStatement ps;

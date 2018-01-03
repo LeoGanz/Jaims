@@ -41,6 +41,7 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>jaims-api</artifactId>
 			<version>${project.version}</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
    		 	<groupId>org.hibernate</groupId>

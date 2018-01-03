@@ -28,7 +28,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import jaims_development_studio.jaims.client.chatObjects.ChatObjects;
+import jaims_development_studio.jaims.client.chatObjects.ChatObject;
 import jaims_development_studio.jaims.client.logic.RecordAudio;
 import jaims_development_studio.jaims.client.settings.Settings;
 
@@ -46,12 +46,12 @@ public class RecordingFrame extends JWindow{
 	RecordAudio ra = null;
 	
 	
-	public RecordingFrame(PanelChat activePanelChat, ChatObjects co) {
+	public RecordingFrame(PanelChat activePanelChat, ChatObject co) {
 		super();
 		initGUI(activePanelChat, co);
 	}
 	
-	private void initGUI(PanelChat activePanelChat, ChatObjects co) {
+	private void initGUI(PanelChat activePanelChat, ChatObject co) {
 		setSize(new Dimension(400, 200));
 		setMinimumSize(getSize());
 		setMaximumSize(getSize());

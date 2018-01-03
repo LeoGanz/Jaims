@@ -26,7 +26,7 @@ import javax.swing.border.LineBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jaims_development_studio.jaims.client.chatObjects.ChatObjects;
+import jaims_development_studio.jaims.client.chatObjects.ChatObject;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.chatObjects.Profile;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
@@ -44,12 +44,12 @@ public class PanelChatMessages extends JPanel implements Runnable{
 	
 	JaimsFrame jf;
 	Profile userProfile;
-	ChatObjects co;
+	ChatObject co;
 	JLabel lbl;
 	JTextArea jta;
 	ContactPanel cp;
 	
-	public PanelChatMessages(JaimsFrame jf, Profile userProfile, ChatObjects co, ContactPanel cp) {
+	public PanelChatMessages(JaimsFrame jf, Profile userProfile, ChatObject co, ContactPanel cp) {
 		this.jf = jf;
 		this.userProfile = userProfile;
 		this.co = co;
@@ -218,24 +218,33 @@ public class PanelChatMessages extends JPanel implements Runnable{
 		 }
 	 }
 	 
-	 public void addMessageFromUser(String s, UUID profileUUID, ChatObjects co) {
-		 	JPanel p = new JPanel();
-			p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
-			TextAreaMessage tam = new TextAreaMessage(s.trim(), jf, this, true);
-			
-			p.add(Box.createHorizontalGlue());
-			p.add(tam);			
-			add(p);
-			add(Box.createRigidArea(new Dimension(0, 10)));
-			revalidate();
-			repaint();
-			
-			PanelChat.jsp.getVerticalScrollBar().setValue(PanelChat.jsp.getVerticalScrollBar().getMaximum());			
-			Message m = new Message(ClientMain.userProfile.getUuid(), profileUUID, s, null,new Date(System.currentTimeMillis()), false);
-			cp.getClientMain().getWTD().writeMessage(m, profileUUID, co, getMessageList(co));
+	 public void addMessageFromUser(String s, UUID profileUUID, ChatObject co) {
+		 PanelChatMessages pcm = this;
+		 Thread thread = new Thread() {
+			@Override
+			public void run() {
+				JPanel p = new JPanel();
+				p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
+				TextAreaMessage tam = new TextAreaMessage(s.trim(), jf, pcm, true);
+				
+				p.add(Box.createHorizontalGlue());
+				p.add(tam);			
+				add(p);
+				add(Box.createRigidArea(new Dimension(0, 10)));
+				revalidate();
+				repaint();
+				
+				PanelChat.jsp.getVerticalScrollBar().setValue(PanelChat.jsp.getVerticalScrollBar().getMaximum());			
+				Message m = new Message(ClientMain.userProfile.getUuid(), profileUUID, s, null,new Date(System.currentTimeMillis()), false);
+				cp.getClientMain().getWTD().writeMessage(m, profileUUID, co, getMessageList(co));
+				cp.getClientMain().getPCC().checkChatPanels(cp);
+			}
+		 };
+		 thread.start();
+		 	
 	 }
 	 
-	 public void addVoiceMessageFromUser(String path, UUID profileUUID, ChatObjects co) {
+	 public void addVoiceMessageFromUser(String path, UUID profileUUID, ChatObject co) {
 		 JPanel p = new JPanel();
 		 p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
 		 
@@ -250,9 +259,10 @@ public class PanelChatMessages extends JPanel implements Runnable{
 		 PanelChat.jsp.getVerticalScrollBar().setValue(PanelChat.jsp.getVerticalScrollBar().getMaximum());
 		 Message m = new Message(ClientMain.userProfile.getUuid(), profileUUID, path, null, new Date(System.currentTimeMillis()), true);
 		 cp.getClientMain().getWTD().writeMessage(m, profileUUID, co, getMessageList(co));
+		 cp.getClientMain().getPCC().checkChatPanels(cp);
 	 }
 	 
-	 private boolean messageListExists(ChatObjects co) {
+	 private boolean messageListExists(ChatObject co) {
 			ResultSet rs;
 			Connection con = DatabaseConnection.getConnection();
 			PreparedStatement ps;
@@ -278,7 +288,7 @@ public class PanelChatMessages extends JPanel implements Runnable{
 			
 	}
 	 
-	 private ArrayList<Message> getMessageList(ChatObjects co) {
+	 private ArrayList<Message> getMessageList(ChatObject co) {
 			ResultSet rs;
 			Connection con = DatabaseConnection.getConnection();
 			PreparedStatement ps;

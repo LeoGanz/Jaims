@@ -24,7 +24,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jaims_development_studio.jaims.client.chatObjects.ChatObjects;
+import jaims_development_studio.jaims.client.chatObjects.ChatObject;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.chatObjects.Profile;
 import jaims_development_studio.jaims.client.logic.ClientMain;
@@ -32,7 +32,7 @@ import jaims_development_studio.jaims.client.logic.ClientMain;
 public class ReadFromDatabase implements Runnable {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ReadFromDatabase.class);
-	public static List<ChatObjects> chatObjectsList = Collections.synchronizedList(new ArrayList<ChatObjects>());
+	public static List<ChatObject> chatObjectsList = Collections.synchronizedList(new ArrayList<ChatObject>());
 	
 	
 	String tablename;
@@ -65,38 +65,7 @@ public class ReadFromDatabase implements Runnable {
 			LOG.error("Failed to create resultSet!", e);
 		}
 	    
-	    if (tableExists) {
-	    	try {
-				//gets all profile in the Database USERNAME
-				statement = con.createStatement();
-				rs = statement.executeQuery("SELECT * from " + tablename.toUpperCase());
-				while (rs.next()) {
-					//creates profiles with data from db
-					Profile pf = new Profile();
-					pf.setUUID((UUID) rs.getObject(1));
-					pf.setNickname(rs.getString(2));
-					pf.setDescription(rs.getString(3));
-					pf.setStatus(rs.getString(4));
-					pf.setLastUpdated(convertToDate(rs.getTimestamp(6)));
-					pf.setProfilePicture("SELECT PROFILE_PICTURE FROM " + tablename.toUpperCase() + " WHERE ID=?;");
-					ChatObjects co = new ChatObjects(pf);
-					co.setMessageObjectsArray("SELECT MESSAGE_ARRAY FROM " + tablename.toUpperCase() + " WHERE ID=?;");
-					chatObjectsList.add(co);
-				}
-				statement.close();
-			} catch (SQLException e) {
-				LOG.error("Failed to create statement or resultSet!", e);
-			}
-	    }else {
-	    	try {
-	    		statement = con.createStatement();
-				rs = statement.executeQuery("CREATE TABLE " + tablename.toUpperCase() +  "(ID UUID PRIMARY KEY NOT NULL,NICKNAME VARCHAR(256) NOT NULL,DESCRIPTION VARCHAR(4096),STATUS VARCHAR(2048),PROFILE_PICTURE BLOB,TIMESTAMP TIMESTAMP NOT NULL,MESSAGE_ARRAY BLOB)");
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	    	
-	    }
+	    
 		
 //		try {
 //			
@@ -134,8 +103,8 @@ public class ReadFromDatabase implements Runnable {
 //				ps.setTimestamp(6, new Timestamp(new Date(System.currentTimeMillis()).getTime()));
 //				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 //				ObjectOutputStream oos = new ObjectOutputStream(bos);
-//				oos.writeObject(list1);
-//				ps.setBytes(7, null);
+//				oos.writeObject(new ArrayList<Message>());
+//				ps.setBytes(7, bos.toByteArray());
 //				bos.close();
 //				oos.close();
 //				
@@ -196,7 +165,10 @@ public class ReadFromDatabase implements Runnable {
 //				ps.setString(4, "Test");
 //				ps.setBytes(5, IOUtils.toByteArray(getClass().getResourceAsStream("/images/JAIMS_Penguin.png")));
 //				ps.setTimestamp(6, new Timestamp(new Date(System.currentTimeMillis()).getTime()));
-//				ps.setBytes(7, null);
+//				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//				ObjectOutputStream oos = new ObjectOutputStream(bos);
+//				oos.writeObject(new ArrayList<Message>());
+//				ps.setBytes(7, bos.toByteArray());
 //				
 //				ps.executeUpdate();
 //				con.commit();
@@ -214,6 +186,38 @@ public class ReadFromDatabase implements Runnable {
 //			// TODO Auto-generated catch block
 //			e1.printStackTrace();
 //		}
+	    if (tableExists) {
+	    	try {
+				//gets all profile in the Database USERNAME
+				statement = con.createStatement();
+				rs = statement.executeQuery("SELECT * from " + tablename.toUpperCase());
+				while (rs.next()) {
+					//creates profiles with data from db
+					Profile pf = new Profile();
+					pf.setUUID((UUID) rs.getObject(1));
+					pf.setNickname(rs.getString(2));
+					pf.setDescription(rs.getString(3));
+					pf.setStatus(rs.getString(4));
+					pf.setLastUpdated(convertToDate(rs.getTimestamp(6)));
+					pf.setProfilePicture("SELECT PROFILE_PICTURE FROM " + tablename.toUpperCase() + " WHERE ID=?;");
+					ChatObject co = new ChatObject(pf);
+					co.setMessageObjectsArray("SELECT MESSAGE_ARRAY FROM " + tablename.toUpperCase() + " WHERE ID=?;");
+					chatObjectsList.add(co);
+				}
+				statement.close();
+			} catch (SQLException e) {
+				LOG.error("Failed to create statement or resultSet!", e);
+			}
+	    }else {
+	    	try {
+	    		statement = con.createStatement();
+				rs = statement.executeQuery("CREATE TABLE " + tablename.toUpperCase() +  "(ID UUID PRIMARY KEY NOT NULL,NICKNAME VARCHAR(256) NOT NULL,DESCRIPTION VARCHAR(4096),STATUS VARCHAR(2048),PROFILE_PICTURE BLOB,TIMESTAMP TIMESTAMP NOT NULL,MESSAGE_ARRAY BLOB)");
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    	
+	    }
 	}
 
 	@Override

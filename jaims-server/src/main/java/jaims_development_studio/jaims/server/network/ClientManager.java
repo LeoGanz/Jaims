@@ -43,7 +43,6 @@ public class ClientManager implements ITickable {
 		clientConnection.setConnectionID(nextConnectionID++);
 
 		connections.add(clientConnection);
-
 		Thread thread = new Thread(clientConnection, "ClientConnection-" + clientConnection.getConnectionID());
 		thread.start();
 
@@ -62,7 +61,7 @@ public class ClientManager implements ITickable {
 		terminatingAll = true;
 		connections.forEach(c -> c.terminate());
 		terminatingAll = false;
-		//TODO Handle connections not being removed from collection
+		// TODO Handle connections not being removed from collection
 	}
 
 	public List<ClientConnection> getConnections() {
@@ -84,37 +83,38 @@ public class ClientManager implements ITickable {
 
 	@Override
 	public void tick() {
-		//TODO save batches of users from connections list
-		//userManager.save(user batch);
+		// TODO save batches of users from connections list
+		// userManager.save(user batch);
 	}
-	
-	//Method forwarding
+
+	// Method forwarding
 
 	public User registerNewUser(SendableRegistration registration) throws UserNameNotAvailableException {
 		User user = userManager.registerNewUser(registration);
-		
+
 		SendableConfirmation sendableConfirmation = new SendableConfirmation(EConfirmationType.REGISTRATION_SUCCESSFUL);
 		user.enqueueSendable(sendableConfirmation);
-		
+
 		SendableUUID sendableUUID = new SendableUUID(user.getAccount().getUuid());
 		user.enqueueSendable(sendableUUID);
-		
+
 		return user;
 	}
 
 	public User loginUser(SendableLogin login) throws UserNotFoundException, IncorrectPasswordException {
 		User user = userManager.loginUser(login);
-		
+
 		SendableConfirmation sendableConfirmation = new SendableConfirmation(EConfirmationType.LOGIN_SUCCESSFUL);
 		user.enqueueSendable(sendableConfirmation);
-
+		SendableUUID sendableUUID = new SendableUUID(user.getAccount().getUuid());
+		user.enqueueSendable(sendableUUID);
 		return user;
 	}
-	
+
 	public void deleteUserAndAccount(UUID uuid) {
 		userManager.deleteUserAndAccount(uuid);
 	}
-	
+
 	public void deliverMessage(SendableMessage message) throws UserNotFoundException {
 		userManager.deliverMessage(message);
 	}

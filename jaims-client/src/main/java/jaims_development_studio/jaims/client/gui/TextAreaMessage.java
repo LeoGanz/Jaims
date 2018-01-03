@@ -15,8 +15,12 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import jaims_development_studio.jaims.client.settings.Settings;
@@ -38,7 +42,7 @@ public class TextAreaMessage extends JPanel {
 		super();
 		this.jf = jf;
 		this.own = own;
-		setLayout(new BorderLayout());
+		setLayout(new BorderLayout(0,5));
 		initGUI(message, panel);
 	}
 	
@@ -74,7 +78,7 @@ public class TextAreaMessage extends JPanel {
 						jta.setFont(new Font(Settings.contactFontName, Settings.contactFontStyle, Settings.contactFontSize));
 					
 					
-					int height = getStringHeight(message, jta)+5;
+					int height = getStringHeight(message, jta)+10;
 					int width = getStringWidth(message, jta)+10;
 					
 					setPreferredSize(new Dimension(width, height));
@@ -86,7 +90,7 @@ public class TextAreaMessage extends JPanel {
 				
 				@Override
 				public void componentResized(ComponentEvent e) {
-					int height = getStringHeight(message, jta)+5;
+					int height = getStringHeight(message, jta)+10;
 					int width = getStringWidth(message, jta)+10;
 					
 					setPreferredSize(new Dimension(width, height));
@@ -101,7 +105,7 @@ public class TextAreaMessage extends JPanel {
 		setPreferredSize(new Dimension(width, (int) lineStrings.size()*19+15));
 		setMaximumSize(getPreferredSize());
 		
-		add(jta, BorderLayout.CENTER);
+		add(jta);
 	}
 	
 	private int countLines(String s, FontMetrics fm, JTextArea jta) {
@@ -178,17 +182,17 @@ public class TextAreaMessage extends JPanel {
 	 
 	 @Override
 	 public void paintComponent(Graphics g) {
-	 
+		 
 	    Graphics2D g2d = (Graphics2D) g.create();
 	    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	      
 	   	if (own) {
 	   		g2d.setColor(Settings.colorOwnMessages);
-	        g2d.fillRoundRect(0, 1, (int) getPreferredSize().getWidth()-1, (int) getPreferredSize().getHeight()-2, 20, 20);
+	        g2d.fillRoundRect(0, 0, (int) getPreferredSize().getWidth()-1, (int) getPreferredSize().getHeight()-1, 20, 20);
 		    g2d.dispose();
 	    }else {
 	    	g2d.setColor(Settings.colorContactMessages);
-		    g2d.fillRoundRect(0, 1, (int) getPreferredSize().getWidth()-1, (int) getPreferredSize().getHeight()-2, 20, 20);
+		    g2d.fillRoundRect(0, 0, (int) getPreferredSize().getWidth()-1, (int) getPreferredSize().getHeight()-1, 20, 20);
 
 		    g2d.dispose();
 	    }

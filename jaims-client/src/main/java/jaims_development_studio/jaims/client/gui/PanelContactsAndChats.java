@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -27,7 +28,7 @@ import javax.swing.JTabbedPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jaims_development_studio.jaims.client.chatObjects.ChatObjects;
+import jaims_development_studio.jaims.client.chatObjects.ChatObject;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
 import jaims_development_studio.jaims.client.database.ReadFromDatabase;
@@ -48,6 +49,10 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 	ClientMain cm;
 	String html1 = "<html><body style = margin:0;background:#ffffff;padding:0px;width:86.5px;height:10px;border-radius:5px;text-align:center;border:none;><font size=15; color=#000000><b>";
 	String html2 = "</b></font></body></html>";
+	JPanel q;
+	ArrayList<UUID> panels = new ArrayList<>();
+	JScrollPane scrollpane;
+	ArrayList<ContactPanel> listCp;
 	
 	public PanelContactsAndChats(JaimsFrame frame, ClientMain cm) {
 		// TODO Auto-generated constructor stub
@@ -57,7 +62,7 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 
 	private void initGUI() {
 		List<ContactPanel> list = Collections.synchronizedList(new ArrayList<ContactPanel>());
-		for (ChatObjects co:ReadFromDatabase.chatObjectsList) {
+		for (ChatObject co:ReadFromDatabase.chatObjectsList) {
 			list.add(new ContactPanel(co, frame, cm));
 		}
 		list.sort(new Comparator<ContactPanel>() {
@@ -95,8 +100,9 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 			}
 		});
 		
-		ArrayList<ContactPanel> listCp = new ArrayList();
+		listCp = new ArrayList();
 		for (ContactPanel cp:list) {
+		
 			if (cp.chatExists())
 				listCp.add(cp);
 		}
@@ -105,16 +111,16 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 			@Override
 			public int compare(ContactPanel o1, ContactPanel o2) {
 				if (getMessageList(o1.getChatObject()).get(getMessageList(o1.getChatObject()).size()-1).getTimestampRecieved().compareTo(getMessageList(o2.getChatObject()).get(getMessageList(o2.getChatObject()).size()-1).getTimestampRecieved()) > 0) {
-					return 1;
-				}else if (getMessageList(o1.getChatObject()).get(getMessageList(o1.getChatObject()).size()-1).getTimestampRecieved().compareTo(getMessageList(o2.getChatObject()).get(getMessageList(o2.getChatObject()).size()-1).getTimestampRecieved()) < 0 ) {
 					return -1;
+				}else if (getMessageList(o1.getChatObject()).get(getMessageList(o1.getChatObject()).size()-1).getTimestampRecieved().compareTo(getMessageList(o2.getChatObject()).get(getMessageList(o2.getChatObject()).size()-1).getTimestampRecieved()) < 0 ) {
+					return 1;
 				}else {
 					return 0;
 				}
 			}
 			
 		});
-		JPanel q = new JPanel();
+		q = new JPanel();
 		q.setLayout(new BoxLayout(q, BoxLayout.PAGE_AXIS));
 		{
 			q.add(Box.createRigidArea(new Dimension(0, 3)));
@@ -122,10 +128,11 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 				q.add(cp.getChatPanel());
 				q.add(new LinePanel());
 				q.add(Box.createRigidArea(new Dimension(0, 5)));
+				panels.add(cp.getChatObject().getProfileContact().getUuid());
 			}
 		}
 
-		JScrollPane scrollpane = new JScrollPane(q, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollpane = new JScrollPane(q, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollpane.getVerticalScrollBar().addAdjustmentListener(e -> scrollpane.getViewport().repaint());
 		addTab(html1 + "Chats" + html2, scrollpane);
 		addTab(html1 + "Contacts" + html2, scrollpane2);
@@ -159,7 +166,7 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 		list = null;
 	}
 	
-	private ArrayList<Message> getMessageList(ChatObjects co) {
+	private ArrayList<Message> getMessageList(ChatObject co) {
 		ResultSet rs;
 		Connection con = DatabaseConnection.getConnection();
 		PreparedStatement ps;
@@ -190,6 +197,35 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 		return null;
 	}
 
+	public void checkChatPanels(ContactPanel cp) {
+		if (panels.contains(cp.getChatObject().getProfileContact().getUuid()) == false) {
+			cp.createChatPanel();
+			listCp.add(cp);
+			listCp.sort(new Comparator<ContactPanel>() {
+				
+				@Override
+				public int compare(ContactPanel o1, ContactPanel o2) {
+					if (getMessageList(o1.getChatObject()).get(getMessageList(o1.getChatObject()).size()-1).getTimestampRecieved().compareTo(getMessageList(o2.getChatObject()).get(getMessageList(o2.getChatObject()).size()-1).getTimestampRecieved()) > 0) {
+						return -1;
+					}else if (getMessageList(o1.getChatObject()).get(getMessageList(o1.getChatObject()).size()-1).getTimestampRecieved().compareTo(getMessageList(o2.getChatObject()).get(getMessageList(o2.getChatObject()).size()-1).getTimestampRecieved()) < 0 ) {
+						return 1;
+					}else {
+						return 0;
+					}
+				}
+				
+			});
+			q.removeAll();
+			for (ContactPanel c:listCp) {
+				q.add(c.getChatPanel());
+				q.add(new LinePanel());
+				q.add(Box.createRigidArea(new Dimension(0, 5)));
+				panels.add(c.getChatObject().getProfileContact().getUuid());
+			}
+			scrollpane.repaint();
+		}
+	}
+	
 	public ClientMain getClientMain() {
 		return cm;
 	}

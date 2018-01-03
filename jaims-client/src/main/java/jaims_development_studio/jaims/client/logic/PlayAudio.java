@@ -14,16 +14,35 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 
-public class PlayAudio implements Runnable{
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-	String file;
-	Clip clip;
-	JLabel actualTime;
-	SimpleDateFormat sdf;
-	Date d;
-	JSlider slider;
-	JPanel p, vm;
-	
+public class PlayAudio implements Runnable {
+
+	private static final Logger	LOG	= LoggerFactory.getLogger(PlayAudio.class);
+	String						file;
+	Clip						clip;
+	JLabel						actualTime;
+	SimpleDateFormat			sdf;
+	Date						d;
+	JSlider						slider;
+	JPanel						p, vm;
+
+	/**
+	 * The constructor of this class. Initialises only the fields, playback has to
+	 * be started by running a thread.
+	 *
+	 * @param file
+	 *            the absolute path to the audio file which has to be played.
+	 * @param actualTime
+	 *            JLabel showing the current clip position.
+	 * @param slider
+	 *            JSlider with length of clip in seconds as units.
+	 * @param p
+	 *            JPanel containing the slider.
+	 * @param vm
+	 *            JPanel containing the <code>VoiceMessage</code> Panel.
+	 */
 	public PlayAudio(String file, JLabel actualTime, JSlider slider, JPanel p, JPanel vm) {
 		this.file = file;
 		this.actualTime = actualTime;
@@ -31,27 +50,32 @@ public class PlayAudio implements Runnable{
 		this.p = p;
 		this.vm = vm;
 	}
-	
-	private void initPlayback( ) {
+
+	/**
+	 * Starts the playback of the given audio file 'file' and runs a thread in which
+	 * the sliders value is set to the clip's current audio position
+	 */
+	private void initPlayback() {
 		sdf = new SimpleDateFormat("mm:ss");
 		d = new Date();
-		
+
 		try {
 			clip = AudioSystem.getClip();
 			AudioInputStream ais = AudioSystem.getAudioInputStream(new File(file));
 			clip.open(ais);
 			clip.start();
+
 			Thread thread = new Thread() {
 				@Override
 				public void run() {
-					while (clip.isActive()) {
-						d.setTime(clip.getMicrosecondPosition()/1000);
-						System.out.println(clip.getMicrosecondPosition()/1000);
-						System.out.println(clip.getMicrosecondPosition()/1000000);
+					while (clip.isOpen()) {
+						d.setTime(clip.getMicrosecondPosition() / 1000); // converts microseconds into milliseconds
 						actualTime.setText(sdf.format(d) + " / ");
 						actualTime.repaint();
-						
-						slider.setValue((int) (clip.getMicrosecondPosition()/1000000));
+						vm.repaint();
+
+						slider.setValue((int) (clip.getMicrosecondPosition() / 1000000)); // converts Microseconds into
+																							// seconds
 						slider.revalidate();
 						p.repaint();
 						vm.repaint();
@@ -62,26 +86,26 @@ public class PlayAudio implements Runnable{
 							e.printStackTrace();
 						}
 					}
+					// sets the slider's value to 0 after the clip has finished playing
 					slider.setValue(0);
+					d.setTime(0);
+					actualTime.setText(sdf.format(d) + " / ");
+					vm.repaint();
 				}
 			};
 			thread.start();
 		} catch (LineUnavailableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("Line is unavailable - probably used by other program/device", e);
 		} catch (UnsupportedAudioFileException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("Audio file is unsupported - propbably unsupported audio format", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("Error when reading file", e);
 		}
-		
+
 	}
-	
+
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		initPlayback();
 	}
 

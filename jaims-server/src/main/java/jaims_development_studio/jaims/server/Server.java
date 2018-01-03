@@ -126,7 +126,6 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 				notifyAll(); //used in UserList for example
 			}
 			while (serverRunning)
-				//accept clients here or in extra class?
 				Thread.sleep(50);
 			LOG.info("Server stopping...");
 			//Saving data is handled by shutdown hook
