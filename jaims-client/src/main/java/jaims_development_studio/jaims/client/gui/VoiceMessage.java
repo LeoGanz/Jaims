@@ -13,6 +13,8 @@ import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -22,6 +24,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -189,9 +192,9 @@ public class VoiceMessage extends JPanel {
 	}
 
 	private byte[] getPicture(Profile up) {
-		ResultSet rs;
 		Connection con = DatabaseConnection.getConnection();
 		PreparedStatement ps;
+		ResultSet rs;
 		try {
 			ps = con.prepareStatement(up.getProfilePicture());
 			ps.setObject(1, up.getUuid());
@@ -202,10 +205,21 @@ public class VoiceMessage extends JPanel {
 
 			return rs.getBytes(1);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			BufferedImage bi;
+			try {
+				bi = ImageIO.read(getClass().getClassLoader().getResourceAsStream("images/JAIMS_Penguin.png"));
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				ImageIO.write(bi, "jpg", baos);
+				baos.flush();
+				byte[] imageInByte = baos.toByteArray();
+				baos.close();
+				return imageInByte;
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 
+		}
 		return null;
 	}
 
