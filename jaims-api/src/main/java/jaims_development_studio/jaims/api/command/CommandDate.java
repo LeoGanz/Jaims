@@ -25,6 +25,11 @@ public class CommandDate extends CommandBase {
 	}
 	
 	@Override
+	public int getRequiredPermissionLevel() {
+		return CommandBase.PERMISSION_LEVEL_UTILITY;
+	}
+
+	@Override
 	public String getUsage(ICommandSender sender) {
 		return "/date [short | medium | long | full] - returns the current date in the specified formatting";
 	}
@@ -62,7 +67,7 @@ public class CommandDate extends CommandBase {
 	
 	@Override
 	public List<String> getTabCompletions(IServer server, ICommandSender sender, String[] args) {
-		return args.length == 1 ? getListOfStringsMatchingLastWord(args, arguments) : Collections.emptyList();
+		return args.length == 1 ? getListOfStringsMatchingLastWord(args, arguments) : Collections.EMPTY_LIST;
 	}
 	
 }

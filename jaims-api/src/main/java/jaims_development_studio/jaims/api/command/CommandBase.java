@@ -12,6 +12,10 @@ import jaims_development_studio.jaims.api.IServer;
 
 public abstract class CommandBase implements ICommand {
 	
+	public static final int			PERMISSION_LEVEL_ALL			= 0;
+	public static final int			PERMISSION_LEVEL_UTILITY		= 1;
+	public static final int			PERMISSION_LEVEL_MODERATION		= 2;
+	public static final int			PERMISSION_LEVEL_ADMINISTRATION	= 3;
 	private static ICommandListener commandListener;
 
 	/**
@@ -41,7 +45,7 @@ public abstract class CommandBase implements ICommand {
 
 	@Override
 	public List<String> getTabCompletions(IServer server, ICommandSender sender, String[] args) {
-		return Collections.emptyList();
+		return Collections.EMPTY_LIST;
 	}
 
 	@Override
