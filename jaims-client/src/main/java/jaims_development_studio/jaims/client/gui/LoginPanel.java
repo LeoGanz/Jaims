@@ -14,8 +14,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 
 import javax.imageio.ImageIO;
 import javax.swing.Box;
@@ -36,7 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import jaims_development_studio.jaims.api.sendables.SendableLogin;
 import jaims_development_studio.jaims.client.logic.ClientMain;
-import jaims_development_studio.jaims.client.networking.ListenForInput;
 import jaims_development_studio.jaims.client.networking.ServerConnection;
 
 public class LoginPanel extends JPanel {
@@ -44,31 +41,34 @@ public class LoginPanel extends JPanel {
 	/**
 	 *
 	 */
-	private static final long	serialVersionUID	= 1L;
-	private static final Logger	LOG					= LoggerFactory.getLogger(LoginPanel.class);
+	private static final long		serialVersionUID	= 1L;
+	private static final Logger		LOG					= LoggerFactory.getLogger(LoginPanel.class);
 
-	private Image				image;
-	private boolean				tField, pwField;
-	private static boolean		registrationExists;
-	private String				username, pw, oldUsername = "";
+	private Image					image;
+	private boolean					tField, pwField;
+	private static boolean			registrationExists;
+	private String					username, pw, oldUsername = "";
 
-	private JLabel				lblImg, lblUsername, lblPassword, lblRegistrationLink;
-	private JTextField			tfUsername;
-	private JPasswordField		jpPassword;
-	private JPanel				panelCenter, panelSouth;
-	private JPanel				panel;
-	private JButton				btLogin;
-	private GridBagConstraints	c					= new GridBagConstraints();
-	private ClientMain			cm;
-	private RegistrationWindow	rw;
+	private JLabel					lblImg, lblUsername, lblPassword, lblRegistrationLink;
+	private JTextField				tfUsername;
+	private JPasswordField			jpPassword;
+	private JPanel					panelCenter, panelSouth;
+	private JPanel					panel;
+	private JButton					btLogin;
+	private GridBagConstraints		c					= new GridBagConstraints();
+	private ClientMain				cm;
+	private RegistrationWindow		rw;
+	private ConnectionErrorPanel	cep;
 
 	public LoginPanel(JFrame caller, ClientMain cm) {
+
 		setLayout(new BorderLayout());
 		this.cm = cm;
 		initGUI(caller, cm);
 	}
 
 	private void initGUI(JFrame caller, ClientMain cm) {
+
 		try {
 			image = ImageIO.read(getClass().getResourceAsStream("/images/speech-md.png"));
 			image = image.getScaledInstance(200, 120, Image.SCALE_SMOOTH);
@@ -99,6 +99,7 @@ public class LoginPanel extends JPanel {
 
 					@Override
 					public void keyReleased(KeyEvent arg0) {
+
 						if (verifyUsername(tfUsername.getText())) {
 							tfUsername.setBorder(new LineBorder(Color.black, 1));
 							tField = true;
@@ -124,6 +125,7 @@ public class LoginPanel extends JPanel {
 
 					@Override
 					public void keyReleased(KeyEvent arg0) {
+
 						pw = "";
 						for (int i = 0; i < jpPassword.getPassword().length; i++)
 							pw += jpPassword.getPassword()[i];
@@ -212,6 +214,7 @@ public class LoginPanel extends JPanel {
 
 				@Override
 				public void mouseClicked(MouseEvent arg0) {
+
 					if (registrationExists == false) {
 						registrationExists = true;
 						rw = new RegistrationWindow(caller);
@@ -230,68 +233,61 @@ public class LoginPanel extends JPanel {
 
 	}
 
-	public void addConnectionError(ServerConnection sc) {
+	public void addConnectionError() {
+
 		btLogin.setEnabled(false);
 		lblRegistrationLink.setEnabled(false);
 
 		c.gridy = 3;
 		c.gridx = 0;
 		c.gridwidth = 2;
-		ConnectionErrorPanel cep = new ConnectionErrorPanel();
+
+		cep = new ConnectionErrorPanel();
 		panel.add(cep, c);
 		panel.revalidate();
 		panel.repaint();
 
-		Thread thread = new Thread() {
-			@Override
-			public void run() {
-				Socket s = new Socket();
-				while (s.isConnected() == false) {
-					try {
-						s = new Socket();
-						s.connect(new InetSocketAddress("localhost", 6000), 0);
-						Thread.sleep(600);
-					} catch (InterruptedException | IOException e) {
-
-					}
-				}
-				LOG.info("Connected");
-				btLogin.setEnabled(true);
-				lblRegistrationLink.setEnabled(true);
-				panel.remove(cep);
-				panel.repaint();
-				sc.setSocket(s);
-
-				Thread t = new Thread(new ListenForInput(s, cm));
-				t.start();
-			}
-		};
-		thread.start();
-
 	}
 
 	private Boolean verifyUsername(String username) {
+
 		return username.matches("[A-Za-z1-9_.]*");
 	}
 
 	private Boolean verifyPassword(String password) {
+
 		return password.matches("[A-Za-z1-9!\\?@\\(\\)\\{\\}\\[\\]\\\\/|<>=~$€%&#\\*-\\+.:,;'\"_]*");
 	}
 
 	public static void setBooleanWindow(Boolean b) {
+
 		registrationExists = b;
 	}
 
 	private void sendLogin(String username, String pw) {
+
 		SendableLogin sl = new SendableLogin(username, pw);
 		ServerConnection.sendSendable(sl);
 	}
 
 	public RegistrationWindow getRegistrationWindow() {
+
 		return rw;
 	}
 
 	public String getUsername() {
+
 		return username;
+	}
+
+	public void removeErrorPanel() {
+
+		panel.remove(cep);
+	}
+
+	public void activateLogin() {
+
+		btLogin.setEnabled(true);
+		lblRegistrationLink.setEnabled(true);
 	}
 }

@@ -4,10 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.Date;
 
@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jaims_development_studio.jaims.client.chatObjects.ChatObject;
-import jaims_development_studio.jaims.client.chatObjects.Profile;
+import jaims_development_studio.jaims.client.chatObjects.ClientProfile;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
 import jaims_development_studio.jaims.client.database.WriteToDatabase;
 import jaims_development_studio.jaims.client.gui.AddSign;
@@ -30,34 +30,37 @@ import jaims_development_studio.jaims.client.gui.JaimsFrame;
 import jaims_development_studio.jaims.client.gui.LoginPanel;
 import jaims_development_studio.jaims.client.gui.PanelAccount;
 import jaims_development_studio.jaims.client.gui.PanelChat;
+import jaims_development_studio.jaims.client.gui.PanelChatMessages;
 import jaims_development_studio.jaims.client.gui.PanelContactsAndChats;
+import jaims_development_studio.jaims.client.gui.PanelEditUser;
 import jaims_development_studio.jaims.client.gui.PanelSettings;
+import jaims_development_studio.jaims.client.gui.PanelUserProfileInformation;
 import jaims_development_studio.jaims.client.gui.RecordingFrame;
 import jaims_development_studio.jaims.client.gui.SettingDots;
 import jaims_development_studio.jaims.client.networking.ServerConnection;
 
 public class ClientMain {
 
-	private static final Logger	LOG						= LoggerFactory.getLogger(ClientMain.class);
-	public static boolean		confirmationRecieved	= false;
-	Point						p						= new Point(10, 5);
-	JPanel						userUILeftSide			= new JPanel();
-	Rectangle					r						= new Rectangle(150, 150, 500, 500);
-	ContactPanel				activeContactPanel;
-	PanelChat					activePanelChat;
-	PanelSettings				panelSettings;
-	ServerConnection			sc;
-	WriteToDatabase				wtd;
-	Thread						threadDatabaseManagement, threadPCC;
-	DatabaseConnection			dc;
-	PanelContactsAndChats		pcc;
-	JaimsFrame					jf;
-	LoginPanel					lp;
+	private static final Logger			LOG						= LoggerFactory.getLogger(ClientMain.class);
+	public static boolean				confirmationRecieved	= false;
+	private JPanel						userUILeftSide			= new JPanel();
+	private ContactPanel				activeContactPanel;
+	private PanelChat					activePanelChat;
+	private PanelSettings				panelSettings;
+	private ServerConnection			sc;
+	private WriteToDatabase				wtd;
+	private Thread						threadDatabaseManagement, threadPCC;
+	private DatabaseConnection			dc;
+	private PanelContactsAndChats		pcc;
+	private JaimsFrame					jf;
+	private LoginPanel					lp;
+	private PanelEditUser				panelEditUser;
+	private PanelUserProfileInformation	panelUserProfileInformation;
 
 	/**
 	 * Static profile which represents the logged-in user.
 	 */
-	public static Profile		userProfile;
+	public static ClientProfile			userProfile;
 
 	/**
 	 * Main method of program which takes args as given start arguments and creates
@@ -67,6 +70,7 @@ public class ClientMain {
 	 *            given start arguments.
 	 */
 	public static void main(String[] args) {
+
 		try {
 			new ClientMain();
 		} catch (Exception e) {
@@ -79,6 +83,7 @@ public class ClientMain {
 	 * initialises the program.
 	 */
 	public ClientMain() {
+
 		initProgram();
 	}
 
@@ -93,6 +98,7 @@ public class ClientMain {
 	 * </ul>
 	 */
 	private void initProgram() {
+
 		jf = new JaimsFrame();
 
 		dc = new DatabaseConnection();
@@ -110,11 +116,12 @@ public class ClientMain {
 		jf.initGUI();
 
 		lp = new LoginPanel(jf, this);
+		if (!sc.checkIfServerIsAvailable())
+			lp.addConnectionError();
+
 		jf.getContentPane().add(lp, BorderLayout.CENTER);
 		jf.getContentPane().revalidate();
 
-		if (sc.getSocket().isClosed() || sc.getSocket().isConnected() == false)
-			lp.addConnectionError(sc);
 	}
 
 	/**
@@ -125,10 +132,11 @@ public class ClientMain {
 	 *            the name used by the user for login
 	 */
 	public void startCreatingChatWindow(String username) {
+
 		// creates a new WriteToDatabase Object with the username and the connection
 		// object stored in DatabaseConnection
 		wtd = dc.getWTD(username);
-		userProfile = new Profile(null, username, "Test", "Test", null, new Date(System.currentTimeMillis()));
+		userProfile = new ClientProfile(null, username, "Test", "Test", null, new Date(System.currentTimeMillis()));
 
 		// local variable thread which starts loading the content from the database into
 		// the program
@@ -144,6 +152,15 @@ public class ClientMain {
 		PanelAccount pa = null;
 		try {
 			pa = new PanelAccount(ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_Penguin.png")), username);
+			pa.addMouseListener(new MouseAdapter() {
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+
+					addPanelEditUser();
+
+				}
+			});
 		} catch (IOException e1) {
 			LOG.error("Failed to read image from file", e1);
 		}
@@ -216,6 +233,7 @@ public class ClientMain {
 	 *            a finished PanelChat belonging to a specific contact
 	 */
 	public void setMessagePanel(PanelChat panelChat) {
+
 		// if panelSettings is shown then it is first removed before adding the
 		// panelChat
 		if (panelSettings != null) {
@@ -228,6 +246,19 @@ public class ClientMain {
 		// panelChat
 		if (activePanelChat != null) {
 			jf.getContentPane().remove(activePanelChat);
+			jf.getContentPane().revalidate();
+		}
+		// if there is a PanelEditUser displayed then it is first removed before adding
+		// the PanelChat
+		if (panelEditUser != null) {
+			jf.getContentPane().remove(panelEditUser);
+			panelEditUser = null;
+			jf.revalidate();
+
+		}
+		if (panelUserProfileInformation != null) {
+			jf.getContentPane().remove(panelUserProfileInformation);
+			panelUserProfileInformation = null;
 			jf.getContentPane().revalidate();
 		}
 		jf.getContentPane().add(panelChat, BorderLayout.CENTER);
@@ -245,12 +276,29 @@ public class ClientMain {
 	 *            a finished PanelSettings which shows all available setting options
 	 */
 	public void setSettingPanel(PanelSettings panelSettings) {
+
+		if (panelSettings != null)
+			return;
+
 		// if there is a panelChat currently active then first remove it before showing
 		// the panelSettings
 		if (activePanelChat != null) {
 			jf.getContentPane().remove(activePanelChat);
 			jf.revalidate();
 		}
+		// if there is a PanelEditUser then it is first removed before adding the
+		// PanelSettings
+		if (panelEditUser != null) {
+			jf.getContentPane().remove(panelEditUser);
+			panelEditUser = null;
+			jf.revalidate();
+		}
+		if (panelUserProfileInformation != null) {
+			jf.getContentPane().remove(panelUserProfileInformation);
+			panelUserProfileInformation = null;
+			jf.getContentPane().revalidate();
+		}
+
 		jf.getContentPane().add(panelSettings, BorderLayout.CENTER);
 		jf.getContentPane().revalidate();
 		jf.getContentPane().repaint();
@@ -266,12 +314,14 @@ public class ClientMain {
 	 *            a ChatObject which is given to the RecordingFrame's constructor
 	 */
 	public void showRecordFrame(ChatObject co) {
+
 		RecordingFrame rf = new RecordingFrame(activePanelChat, co);
 		rf.setLocationRelativeTo(activePanelChat);
 		jf.addComponentListener(new ComponentAdapter() {
 
 			@Override
 			public void componentMoved(ComponentEvent e) {
+
 				rf.setLocationRelativeTo(jf);
 			}
 		});
@@ -283,7 +333,75 @@ public class ClientMain {
 	 * Repaints the panel userUILeftSide and the frame's contentpane.
 	 */
 	public void repaintPanelLeft() {
+
 		userUILeftSide.repaint();
+		jf.getContentPane().repaint();
+	}
+
+	public void addPanelEditUser() {
+
+		if (panelEditUser != null)
+			return;
+		if (panelUserProfileInformation != null) {
+			jf.getContentPane().remove(panelUserProfileInformation);
+			panelUserProfileInformation = null;
+			jf.getContentPane().revalidate();
+		}
+
+		if (panelSettings != null) {
+			jf.getContentPane().remove(panelSettings);
+			panelSettings.getPF().dispose();
+			panelSettings = null;
+			jf.revalidate();
+		}
+		// if there is a activePanelChat then it is first removed before adding the
+		// panelChat
+		if (activePanelChat != null) {
+			jf.getContentPane().remove(activePanelChat);
+			jf.getContentPane().revalidate();
+		}
+
+		panelEditUser = new PanelEditUser(this);
+		jf.getContentPane().add(panelEditUser, BorderLayout.CENTER);
+		jf.getContentPane().revalidate();
+		jf.getContentPane().repaint();
+	}
+
+	public void addPanelSelectProfileImage() {
+
+	}
+
+	public void repaintPanelSelectProfileImage() {
+
+	}
+
+	public void addPanelUserProfileInformation(PanelChatMessages pcm, ClientProfile userProfile) {
+
+		// if panelSettings is shown then it is first removed before adding the
+		// panelChat
+		if (panelSettings != null) {
+			jf.getContentPane().remove(panelSettings);
+			panelSettings.getPF().dispose();
+			panelSettings = null;
+			jf.revalidate();
+		}
+		// if there is a activePanelChat then it is first removed before adding the
+		// panelChat
+		if (activePanelChat != null) {
+			jf.getContentPane().remove(activePanelChat);
+			jf.getContentPane().revalidate();
+		}
+		// if there is a PanelEditUser displayed then it is first removed before adding
+		// the PanelChat
+		if (panelEditUser != null) {
+			jf.getContentPane().remove(panelEditUser);
+			panelEditUser = null;
+			jf.revalidate();
+		}
+
+		jf.getContentPane().add(panelUserProfileInformation = new PanelUserProfileInformation(this, userProfile, pcm),
+				BorderLayout.CENTER);
+		jf.getContentPane().revalidate();
 		jf.getContentPane().repaint();
 	}
 
@@ -294,7 +412,8 @@ public class ClientMain {
 	 *            the last clicked ContactPanel
 	 */
 	public void setAcvtiveContactPanel(ContactPanel cp) {
-		activeContactPanel = cp;
+
+		// activeContactPanel = cp;
 	}
 
 	/**
@@ -302,6 +421,7 @@ public class ClientMain {
 	 * @return a JaimsFrame object
 	 */
 	public JaimsFrame getJaimsFrame() {
+
 		return jf;
 	}
 
@@ -310,6 +430,7 @@ public class ClientMain {
 	 * @return a WriteToDatabase object
 	 */
 	public WriteToDatabase getWTD() {
+
 		return wtd;
 	}
 
@@ -318,6 +439,7 @@ public class ClientMain {
 	 * @return a PanelChatsAndContacts object
 	 */
 	public PanelContactsAndChats getPCC() {
+
 		return pcc;
 	}
 
@@ -326,6 +448,7 @@ public class ClientMain {
 	 * @return a LoginPanel object
 	 */
 	public LoginPanel getLoginPanel() {
+
 		return lp;
 	}
 }

@@ -37,7 +37,7 @@ import javax.swing.JSlider;
 import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicSliderUI;
 
-import jaims_development_studio.jaims.client.chatObjects.Profile;
+import jaims_development_studio.jaims.client.chatObjects.ClientProfile;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
 import jaims_development_studio.jaims.client.logic.PlayAudio;
 import jaims_development_studio.jaims.client.settings.Settings;
@@ -49,31 +49,34 @@ public class VoiceMessage extends JPanel {
 	 */
 	private static final long	serialVersionUID	= 1L;
 	String						path;
-	JLabel						currentTime;
-	Profile						contactProfile;
-	boolean						own, paused = true;
+	JLabel						currentTime, maxTime;
+	ClientProfile				contactProfile;
+	private boolean				own, paused = true;
 	Image						img;
 	PlayAudio					pa;
 	JSlider						slider;
 	Thread						thread;
+	JPanel						start;
 
-	public VoiceMessage(Profile contactProfile, String pathToFile, boolean own) {
+	public VoiceMessage(ClientProfile contactProfile, String pathToFile, boolean own) {
+
 		path = pathToFile;
 		this.contactProfile = contactProfile;
 		this.own = own;
 		initGUI(contactProfile);
 	}
 
-	private void initGUI(Profile contactProfile) {
+	private void initGUI(ClientProfile contactProfile) {
+
 		setOpaque(true);
 
 		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-		setPreferredSize(new Dimension(320, 50));
+		setPreferredSize(new Dimension(330, 50));
 		setMaximumSize(getPreferredSize());
 		if (own)
-			setBorder(new RoundBorder(320, 50, Settings.colorOwnMessageBorder));
+			setBorder(new RoundBorder(330, 50, Settings.colorOwnMessageBorder));
 		else
-			setBorder(new RoundBorder(320, 50, Settings.colorContactMessageBorder));
+			setBorder(new RoundBorder(330, 50, Settings.colorContactMessageBorder));
 
 		add(Box.createRigidArea(new Dimension(65, 0)));
 		long length = getAudioFileLength();
@@ -81,11 +84,20 @@ public class VoiceMessage extends JPanel {
 		JPanel p = new JPanel() {
 			@Override
 			public void paintComponent(Graphics g) {
+
 				g.setColor(getBackground());
 				g.fillRect(0, 0, getWidth(), getHeight());
 
 				Graphics2D g2d = (Graphics2D) g;
 				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+				if (own) {
+					g2d.setColor(Settings.colorOwnMessages);
+					g2d.fillRect(0, 0, getWidth(), getHeight());
+				} else {
+					g2d.setColor(Settings.colorContactMessages);
+					g2d.fillRect(0, 0, getWidth(), getHeight());
+				}
 
 				g2d.setColor(Color.BLACK);
 				g2d.drawRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 20, 20);
@@ -94,18 +106,15 @@ public class VoiceMessage extends JPanel {
 			}
 		};
 		p.setOpaque(false);
-		if (own)
-			p.setBackground(Settings.colorOwnMessages);
-		else
-			p.setBackground(Settings.colorContactMessages);
 		p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
 		p.setPreferredSize(new Dimension(176, 42));
 		p.setMaximumSize(p.getPreferredSize());
 		{
 			p.add(Box.createRigidArea(new Dimension(5, 42)));
-			JPanel start = new JPanel() {
+			start = new JPanel() {
 				@Override
 				public void paintComponent(Graphics g) {
+
 					g.setColor(Color.WHITE);
 					g.fillRect(0, 0, getWidth(), getHeight());
 
@@ -131,17 +140,14 @@ public class VoiceMessage extends JPanel {
 
 				@Override
 				public void mouseReleased(MouseEvent arg0) {
+
 					if (paused) {
 						paused = false;
 						start.repaint();
 
 						thread = new Thread(pa);
 						thread.start();
-						while (thread.isAlive()) {
-						}
-						paused = true;
-						start.repaint();
-						p.repaint();
+
 					} else {
 						paused = true;
 						start.repaint();
@@ -169,7 +175,7 @@ public class VoiceMessage extends JPanel {
 		add(currentTime);
 
 		d.setTime(length);
-		JLabel maxTime = new JLabel(sdf.format(d));
+		maxTime = new JLabel(sdf.format(d));
 		add(maxTime);
 
 		img = scaleMaintainAspectRatio(Toolkit.getDefaultToolkit().createImage(getPicture(contactProfile)));
@@ -178,6 +184,7 @@ public class VoiceMessage extends JPanel {
 	}
 
 	private long getAudioFileLength() {
+
 		AudioFileFormat format;
 		try {
 			format = AudioSystem.getAudioFileFormat(new File(path));
@@ -191,12 +198,13 @@ public class VoiceMessage extends JPanel {
 
 	}
 
-	private byte[] getPicture(Profile up) {
+	private byte[] getPicture(ClientProfile up) {
+
 		Connection con = DatabaseConnection.getConnection();
 		PreparedStatement ps;
 		ResultSet rs;
 		try {
-			ps = con.prepareStatement(up.getProfilePicture());
+			ps = con.prepareStatement(up.getProfilePic());
 			ps.setObject(1, up.getUuid());
 			rs = ps.executeQuery();
 			con.commit();
@@ -224,11 +232,21 @@ public class VoiceMessage extends JPanel {
 	}
 
 	private Image scaleMaintainAspectRatio(Image image) {
+
 		return image.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
 	}
 
 	@Override
 	public void paintComponent(Graphics g) {
+
+		if (own) {
+			maxTime.setForeground(Settings.colorOwnMessageFont);
+			currentTime.setForeground(Settings.colorOwnMessageFont);
+		} else {
+			maxTime.setForeground(Settings.colorContactMessageFont);
+			currentTime.setForeground(Settings.colorContactMessageFont);
+		}
+
 		g.setColor(getBackground());
 		g.fillRect(0, 0, getWidth(), getHeight());
 
@@ -249,6 +267,11 @@ public class VoiceMessage extends JPanel {
 		g2d.drawRoundRect(9, 3, img.getWidth(this) + 1, img.getHeight(this) + 2, 8, 8);
 	}
 
+	public void setPaused(boolean paused) {
+
+		this.paused = paused;
+		start.repaint();
+	}
 	// -------------------------------------------------------------------------
 	// -------------- CUSTOM SLIDER UI CLASS -----------------------------------
 	// -------------------------------------------------------------------------
@@ -258,11 +281,13 @@ public class VoiceMessage extends JPanel {
 				new float[] {1f, 2f}, 0f);
 
 		public CustomSliderUI(JSlider b) {
+
 			super(b);
 		}
 
 		@Override
 		public void paint(Graphics g, JComponent c) {
+
 			Graphics2D g2d = (Graphics2D) g;
 			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			super.paint(g, c);
@@ -270,11 +295,13 @@ public class VoiceMessage extends JPanel {
 
 		@Override
 		protected Dimension getThumbSize() {
+
 			return new Dimension(12, 16);
 		}
 
 		@Override
 		public void paintTrack(Graphics g) {
+
 			Graphics2D g2d = (Graphics2D) g;
 			Stroke old = g2d.getStroke();
 			g2d.setStroke(stroke);
@@ -291,6 +318,7 @@ public class VoiceMessage extends JPanel {
 
 		@Override
 		public void paintThumb(Graphics g) {
+
 			Graphics2D g2d = (Graphics2D) g;
 			int x1 = thumbRect.x + 2;
 			int x2 = thumbRect.x + thumbRect.width - 2;
