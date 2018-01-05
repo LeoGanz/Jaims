@@ -27,7 +27,7 @@ import jaims_development_studio.jaims.server.gui.ServerGui;
 import jaims_development_studio.jaims.server.network.NetworkSystem;
 
 public class Server implements Runnable, IServer, ICommandSender, ITickable {
-
+	
 	private static final Logger			LOG					= LoggerFactory.getLogger(Server.class);
 	/** A reference to the server's main thread. */
 	private Thread						serverThread;
@@ -53,18 +53,18 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 	private final List<PendingCommand>	pendingCommandList	= Collections.synchronizedList(new ArrayList<>());	// thread safe
 	/** A set that contains all subscribers for ticking */
 	private final Set<ITickable>		tickables			= Sets.newHashSet(this);
-
+	
 	public static void main(String[] args) {
 		boolean gui = true;
 		int port = -1;
 		int maxClients = -2;
 		int tickRate = -1;
-
+		
 		for (int i = 0; i < args.length; i++) {
 			String param = args[i];
 			String nextParam = i == (args.length - 1) ? null : args[i + 1];
 			boolean skipParam = false;
-
+			
 			if (param.equalsIgnoreCase("nogui") || param.equalsIgnoreCase("--nogui"))
 				gui = false;
 			else if ((param.equalsIgnoreCase("--serverPort") || param.equalsIgnoreCase("--port")) && (nextParam != null)) {
@@ -91,31 +91,31 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 			} else
 				LOG.warn("Invalid parameter: " + param);
 			//help or ?
-
+			
 			if (skipParam)
 				i++;
 		}
-
+		
 		final Server server = new Server();
-
+		
 		if (port >= 0)
 			server.setServerPort(port);
-
+		
 		if (maxClients >= -1)
 			server.setMaxClients(maxClients);
-
+		
 		if (gui && !GraphicsEnvironment.isHeadless())
 			server.setGuiEnabled();
-
+		
 		if (tickRate >= 0)
 			server.setTickRate(tickRate);
-
+		
 		server.startServerThread();
 	}
-	
+
 	@Override
 	public void run() {
-
+		
 		try {//Just in case
 			if (!init())
 				//Log error and terminate
@@ -142,16 +142,16 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 			}
 		}
 	}
-
+	
 	private boolean init() {
-
+		
 		Thread thread = new Thread(() -> {
 			if (guiEnabled)
 				return; //Disables command line input to avoid IOException: "The handle is invalid" (temporary)
-
+			
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
 			String line;
-			
+
 			try {
 				while (serverRunning && ((line = bufferedReader.readLine().trim()) != null))
 					addPendingCommand(line, this);
@@ -159,47 +159,47 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 				LOG.warn("An unexpected error ocoured!", e);
 			}
 		}, "ConsoleHandler");
-
+		
 		thread.setDaemon(true);
 		thread.start();
-
-		LOG.info("Starting server...");
 		
+		LOG.info("Starting server...");
+
 		//Configure Server with defaults if nothing else is set
 		if (serverPort < 0)
 			serverPort = 6000; //Have default values outside?
-		
+
 		if (maxClients < -1)
 			maxClients = 100; //Our desktop pc's processor probably won't be able to manage that many clients; should be changed later
-		
+
 		if (tickRate <= 0)
 			tickRate = 50;
-
+		
 		commandManager = new ServerCommandManager(this);
-
+		
 		networkSystem = new NetworkSystem(this);
-
+		
 		ScheduledExecutorService ticker = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("Ticker").build());
 		ticker.scheduleAtFixedRate(() -> tickables.forEach(t -> t.tick()), 100, tickRate, TimeUnit.MILLISECONDS);
-
+		
 		//Load Properties
-
+		
 		return true;
 	}
-
+	
 	@Override
 	public void tick() {
 		executePendingCommands();
 	}
-
+	
 	public void subscribeToTicker(ITickable subscriber) {
 		tickables.add(subscriber);
 	}
-
+	
 	public void unsubscribeFromTicker(ITickable subscriber) {
 		tickables.remove(subscriber);
 	}
-
+	
 	/**
 	 * Sets the serverRunning variable to false, in order to get the server to shut down.
 	 */
@@ -207,106 +207,111 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 		LOG.info("Shutdown initiated");
 		serverRunning = false;
 	}
-
+	
 	private void startServerThread() {
 		serverThread = new Thread(this, "Server thread");
 		serverThread.start();
 	}
-
+	
 	private void stopServer() {
 		// Save data and control shutdown
-
-		networkSystem.close();
-
-		serverStopped = true;
 		
-		LOG.info("Server stopped!");
+		networkSystem.close();
+		
+		serverStopped = true;
 
+		LOG.info("Server stopped!");
+		
 		System.exit(0);
 	}
-
+	
 	private void setGuiEnabled() {
 		ServerGui.createServerGui(this);
 		guiEnabled = true;
 	}
-
+	
 	private void setMaxClients(int maxClients) {
 		this.maxClients = maxClients;
 	}
-
+	
 	private void setTickRate(int tickRate) {
 		this.tickRate = tickRate;
 	}
-
+	
 	private void setServerPort(int port) {
 		serverPort = port;
 	}
-	
+
 	public int getServerPort() {
 		return serverPort;
 	}
-
+	
 	public void addPendingCommand(String input, ICommandSender sender) {
 		pendingCommandList.add(new PendingCommand(input, sender));
 	}
-
+	
 	public void executePendingCommands() {
 		while (!pendingCommandList.isEmpty()) {
 			PendingCommand command = pendingCommandList.remove(0);
 			getCommandManager().executeCommand(command.getSender(), command.getCommand());
 		}
-
+		
 	}
-	
+
 	public boolean isServerStarting() {
 		return serverStarting;
 	}
-
+	
 	public boolean isServerStopped() {
 		return serverStopped;
 	}
-
+	
 	public boolean isServerRunning() {
 		return serverRunning;
 	}
-
+	
 	public boolean isGuiEnabled() {
 		return guiEnabled;
 	}
-
+	
 	public int getTickRate() {
 		return tickRate;
 	}
-	
+
 	public NetworkSystem getNetworkSystem() {
 		return networkSystem;
 	}
-
+	
 	@Override
 	public ICommandManager getCommandManager() {
 		return commandManager;
 	}
-
+	
 	@Override
 	public String getName() {
 		return "Server";
 	}
-
+	
 	@Override
 	public void sendMessage(String msg) {
 		LOG.info(msg);
 	}
-
+	
 	@Override
 	public boolean canUseCommand(int permLevel, String commandName) {
 		// The server is allowed to execute every command
 		return true;
 	}
-
+	
 	@Override
 	public boolean sendCommandFeedback() {
 		// At lest for now command feedback shall be received for debugging purposes
 		return true;
 	}
-
+	
+	@Override
+	public List<String> getAllRegisteredUsernames() {
+		return getNetworkSystem().getClientManager().getUserManager().getAccountManager().getAllRegisteredUsernames();
+	}
+	
 }
