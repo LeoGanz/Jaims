@@ -185,18 +185,20 @@ public class TextAreaMessage extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 
-		if (own) {
-			jta.setForeground(Settings.colorOwnMessageFont);
-			jta.setFont(new Font(Settings.ownFontName, Settings.ownFontStyle, Settings.ownFontSize));
-			// setBorder(new RoundBorder(width, height, Settings.colorOwnMessageBorder));
-		} else {
-			jta.setForeground(Settings.colorContactMessageFont);
-			jta.setFont(new Font(Settings.contactFontName, Settings.contactFontStyle, Settings.contactFontSize));
-			// setBorder(new RoundBorder(width, height,
-			// Settings.colorContactMessageBorder));
-		}
-		jta.revalidate();
-		jta.repaint();
+		// if (own) {
+		// jta.setForeground(Settings.colorOwnMessageFont);
+		// jta.setFont(new Font(Settings.ownFontName, Settings.ownFontStyle,
+		// Settings.ownFontSize));
+		// // setBorder(new RoundBorder(width, height, Settings.colorOwnMessageBorder));
+		// } else {
+		// jta.setForeground(Settings.colorContactMessageFont);
+		// jta.setFont(new Font(Settings.contactFontName, Settings.contactFontStyle,
+		// Settings.contactFontSize));
+		// // setBorder(new RoundBorder(width, height,
+		// // Settings.colorContactMessageBorder));
+		// }
+		// // jta.revalidate();
+		// // jta.repaint();
 
 		Graphics2D g2d = (Graphics2D) g.create();
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

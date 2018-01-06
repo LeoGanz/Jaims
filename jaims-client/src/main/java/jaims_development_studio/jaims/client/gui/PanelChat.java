@@ -213,7 +213,7 @@ public class PanelChat extends JPanel implements Runnable {
 		pcwt = new PanelChatWindowTop(userProfile);
 		pcwt.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 
 				cp.getClientMain().addPanelUserProfileInformation(pcm, userProfile);
 

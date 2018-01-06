@@ -63,6 +63,8 @@ public class ServerConnection implements Runnable {
 				}
 			}
 			oos = new ObjectOutputStream(server.getOutputStream());
+			Thread thread2 = new Thread(new ListenForInput(server, cm));
+			thread2.start();
 		} catch (IOException e) {
 			LOG.error("Couldn't connect to server. Will keep on trying!", e);
 			Thread thread = new Thread() {
@@ -77,12 +79,14 @@ public class ServerConnection implements Runnable {
 							else
 								duration = 120000;
 						}
-
+						System.out.println(duration);
 						server = new Socket();
 						server.connect(is);
 						oos = new ObjectOutputStream(server.getOutputStream());
 
 						LOG.info("Connected");
+						Thread thread2 = new Thread(new ListenForInput(server, cm));
+						thread2.start();
 						if (cm.getLoginPanel() != null) {
 							cm.getLoginPanel().removeErrorPanel();
 							cm.getLoginPanel().activateLogin();
@@ -100,9 +104,6 @@ public class ServerConnection implements Runnable {
 			};
 			thread.start();
 		}
-
-		Thread thread = new Thread(new ListenForInput(server, cm));
-		thread.start();
 	}
 
 	/**
@@ -163,12 +164,12 @@ public class ServerConnection implements Runnable {
 
 	public boolean checkIfServerIsAvailable() {
 
-		try (Socket s = new Socket(is.getAddress().getHostAddress(), is.getPort())) {
-			return true;
-		} catch (IOException ex) {
-			/* ignore */
+		Socket s = new Socket();
+		try {
+			s.connect(is, 100);
+		} catch (IOException e) {
 		}
-		return false;
+		return s.isConnected();
 	}
 
 }
