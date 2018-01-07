@@ -2,9 +2,10 @@ package jaims_development_studio.jaims.api.command;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface ICommandManager {
-
+	
 	/**
 	 * Attempt to execute a command. This method should return if the execution was successful.
 	 *
@@ -14,11 +15,13 @@ public interface ICommandManager {
 	 * @return false if command doesn't exist or sender doesn't have permission, otherwise true
 	 */
 	boolean executeCommand(ICommandSender sender, String rawCommand);
-	
+
 	List<String> getTabCompletions(ICommandSender sender, String input);
-	
+
 	List<ICommand> getPossibleCommands(ICommandSender sender);
-	
+
 	Map<String, ICommand> getCommands();
 
+	Set<String> getCommandNames();
+	
 }

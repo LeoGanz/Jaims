@@ -31,20 +31,26 @@ public class CommandHelp extends CommandBase {
 	@Override
 	public void execute(IServer server, ICommandSender sender, String[] args) throws Exception {
 		
-		List<ICommand> list = server.getCommandManager().getPossibleCommands(sender);
+		List<ICommand> possibleCommands = server.getCommandManager().getPossibleCommands(sender);
 		
-		sender.sendMessage("--- Showing help page ---");
-		
-		for (ICommand cmd : list)
-			sender.sendMessage(cmd.getUsage(sender));
+		if (args.length == 1) {
+			for (ICommand cmd : possibleCommands)
+				if (cmd.getName().equals(args[0]))
+					sender.sendMessage(cmd.getUsage(sender));
+		} else {
 
+			sender.sendMessage("--- Showing help page ---");
+			
+			for (ICommand cmd : possibleCommands)
+				sender.sendMessage(cmd.getUsage(sender));
+		}
 	}
 	
 	@Override
 	public List<String> getTabCompletions(IServer server, ICommandSender sender, String[] args) {
 		if (args.length != 1)
 			return super.getTabCompletions(server, sender, args);
-		return getListOfStringsMatchingLastWord(args, server.getCommandManager().getCommands().keySet());
+		return getListOfStringsMatchingLastWord(args, server.getCommandManager().getCommandNames());
 	}
 	
 }

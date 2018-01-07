@@ -3,7 +3,6 @@ package jaims_development_studio.jaims.api.command;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -17,10 +16,11 @@ import jaims_development_studio.jaims.api.IServer;
 
 public abstract class CommandHandler implements ICommandManager {
 	
-	private static final Logger			LOG			= LoggerFactory.getLogger(CommandHandler.class);
-	private final Map<String, ICommand>	commandMap	= Maps.newHashMap();
-	private final Set<ICommand>			commandSet	= Sets.newHashSet();
-
+	private static final Logger			LOG				= LoggerFactory.getLogger(CommandHandler.class);
+	private final Map<String, ICommand>	commandMap		= Maps.newHashMap();
+	private final Set<String>			commandNames	= Sets.newHashSet();							//no command aliases
+	private final Set<ICommand>			commandSet		= Sets.newHashSet();
+	
 	@Override
 	public boolean executeCommand(ICommandSender sender, String rawCommand) {
 		
@@ -34,21 +34,21 @@ public abstract class CommandHandler implements ICommandManager {
 		
 		String[] arguments = new String[splitCommand.length - 1];
 		System.arraycopy(splitCommand, 1, arguments, 0, arguments.length);
-
+		
 		ICommand command = commandMap.get(baseCommand);
 		
 		if (command == null)
 			sender.sendMessage("Command not found! Try /help");
 		else if (command.checkPermission(getServer(), sender)) {
 			int j = getUsernameIndex(command, arguments);
-
+			
 			if (j > -1) {
 				//TODO find player(s) and replace arguments[j] with users id
 			}
-
+			
 			return tryExecute(sender, arguments, command, commandString);
 		}
-
+		
 		return false;
 	}
 	
@@ -64,33 +64,34 @@ public abstract class CommandHandler implements ICommandManager {
 			sender.sendMessage("Unexpected problems occured when processing command!");
 			LOG.warn("Couldn't process command: '" + input + "'", t);
 		}
-
+		
 		return false;
-
+		
 	}
 	
 	protected abstract IServer getServer();
-
+	
 	/**
 	 * Adds the command and any aliases it has to the internal map of available commands
 	 */
 	public ICommand registerCommand(ICommand command) {
 		commandMap.put(command.getName(), command);
+		commandNames.add(command.getName());
 		commandSet.add(command);
-
+		
 		for (String alias : command.getAliases()) {
 			ICommand icommand = commandMap.get(alias);
-
+			
 			if ((icommand == null) || !icommand.getName().equals(alias))
 				commandMap.put(alias, command);
 		}
-
+		
 		return command;
 	}
 	
 	@Override
 	public List<String> getTabCompletions(ICommandSender sender, String input) {
-
+		
 		if (input.matches("\\s+"))
 			return getTabCompletions(sender, "");
 		
@@ -99,9 +100,13 @@ public abstract class CommandHandler implements ICommandManager {
 		
 		if ((splitInput.length == 1) && !input.endsWith(" ")) {
 			List<String> list = Lists.newArrayList();
-			for (Entry<String, ICommand> entry : commandMap.entrySet())
-				if (entry.getKey().startsWith(start))
-					list.add(entry.getKey());
+			for (String s : commandNames)
+				if (s.startsWith(start))
+					list.add(s);
+
+			//			for (Entry<String, ICommand> entry : commandMap.entrySet())
+			//				if (entry.getKey().startsWith(start))
+			//					list.add(entry.getKey());
 			return list;
 		} else if (input.endsWith(" ")) {
 			ICommand command = commandMap.get(start);
@@ -126,7 +131,7 @@ public abstract class CommandHandler implements ICommandManager {
 	@Override
 	public List<ICommand> getPossibleCommands(ICommandSender sender) {
 		List<ICommand> possibleCommands = Lists.newArrayList();
-
+		
 		for (ICommand cmd : commandSet)
 			if (cmd.checkPermission(getServer(), sender))
 				possibleCommands.add(cmd);
@@ -138,7 +143,12 @@ public abstract class CommandHandler implements ICommandManager {
 	public Map<String, ICommand> getCommands() {
 		return commandMap;
 	}
-
+	
+	@Override
+	public Set<String> getCommandNames() {
+		return commandNames;
+	}
+	
 	/**
 	 * Return a command's first parameter index containing a valid username.
 	 */
@@ -152,5 +162,5 @@ public abstract class CommandHandler implements ICommandManager {
 		
 		return -1;
 	}
-
+	
 }
