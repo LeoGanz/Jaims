@@ -35,6 +35,7 @@ public class ListenForInput implements Runnable {
 	 *            Object representing ClientMain class
 	 */
 	public ListenForInput(Socket so, ClientMain cm) {
+
 		this.so = so;
 		this.cm = cm;
 	}
@@ -46,6 +47,7 @@ public class ListenForInput implements Runnable {
 	 * handleSendable}.
 	 */
 	private void readConnection() {
+
 		try {
 			ois = new ObjectInputStream(so.getInputStream());
 			while (so.isConnected()) {
@@ -78,6 +80,7 @@ public class ListenForInput implements Runnable {
 	 * sendable.
 	 */
 	private void handleSendable() {
+
 		try {
 			switch (s.getType().getValue()) {
 			case "MESSAGE_RESPONSE":
@@ -122,6 +125,7 @@ public class ListenForInput implements Runnable {
 
 	@Override
 	public void run() {
+
 		readConnection();
 
 	}

@@ -18,6 +18,7 @@ public class Panel extends JPanel {
 	String	username;
 
 	public Panel(Image img, String username) {
+
 		this.img = scaleMaintainAspectRatio(img);
 		this.username = username;
 		setPreferredSize(new Dimension(250, 55));
@@ -27,6 +28,7 @@ public class Panel extends JPanel {
 
 	@Override
 	public void paintComponent(Graphics g) {
+
 		g.setColor(getBackground());
 		g.fillRect(1, 1, getWidth() - 1, getHeight() - 1);
 
@@ -36,7 +38,7 @@ public class Panel extends JPanel {
 		g2d.setFont(new Font("Calibri", Font.BOLD, 15));
 		g2d.drawString(username, 75, 30);
 		g2d.drawRoundRect(9, 2, 51, 51, 15, 15);
-		g2d.setClip(new RoundRectangle2D.Double(0, 0, 51, 51, 15, 15));
+		g2d.setClip(new RoundRectangle2D.Double(10, 3, img.getWidth(this), img.getHeight(this), 15, 15));
 		g2d.drawImage(img, 10, 3, this);
 
 		g2d.dispose();
@@ -44,6 +46,7 @@ public class Panel extends JPanel {
 	}
 
 	private Image scaleMaintainAspectRatio(Image image) {
+
 		image.getHeight(this);
 		image.getWidth(this);
 		Image returnImg = image.getScaledInstance(50, 50, Image.SCALE_SMOOTH);

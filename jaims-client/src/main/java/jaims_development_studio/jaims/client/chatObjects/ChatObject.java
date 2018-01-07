@@ -1,28 +1,35 @@
 package jaims_development_studio.jaims.client.chatObjects;
 
+import java.util.ArrayList;
+
 public class ChatObject {
 
-	Profile	profileContact;
-	String	messageObjects;
+	ClientProfile		profileContact;
+	ArrayList<Message>	list	= new ArrayList<>();
 
-	public ChatObject(Profile profile) {
+	public ChatObject(ClientProfile profile) {
+
 		profileContact = profile;
 	}
 
-	public void setProfileContact(Profile profile) {
+	public void setProfileContact(ClientProfile profile) {
+
 		this.profileContact = profile;
 	}
 
-	public void setMessageObjectsArray(String list) {
-		messageObjects = list;
+	public void setMessageObjectsArray(ArrayList<Message> list) {
+
+		this.list = list;
 	}
 
-	public Profile getProfileContact() {
+	public ClientProfile getProfileContact() {
+
 		return profileContact;
 	}
 
-	public String getList() {
-		return messageObjects;
+	public ArrayList<Message> getList() {
+
+		return list;
 	}
 
 }

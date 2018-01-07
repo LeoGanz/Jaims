@@ -4,9 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -24,57 +21,57 @@ public class JaimsFrame extends JFrame {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	private static final Logger LOG = LoggerFactory.getLogger(JaimsFrame.class);
-	
-	JFrame frame;
-	
+	private static final long	serialVersionUID	= 1L;
+	private static final Logger	LOG					= LoggerFactory.getLogger(JaimsFrame.class);
+	private Image				img					= null;
+
+	private JFrame				frame;
+
 	public JaimsFrame() {
+
 		super("JAIMS Client");
-		
+
 		initLoadingFrame();
 	}
-	
+
 	private void initLoadingFrame() {
+
 		frame = new JFrame();
 		frame.setSize(705, 505);
 		frame.setLocationRelativeTo(null);
 		frame.setUndecorated(true);
 		frame.setBackground(new Color(0, 0, 0, 0));
 		try {
-			frame.setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_Penguin.png")));
+			frame.setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_icon.png")));
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		Image img = null;		
+
 		try {
-			img = ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_Penguin.png"));
-			img = img.getScaledInstance(370, 473, Image.SCALE_SMOOTH);
+			img = ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_Logo.png"));
+			img = img.getScaledInstance(400, 400, Image.SCALE_SMOOTH);
 		} catch (IOException e) {
 			LOG.error("Failed to create image");
 		}
-		
-		frame.add(new JLabel(new ImageIcon(img)));
+		frame.getContentPane().add(new JLabel(new ImageIcon(img)));
 		frame.setVisible(true);
-		
-		
+
 	}
-	
+
 	public void initGUI() {
-		
-		
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(800, 600);
-		setMinimumSize(new Dimension(705,505));
+		setSize(705, 505);
+		setMinimumSize(new Dimension(705, 505));
 		setLocationRelativeTo(null);
-		getContentPane().setLayout(new BorderLayout(10,0));
+		getContentPane().setLayout(new BorderLayout(10, 0));
 		try {
-			setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_Penguin.png")));
+			setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_icon.png")));
 		} catch (IOException e) {
 			LOG.error("Failed to create IconImage");
 			try {
-				setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_Penguin.png")));
+				setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_Logo.png")));
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -86,11 +83,11 @@ public class JaimsFrame extends JFrame {
 				| UnsupportedLookAndFeelException e) {
 			LOG.error("Failed to set Look and Feel");
 		}
-		
+
 		setVisible(true);
-		
+
 		frame.dispose();
-		
+
 	}
 
 }
