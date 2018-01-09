@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import jaims_development_studio.jaims.api.sendables.SendableLogin;
 import jaims_development_studio.jaims.client.logic.ClientMain;
-import jaims_development_studio.jaims.client.networking.ServerConnection;
 
 public class LoginPanel extends JPanel {
 
@@ -217,7 +216,7 @@ public class LoginPanel extends JPanel {
 
 					if (registrationExists == false) {
 						registrationExists = true;
-						rw = new RegistrationWindow(caller);
+						rw = new RegistrationWindow(caller, cm);
 					} else {
 
 					}
@@ -267,7 +266,7 @@ public class LoginPanel extends JPanel {
 	private void sendLogin(String username, String pw) {
 
 		SendableLogin sl = new SendableLogin(username, pw);
-		ServerConnection.sendSendable(sl);
+		cm.getServerConnection().sendSendable(sl);
 	}
 
 	public RegistrationWindow getRegistrationWindow() {

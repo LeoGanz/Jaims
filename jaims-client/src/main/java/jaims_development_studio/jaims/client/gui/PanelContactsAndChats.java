@@ -21,6 +21,7 @@ import javax.swing.JTabbedPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.api.sendables.SendableMessage;
 import jaims_development_studio.jaims.client.chatObjects.ChatObject;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.database.ReadFromDatabase;
@@ -45,6 +46,7 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 	ArrayList<UUID>					panels				= new ArrayList<>();
 	JScrollPane						scrollpane;
 	private ArrayList<ContactPanel>	listCp;
+	private List<ContactPanel>		list;
 
 	public PanelContactsAndChats(JaimsFrame frame, ClientMain cm) {
 
@@ -55,7 +57,7 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 
 	private void initGUI() {
 
-		List<ContactPanel> list = Collections.synchronizedList(new ArrayList<ContactPanel>());
+		list = Collections.synchronizedList(new ArrayList<ContactPanel>());
 		for (ChatObject co : ReadFromDatabase.chatObjectsList) {
 			list.add(new ContactPanel(co, frame, cm));
 		}
@@ -173,7 +175,6 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 
 		setPreferredSize(new Dimension(250, frame.getHeight() - 120));
 		ReadFromDatabase.chatObjectsList = null;
-		list = null;
 	}
 
 	private ArrayList<Message> getMessageList(ChatObject co) {
@@ -225,6 +226,24 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 	public void run() {
 
 		initGUI();
+
+	}
+
+	public void addMessageToChat(SendableMessage sm) {
+
+		Thread thread = new Thread() {
+			@Override
+			public void run() {
+
+				for (ContactPanel cp : list) {
+					if (cp.getChatObject().getProfileContact().getUuid().equals(sm.getSender())) {
+						cp.getPanelChatMessages().addMessageFromContact(sm);
+						break;
+					}
+				}
+			}
+		};
+		thread.start();
 
 	}
 

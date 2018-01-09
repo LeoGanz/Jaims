@@ -13,6 +13,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -23,12 +25,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
+import javax.swing.border.MatteBorder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.api.sendables.SendableTextMessage;
 import jaims_development_studio.jaims.client.chatObjects.ChatObject;
 import jaims_development_studio.jaims.client.chatObjects.ClientProfile;
+import jaims_development_studio.jaims.client.logic.ClientMain;
 
 public class PanelChat extends JPanel implements Runnable {
 
@@ -61,6 +66,7 @@ public class PanelChat extends JPanel implements Runnable {
 		setBorder(new LineBorder(Color.BLACK));
 
 		panelPageEnd = new JPanel();
+		panelPageEnd.setBorder(new MatteBorder(1, 0, 0, 0, Color.BLACK));
 		panelPageEnd.setLayout(new BorderLayout(6, 0));
 		{
 			jta = new JTextArea("");
@@ -80,9 +86,11 @@ public class PanelChat extends JPanel implements Runnable {
 									|| jta.getText().equals("[\\n]*") || jta.getText().trim().isEmpty()) {
 							} else {
 								pcm.addMessageFromUser(jta.getText(), userProfile.getUuid(), co);
-								jta.setText("");
 								jsp.getVerticalScrollBar().setValue(jsp.getVerticalScrollBar().getMaximum() + 50);
 								cp.getClientMain().getPCC().checkChatPanels(cp);
+
+								sendSendable(jta.getText());
+								jta.setText("");
 							}
 						}
 					}
@@ -182,10 +190,12 @@ public class PanelChat extends JPanel implements Runnable {
 
 						if (jta.getText().equals("")) {
 						} else {
-							pcm.addMessageFromUser(jta.getText().replaceAll("\n", " "), userProfile.getUuid(), co);
-							jta.setText("");
+							pcm.addMessageFromUser(jta.getText(), userProfile.getUuid(), co);
 							jsp.getVerticalScrollBar().setValue(jsp.getVerticalScrollBar().getMaximum() + 50);
 							cp.getClientMain().getPCC().checkChatPanels(cp);
+
+							sendSendable(jta.getText());
+							jta.setText("");
 						}
 
 					}
@@ -200,15 +210,25 @@ public class PanelChat extends JPanel implements Runnable {
 		jsp = new JScrollPane(pcm, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		jsp.setOpaque(false);
 		jsp.getVerticalScrollBar().addAdjustmentListener(e -> jsp.getViewport().repaint());
-		add(jsp, BorderLayout.CENTER);
-		jsp.addComponentListener(new ComponentAdapter() {
+		try {
+			jsp.getVerticalScrollBar().setUI(new MyScrollBarUI());
+		} catch (NullPointerException npe) {
+			LOG.error("Failed to start timer in BasicScrollBarUI.java", npe);
+		}
+		jsp.getVerticalScrollBar().setUnitIncrement(16);
+		jsp.getVerticalScrollBar().setOpaque(false);
+		jsp.addPropertyChangeListener(new PropertyChangeListener() {
 
 			@Override
-			public void componentShown(ComponentEvent e) {
+			public void propertyChange(PropertyChangeEvent evt) {
 
-				jsp.getVerticalScrollBar().setValue(jsp.getVerticalScrollBar().getMaximum());
+				jsp.getVerticalScrollBar().setPreferredSize(new Dimension(8, 50));
+				jsp.getVerticalScrollBar().setMaximumSize(jsp.getPreferredSize());
+
 			}
 		});
+		jsp.setBorder(null);
+		add(jsp, BorderLayout.CENTER);
 
 		pcwt = new PanelChatWindowTop(userProfile);
 		pcwt.addMouseListener(new MouseAdapter() {
@@ -227,6 +247,22 @@ public class PanelChat extends JPanel implements Runnable {
 	public void run() {
 
 		initGUI();
+
+	}
+
+	public void sendSendable(String message) {
+
+		Thread thread = new Thread() {
+			@Override
+			public void run() {
+
+				SendableTextMessage stm = new SendableTextMessage(ClientMain.userProfile.getUuid(),
+						ClientMain.serverUUID, message);
+				cp.getClientMain().getServerConnection().sendSendable(stm);
+
+			}
+		};
+		thread.start();
 
 	}
 

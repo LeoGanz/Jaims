@@ -1,6 +1,5 @@
 package jaims_development_studio.jaims.client.gui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Image;
@@ -20,12 +19,12 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.LineBorder;
+import javax.swing.border.EmptyBorder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.api.sendables.SendableMessage;
 import jaims_development_studio.jaims.client.chatObjects.ChatObject;
 import jaims_development_studio.jaims.client.chatObjects.ClientProfile;
 import jaims_development_studio.jaims.client.chatObjects.Message;
@@ -58,7 +57,7 @@ public class PanelChatMessages extends JPanel implements Runnable {
 
 		setName(userProfile.getNickname());
 		setOpaque(false);
-		setBorder(new CompoundBorder(new LineBorder(Color.BLACK), new LineBorder(getBackground(), 3)));
+		setBorder(new EmptyBorder(0, 3, 0, 3));
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 	}
 
@@ -248,6 +247,21 @@ public class PanelChatMessages extends JPanel implements Runnable {
 						new Date(System.currentTimeMillis()), false);
 				cp.getClientMain().getWTD().writeMessage(m, profileUUID, co, getMessageList(co));
 				cp.getClientMain().getPCC().checkChatPanels(cp);
+			}
+		};
+		thread.start();
+
+	}
+
+	public void addMessageFromContact(SendableMessage sm) {
+
+		Thread thread = new Thread() {
+			@Override
+			public void run() {
+
+				JPanel p = new JPanel();
+				p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
+
 			}
 		};
 		thread.start();

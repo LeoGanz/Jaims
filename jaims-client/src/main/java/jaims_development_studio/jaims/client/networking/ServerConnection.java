@@ -54,7 +54,7 @@ public class ServerConnection implements Runnable {
 		try {
 			// opens up a connection to the server
 			server = new Socket();
-			server.connect(is = new InetSocketAddress("188.193.157.228", 6000), 2000);
+			server.connect(is = new InetSocketAddress("188.194.21.33" /* "localhost" */, 6000), 2000);
 			while (server.isConnected() == false) {
 				try {
 					Thread.sleep(500);
@@ -79,9 +79,6 @@ public class ServerConnection implements Runnable {
 							else
 								duration = 120000;
 						}
-						System.out.println(duration);
-						server = new Socket();
-						server.connect(is);
 						oos = new ObjectOutputStream(server.getOutputStream());
 
 						LOG.info("Connected");
@@ -125,7 +122,7 @@ public class ServerConnection implements Runnable {
 	 * @param s
 	 *            the sendable to be sent
 	 */
-	public static void sendSendable(Sendable s) {
+	public void sendSendable(Sendable s) {
 
 		try {
 			oos.writeObject(s);
@@ -164,12 +161,12 @@ public class ServerConnection implements Runnable {
 
 	public boolean checkIfServerIsAvailable() {
 
-		Socket s = new Socket();
+		server = new Socket();
 		try {
-			s.connect(is, 100);
+			server.connect(is, 100);
 		} catch (IOException e) {
 		}
-		return s.isConnected();
+		return server.isConnected();
 	}
 
 }

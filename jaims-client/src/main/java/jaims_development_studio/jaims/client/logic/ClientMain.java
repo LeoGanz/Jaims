@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.imageio.ImageIO;
 import javax.swing.Box;
@@ -61,6 +62,7 @@ public class ClientMain {
 	 * Static profile which represents the logged-in user.
 	 */
 	public static ClientProfile			userProfile;
+	public static UUID					serverUUID;
 
 	/**
 	 * Main method of program which takes args as given start arguments and creates
@@ -104,6 +106,8 @@ public class ClientMain {
 		dc = new DatabaseConnection();
 		dc.initConnection();
 
+		userProfile = new ClientProfile(null, "Bu88le", "Test", "Test", null, new Date(System.currentTimeMillis()));
+
 		Thread thread = new Thread(sc = new ServerConnection(this));
 		thread.start();
 
@@ -136,7 +140,6 @@ public class ClientMain {
 		// creates a new WriteToDatabase Object with the username and the connection
 		// object stored in DatabaseConnection
 		wtd = dc.getWTD(username);
-		userProfile = new ClientProfile(null, username, "Test", "Test", null, new Date(System.currentTimeMillis()));
 
 		// local variable thread which starts loading the content from the database into
 		// the program
@@ -238,7 +241,7 @@ public class ClientMain {
 		// panelChat
 		if (panelSettings != null) {
 			jf.getContentPane().remove(panelSettings);
-			panelSettings.getPF().dispose();
+			// panelSettings.getPF().dispose();
 			panelSettings = null;
 			jf.revalidate();
 		}
@@ -246,6 +249,7 @@ public class ClientMain {
 		// panelChat
 		if (activePanelChat != null) {
 			jf.getContentPane().remove(activePanelChat);
+			jf.getContentPane().revalidate();
 			jf.getContentPane().revalidate();
 		}
 		// if there is a PanelEditUser displayed then it is first removed before adding
@@ -268,42 +272,14 @@ public class ClientMain {
 		activePanelChat = panelChat;
 	}
 
-	/**
-	 * Receives a finished PanelSettings and shows it in the centre of the frame's
-	 * content pane.
-	 *
-	 * @param panelSettings
-	 *            a finished PanelSettings which shows all available setting options
-	 */
-	public void setSettingPanel(PanelSettings panelSettings) {
+	public void setSettingPanel() {
 
-		if (panelSettings != null)
-			return;
-
-		// if there is a panelChat currently active then first remove it before showing
-		// the panelSettings
-		if (activePanelChat != null) {
-			jf.getContentPane().remove(activePanelChat);
-			jf.revalidate();
-		}
-		// if there is a PanelEditUser then it is first removed before adding the
-		// PanelSettings
-		if (panelEditUser != null) {
-			jf.getContentPane().remove(panelEditUser);
-			panelEditUser = null;
-			jf.revalidate();
-		}
-		if (panelUserProfileInformation != null) {
-			jf.getContentPane().remove(panelUserProfileInformation);
-			panelUserProfileInformation = null;
-			jf.getContentPane().revalidate();
-		}
+		jf.getContentPane().removeAll();
+		panelSettings = new PanelSettings(this);
 
 		jf.getContentPane().add(panelSettings, BorderLayout.CENTER);
 		jf.getContentPane().revalidate();
 		jf.getContentPane().repaint();
-
-		this.panelSettings = panelSettings;
 	}
 
 	/**
@@ -350,7 +326,7 @@ public class ClientMain {
 
 		if (panelSettings != null) {
 			jf.getContentPane().remove(panelSettings);
-			panelSettings.getPF().dispose();
+			// panelSettings.getPF().dispose();
 			panelSettings = null;
 			jf.revalidate();
 		}
@@ -381,7 +357,7 @@ public class ClientMain {
 		// panelChat
 		if (panelSettings != null) {
 			jf.getContentPane().remove(panelSettings);
-			panelSettings.getPF().dispose();
+			// panelSettings.getPF().dispose();
 			panelSettings = null;
 			jf.revalidate();
 		}
@@ -450,5 +426,10 @@ public class ClientMain {
 	public LoginPanel getLoginPanel() {
 
 		return lp;
+	}
+
+	public ServerConnection getServerConnection() {
+
+		return sc;
 	}
 }

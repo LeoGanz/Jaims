@@ -59,7 +59,6 @@ public class ContactPanel {
 			public void mouseReleased(MouseEvent arg0) {
 
 				setPanel();
-				pc.getSP().getVerticalScrollBar().setValue(100);
 			}
 		});
 
@@ -151,5 +150,10 @@ public class ContactPanel {
 				setPanel();
 			}
 		});
+	}
+
+	public PanelChatMessages getPanelChatMessages() {
+
+		return pcm;
 	}
 }

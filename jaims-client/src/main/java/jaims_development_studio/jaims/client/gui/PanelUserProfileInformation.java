@@ -59,6 +59,7 @@ public class PanelUserProfileInformation extends JPanel {
 
 		setLayout(new BorderLayout());
 		setBackground(Color.white);
+		setBorder(new EmptyBorder(0, 0, 0, 8));
 		panelUserInfo = new JPanel();
 		panelUserInfo.setLayout(new BoxLayout(panelUserInfo, BoxLayout.PAGE_AXIS));
 		{

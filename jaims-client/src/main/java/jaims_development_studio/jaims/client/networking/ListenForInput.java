@@ -1,6 +1,7 @@
 package jaims_development_studio.jaims.client.networking;
 
 import java.awt.Cursor;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
@@ -12,18 +13,21 @@ import org.slf4j.LoggerFactory;
 import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.api.sendables.SendableConfirmation;
 import jaims_development_studio.jaims.api.sendables.SendableException;
+import jaims_development_studio.jaims.api.sendables.SendableMessage;
 import jaims_development_studio.jaims.api.sendables.SendableMessageResponse;
+import jaims_development_studio.jaims.api.sendables.SendableTextMessage;
 import jaims_development_studio.jaims.api.sendables.SendableUUID;
 import jaims_development_studio.jaims.client.logic.ClientMain;
 
 public class ListenForInput implements Runnable {
 
-	private static final Logger	LOG	= LoggerFactory.getLogger(ListenForInput.class);
+	private static final Logger	LOG				= LoggerFactory.getLogger(ListenForInput.class);
 
 	Socket						so;
 	ObjectInputStream			ois;
 	Sendable					s;
 	ClientMain					cm;
+	boolean						firstSendable	= true;
 
 	/**
 	 * Constructor of this class. Initialises only the files, reading the socket
@@ -60,14 +64,19 @@ public class ListenForInput implements Runnable {
 					LOG.error("Socket isn't initialised", npe);
 				} catch (SocketException se) {
 					LOG.error("Socket isn't connected", se);
+				} catch (EOFException e) {
+					LOG.error("Server connection closed. Trying to reconnect", e);
+					cm.getServerConnection().initConnection();
 				} catch (IOException ie) {
 					LOG.error("IO Exception", ie);
-					break;
 				}
 
 			}
 		} catch (NullPointerException npe) {
 			LOG.error("Socket isn't initialised!", npe);
+		} catch (EOFException e) {
+			LOG.error("Server connection closed. Trying to reconnect", e);
+			cm.getServerConnection().initConnection();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			LOG.error("Socket isn't connected", e);
@@ -83,6 +92,26 @@ public class ListenForInput implements Runnable {
 
 		try {
 			switch (s.getType().getValue()) {
+			case "MESSAGE":
+				SendableMessage sm = (SendableMessage) s;
+				switch (sm.getMessageType().getValue()) {
+				case "TEXT":
+					SendableTextMessage stm = (SendableTextMessage) sm;
+					LOG.info("Received sendable of type " + sm.getType().toString());
+					System.out.println(stm.getMessage());
+					break;
+				case "IMAGE":
+
+				case "VOICE":
+
+				case "FILE":
+
+				case "LOCATION":
+
+				case "OTHER":
+
+				}
+				break;
 			case "MESSAGE_RESPONSE":
 				SendableMessageResponse smr = (SendableMessageResponse) s;
 				LOG.info("Received sendable of type " + smr.getType().toString());
@@ -96,7 +125,14 @@ public class ListenForInput implements Runnable {
 			case "STORED_UUID":
 				SendableUUID su = (SendableUUID) s;
 				LOG.info("Received Sendable of type " + su.getType().toString());
-				ClientMain.userProfile.setUUID(su.getUuid());
+				if (firstSendable) {
+					ClientMain.serverUUID = su.getStoredUuid();
+					firstSendable = false;
+				} else {
+
+					ClientMain.userProfile.setUUID(su.getStoredUuid());
+				}
+
 				break;
 			case "PROFILE":
 				break;
@@ -109,6 +145,18 @@ public class ListenForInput implements Runnable {
 					}
 				} else if (sc.getConfirmationType().getValue().equals("LOGIN_SUCCESSFUL")) {
 					cm.startCreatingChatWindow(cm.getLoginPanel().getUsername());
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+					SendableTextMessage stm = new SendableTextMessage(ClientMain.userProfile.getUuid(),
+							ClientMain.serverUUID, "hallo server :-)");
+					cm.getServerConnection().sendSendable(stm);
+					SendableTextMessage sm1 = new SendableTextMessage(ClientMain.userProfile.getUuid(),
+							ClientMain.serverUUID, "/date");
+					cm.getServerConnection().sendSendable(sm1);
 				}
 				break;
 			case "OTHER":

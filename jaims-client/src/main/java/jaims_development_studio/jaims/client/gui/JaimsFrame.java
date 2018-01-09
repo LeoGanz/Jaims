@@ -62,8 +62,8 @@ public class JaimsFrame extends JFrame {
 	public void initGUI() {
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(705, 505);
-		setMinimumSize(new Dimension(705, 505));
+		setSize(805, 505);
+		setMinimumSize(new Dimension(805, 505));
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout(10, 0));
 		try {
