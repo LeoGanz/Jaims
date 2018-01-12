@@ -3,10 +3,15 @@ package jaims_development_studio.jaims.server.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -56,6 +61,16 @@ public class ServerGui extends JComponent {
 		
 		ServerGui serverGui = new ServerGui(server);
 		JFrame frame = new JFrame("Server");
+		try {
+			List<Image> iconImages = new ArrayList<>(4);
+			iconImages.add(ImageIO.read(ServerGui.class.getResourceAsStream("/images/logo_red_simple - 16x.png")));
+			iconImages.add(ImageIO.read(ServerGui.class.getResourceAsStream("/images/logo_red_simple - 32x.png")));
+			iconImages.add(ImageIO.read(ServerGui.class.getResourceAsStream("/images/logo_red_simple - 64x.png")));
+			iconImages.add(ImageIO.read(ServerGui.class.getResourceAsStream("/images/logo_red_simple - 128x.png")));
+			frame.setIconImages(iconImages);
+		} catch (@SuppressWarnings("unused") IOException e) {
+			LOG.warn("Could set IconImage");
+		}
 		frame.add(serverGui);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
