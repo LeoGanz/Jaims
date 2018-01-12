@@ -35,7 +35,6 @@ public class ObservableList<E> extends ForwardingList<E> {
 	}
 	
 	private void fireListChangeEvent(ListChangeEvent event) {
-		LOG.debug("Firing ListChangeEvent");
 		Object[] listeners = eventListenerList.getListenerList();
 		for (int i = 0; i < listeners.length; i++)
 			if (listeners[i] == ListChangeListener.class)

@@ -23,7 +23,6 @@ public abstract class CommandHandler implements ICommandManager {
 	
 	@Override
 	public boolean executeCommand(ICommandSender sender, String rawCommand) {
-		
 		String commandString = rawCommand.trim();
 		
 		if (commandString.startsWith("/"))
@@ -31,10 +30,12 @@ public abstract class CommandHandler implements ICommandManager {
 		
 		String[] splitCommand = commandString.split(" ");
 		String baseCommand = splitCommand[0];
-		
+
 		String[] arguments = new String[splitCommand.length - 1];
 		System.arraycopy(splitCommand, 1, arguments, 0, arguments.length);
 		
+		LOG.debug(baseCommand);
+
 		ICommand command = commandMap.get(baseCommand);
 		
 		if (command == null)
@@ -157,7 +158,7 @@ public abstract class CommandHandler implements ICommandManager {
 		if (command == null)
 			return -1;
 		for (int i = 0; i < args.length; ++i)
-			if (command.isUsernameIndex(args, i) && true) //TODO second part needs to check if player can be found
+			if (command.isUsernameIndex(args, i) && true) //TODO second part needs to check if user can be found
 				return i;
 		
 		return -1;

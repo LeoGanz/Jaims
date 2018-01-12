@@ -52,7 +52,6 @@ public class NetworkSystem implements Runnable, Closeable {
 		while (server.isServerRunning()) {
 			try {
 				clientSocket = serverSocket.accept();
-				LOG.debug("clientSocket accepted");
 			} catch (@SuppressWarnings("unused") SocketException e) {
 				LOG.info("Shutting down network system");
 				break;
@@ -60,7 +59,8 @@ public class NetworkSystem implements Runnable, Closeable {
 				LOG.error("An unexpected IOException occurred while accepting clients", e);
 			}
 
-			clientManager.newConnection(clientSocket);
+			if (clientSocket != null)
+				clientManager.newConnection(clientSocket);
 		}
 
 	}

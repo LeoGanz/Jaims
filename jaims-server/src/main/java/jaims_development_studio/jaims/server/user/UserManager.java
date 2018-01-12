@@ -1,8 +1,10 @@
 package jaims_development_studio.jaims.server.user;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -29,16 +31,14 @@ public class UserManager implements Serializable {
 	private final AccountManager	accountManager;
 	private final UserDAO			userDAO				= new UserDAO();
 	private final Server			server;
-	private final List<User>				onlineUsers;
+	private final Map<UUID, User>	loadedUsers;
+	private final List<User>		onlineUsers;
 
 	public UserManager(Server server) {
 		this.server = server;
 		accountManager = new AccountManager();
+		loadedUsers = new HashMap<>();
 		onlineUsers = new ObservableList<>(new LinkedList<>());
-	}
-	
-	public UUID getUuidForUsername(String username) {
-		return accountManager.getUuidForUsername(username);
 	}
 	
 	public User registerNewUser(SendableRegistration registration) throws UserNameNotAvailableException {
@@ -47,11 +47,10 @@ public class UserManager implements Serializable {
 		String email = registration.getEmail();
 
 		Account account = accountManager.createNewAccount(username, password, email);
-		User user = new User(account);
+		User user = new User(server, account);
 
-		userDAO.saveOrUpdate(user);
-
-		//		users.put(account.getUuid(), user);
+		save(user);
+		loadedUsers.put(user.getAccount().getUuid(), user);
 
 		return user;
 	}
@@ -59,11 +58,11 @@ public class UserManager implements Serializable {
 	public User loginUser(SendableLogin login) throws UserNotFoundException, IncorrectPasswordException {
 		UUID uuid = getUuidForUsername(login.getUsername());
 
-		User user = userDAO.get(uuid);
-		//		User user = users.get(uuid);
+		User user = get(uuid);
 		if (user == null)
 			throw new UserNotFoundException("User with UUID " + uuid + " could not be found!");
-		
+		user.setServer(server);
+
 		Account account = user.getAccount();
 		
 		boolean correctPassword = account.validatePassword(login.getPassword());
@@ -82,7 +81,37 @@ public class UserManager implements Serializable {
 	
 	public void deleteUserAndAccount(UUID uuid) {
 		LOG.info("Deleting User " + uuid);
+		User user = loadedUsers.remove(uuid);
+		onlineUsers.remove(user);
+		user = null;
 		accountManager.deleteAccount(uuid); //accountDAO in AccountManager will delete both user and account objects
+	}
+	
+	public void deliverMessage(SendableMessage message) throws UserNotFoundException {
+		UUID recipientUuid = message.getRecipient();
+
+		if (recipientUuid.equals(server.getServerUUID()) && (message.getMessageType() == EMessageType.TEXT)) {
+			UUID senderUuid = message.getSender();
+			User sender = get(senderUuid); //TODO first check if user is logged in and user object can be taken from some central user management. Otherwise sendAutoS. will listen on the wrong object
+
+			if (sender == null)
+				throw new UserNotFoundException("Could not find account of sender with UUID " + senderUuid + "!");
+
+			SendableTextMessage sendableTextMessage = (SendableTextMessage) message;
+			
+			LOG.info(sender.getName() + ": " + sendableTextMessage.getMessage());
+			
+			if (sendableTextMessage.getMessage().startsWith("/"))
+				server.addPendingCommand(sendableTextMessage.getMessage(), sender);
+			return;
+		}
+
+		User recipient = get(recipientUuid);
+		
+		if (recipient == null)
+			throw new UserNotFoundException("Could not deliver message to user " + recipientUuid + "!");
+		
+		recipient.enqueueSendable(message);
 	}
 	
 	public void save(User user) {
@@ -91,25 +120,24 @@ public class UserManager implements Serializable {
 			userDAO.saveOrUpdate(user);
 		}
 	}
-	
 
-	public void deliverMessage(SendableMessage message) throws UserNotFoundException {
-		UUID recipientUuid = message.getRecipient();
-		User recipient = userDAO.get(recipientUuid);
-		
-		if (recipient == null) {
-			if (recipientUuid.equals(UUID.fromString("SERVER")) && (message.getMessageType() == EMessageType.TEXT)) {
-				UUID senderUuid = message.getSender();
-				User sender = userDAO.get(senderUuid);
-				server.addPendingCommand(((SendableTextMessage) message).getMessage(), sender);
-				return;
-			}
-			throw new UserNotFoundException("Could not deliver message to user " + recipientUuid + "!");
+	public User get(UUID uuid) {
+		User result = loadedUsers.get(uuid);
+		if (result == null) {
+			result = userDAO.get(uuid);
+			loadedUsers.put(uuid, result);
 		}
-		
-		recipient.enqueueSendable(message);
+		return result;
 	}
-	
+
+	public UUID getUuidForUsername(String username) {
+		return accountManager.getUuidForUsername(username);
+	}
+
+	public String getUsernameForUuid(UUID uuid) {
+		return accountManager.getUsernameForUuid(uuid);
+	}
+
 	public List<User> getOnlineUsers() {
 		return onlineUsers;
 	}

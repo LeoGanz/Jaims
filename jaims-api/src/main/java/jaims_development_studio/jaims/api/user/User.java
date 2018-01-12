@@ -17,30 +17,39 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import jaims_development_studio.jaims.api.IServer;
 import jaims_development_studio.jaims.api.account.Account;
+import jaims_development_studio.jaims.api.command.CommandBase;
 import jaims_development_studio.jaims.api.command.ICommandSender;
 import jaims_development_studio.jaims.api.sendables.Sendable;
-import jaims_development_studio.jaims.api.sendables.SendableMessage;
 import jaims_development_studio.jaims.api.sendables.SendableTextMessage;
 
 @Entity(name = "User")
 @Table(name = "USERS")
 public class User implements Serializable, ICommandSender {
-
-	private static final long				serialVersionUID	= 1L;
+	
+	private static final long		serialVersionUID	= 1L;
+	
+	@Transient
+	private IServer					server;
+	
 	@Column(name = "ACCOUNT_UUID", columnDefinition = "BINARY(16)")
 	@Id
-	private UUID							uuid;
+	private UUID					uuid;
+	
 	@OneToOne(cascade = CascadeType.ALL)
 	@MapsId
-	private Account							account;
+	private Account					account;
+	
 	@Column(name = "LAST_SEEN", columnDefinition = "TIMESTAMP")
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date							lastSeen;
+	private Date					lastSeen;
+	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user", fetch = FetchType.EAGER)
 	//	@JoinColumn(name = "SENDABLE_UUID", columnDefinition = "BINARY(16)")
 	//	@Transient
@@ -53,16 +62,21 @@ public class User implements Serializable, ICommandSender {
 	
 	public User(Account account) {
 		this.account = account;
-		
 		//		sendables.sort((o1, o2) -> Integer.compare(o1.getPriority(), o2.getPriority()));
 	}
-
+	
+	public User(IServer server, Account account) {
+		this.server = server;
+		this.account = account;
+		//		sendables.sort((o1, o2) -> Integer.compare(o1.getPriority(), o2.getPriority()));
+	}
+	
 	public synchronized void enqueueSendable(Sendable sendable) {
 		sendables.add(sendable);
 		//		((LinkedBlockingDeque<Sendable>) sendables).addLast(sendable);
 		//		sendables.stream().filter(s -> s.getPriority() == sendable.getPriority()).reduce((first, second) -> second).get();
 		sendable.setUser(this);
-		notify();
+		notifyAll();
 	}
 	
 	public synchronized void enqueueAsFirstElement(Sendable sendable) {
@@ -71,29 +85,33 @@ public class User implements Serializable, ICommandSender {
 		//		sendable.setUser(this);
 		//		notify();
 	}
-
+	
 	public synchronized Sendable takeSendable() {
 		Sendable sendable = sendables.stream().sorted((o1, o2) -> Integer.compare(o1.getPriority(), o2.getPriority())).findFirst().get();
 		//			Sendable sendable = ((LinkedBlockingDeque<Sendable>) sendables).takeFirst();
-		//		if (sendable != null) {
-		sendables.remove(sendable);
-		sendable.setUser(null);
-		//		}
+		if (sendable != null) {
+			sendables.remove(sendable);
+			sendable.setUser(null);
+		}
 		return sendable;
+	}
+	
+	public void setServer(IServer server) {
+		this.server = server;
 	}
 
 	public Account getAccount() {
 		return account;
 	}
-
+	
 	public Date getLastSeen() {
 		return lastSeen;
 	}
-
+	
 	public void updateLastSeen() {
 		lastSeen = new Date();
 	}
-
+	
 	@Override
 	public String toString() {
 		return account.toStringName();
@@ -124,31 +142,37 @@ public class User implements Serializable, ICommandSender {
 				.toHashCode();
 	}
 	
-	public boolean noSendableQueued() {
+	public synchronized boolean noSendableQueued() {
 		return sendables.isEmpty();
 	}
-
+	
 	@Override
 	public String getName() {
 		return account.getUsername();
 	}
-
+	
 	@Override
 	public void sendMessage(String msg) {
-		SendableMessage sendableMessage = new SendableTextMessage(UUID.fromString("SERVER"), account.getUuid(), msg);
-		enqueueSendable(sendableMessage);
+		synchronized (this) {
+			UUID senderUUID = null;
+			if (server != null)
+				senderUUID = server.getServerUUID();
+			SendableTextMessage sendableMessage = new SendableTextMessage(senderUUID, account.getUuid(), msg);
+			enqueueSendable(sendableMessage);
+			notifyAll();
+		}
 	}
-
+	
 	@Override
 	public boolean canUseCommand(int permLevel, String commandName) {
 		// TODO different users can get different command levels
-		return permLevel <= 1;
+		return permLevel <= CommandBase.PERMISSION_LEVEL_UTILITY;
 	}
-
+	
 	@Override
 	public boolean sendCommandFeedback() {
 		// TODO User setting
 		return true; //for now
 	}
-
+	
 }

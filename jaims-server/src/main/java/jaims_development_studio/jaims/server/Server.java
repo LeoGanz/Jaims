@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -53,19 +54,44 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 	private final List<PendingCommand>	pendingCommandList	= Collections.synchronizedList(new ArrayList<>());	// thread safe
 	/** A set that contains all subscribers for ticking */
 	private final Set<ITickable>		tickables			= Sets.newHashSet(this);
+	/** The Server's UUID. Generated every time the server starts. Used for Messages */
+	private final UUID					serverUUID			= UUID.randomUUID();
 	
+	/**
+	 * The main method is called when the server application is started.<br></br>
+	 * It processes the command line arguments the user provides when executing the application. If no arguments are
+	 * provided the following default values will be applied during initialization:<br></br>
+	 *
+	 * <table>
+	 * <tr> <th>Parameter</th> 		<th>Value</th> 	</tr>
+	 * <tr> <td>--nogui</td> 		<td>false</td> 	</tr>
+	 * <tr> <td>--port</td> 		<td>6000</td> 	</tr>
+	 * <tr> <td>--maxClients</td> 	<td>100</td> 	</tr>
+	 * <tr> <td>--tickRate</td> 	<td>50</td> 	</tr>
+	 * </table>
+	 *
+	 * <br></br>
+	 * Afterwards the <code>Server</code> and <code>ServerGui</code> are initialized.
+	 *
+	 * @param args command line arguments the user provides. Possible arguments are: <br></br>
+	 *            [help | ?] [nogui | --nogui] [(--serverPort | --port) ###] [--maxClients ###] [--tickRate ###]
+	 */
 	public static void main(String[] args) {
 		boolean gui = true;
 		int port = -1;
 		int maxClients = -2;
 		int tickRate = -1;
 		
+		//parsing of command line arguments
 		for (int i = 0; i < args.length; i++) {
 			String param = args[i];
 			String nextParam = i == (args.length - 1) ? null : args[i + 1];
-			boolean skipParam = false;
+			boolean skipParam = false; //used if to arguments belong together like '--port' and '#portValue#'
 			
-			if (param.equalsIgnoreCase("nogui") || param.equalsIgnoreCase("--nogui"))
+			if (param.equalsIgnoreCase("help") || param.equals("?")) {
+				LOG.info("Possible arguments [help | ?] [nogui | --nogui] [(--serverPort | --port) ###] [--maxClients ###] [--tickRate ###]");
+				return; //
+			} else if (param.equalsIgnoreCase("nogui") || param.equalsIgnoreCase("--nogui"))
 				gui = false;
 			else if ((param.equalsIgnoreCase("--serverPort") || param.equalsIgnoreCase("--port")) && (nextParam != null)) {
 				skipParam = true;
@@ -90,14 +116,15 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 				}
 			} else
 				LOG.warn("Invalid parameter: " + param);
-			//help or ?
 			
 			if (skipParam)
 				i++;
 		}
 		
+		//Create a new Server instance
 		final Server server = new Server();
 		
+		//update server properties if the user specified them
 		if (port >= 0)
 			server.setServerPort(port);
 		
@@ -110,39 +137,32 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 		if (tickRate >= 0)
 			server.setTickRate(tickRate);
 		
+		//start the server
 		server.startServerThread();
 	}
 
-	@Override
-	public void run() {
-		
-		try {//Just in case
-			if (!init())
-				//Log error and terminate
-				return;
-			serverStarting = false;
-			LOG.info("Server running");
-			synchronized (this) {
-				notifyAll(); //used in UserList for example
-			}
-			while (serverRunning)
-				Thread.sleep(50);
-			LOG.info("Server stopping...");
-			//Saving data is handled by shutdown hook
-		} catch (Exception e) {
-			LOG.error("Encountered an unexpected exception", e);
-			//Implement crash reports
-		} finally {
-			try { //Just in case
-				stopServer();
-			} catch (Exception e) {
-				LOG.error("Exception stopping the server", e);
-			} finally {
-				serverStopped = true;
-			}
-		}
-	}
-	
+	/**
+	 * This method initializes the {@link Server}. If the server port, maximum amount of clients and tick rate were not
+	 * specified by the user in the <code>main</code> method through command line arguments the following default values will be
+	 * applied:
+	 * <br></br>
+	 *
+	 * <table>
+	 * <tr> <th>Parameter</th> 		<th>Value</th> 	</tr>
+	 * <tr> <td>--nogui</td> 		<td>false</td> 	</tr>
+	 * <tr> <td>--port</td> 		<td>6000</td> 	</tr>
+	 * <tr> <td>--maxClients</td> 	<td>100</td> 	</tr>
+	 * <tr> <td>--tickRate</td> 	<td>50</td> 	</tr>
+	 * </table>
+	 *
+	 * <br></br>
+	 * Furthermore a console handler thread is initialized an started. It reads command line input and enqueues it as {@link PendingCommand}s.
+	 * <br></br>
+	 * A {@link ServerCommandManager} and the {@link NetworkSystem} are initialized.
+	 * The server's ticker is started and set to execute all subscribed {@link Tickable}s in the interval specified by the tick rate.
+	 *
+	 * @return whether initialization was successful
+	 */
 	private boolean init() {
 		
 		Thread thread = new Thread(() -> {
@@ -185,6 +205,36 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 		//Load Properties
 		
 		return true;
+	}
+	
+	@Override
+	public void run() {
+		
+		try {//Just in case
+			if (!init())
+				//Log error and terminate
+				return;
+			serverStarting = false;
+			LOG.info("Server running");
+			synchronized (this) {
+				notifyAll(); //used in UserList for example
+			}
+			while (serverRunning)
+				Thread.sleep(50);
+			LOG.info("Server stopping...");
+			//Saving data is handled by shutdown hook
+		} catch (Exception e) {
+			LOG.error("Encountered an unexpected exception", e);
+			//Implement crash reports
+		} finally {
+			try { //Just in case
+				stopServer();
+			} catch (Exception e) {
+				LOG.error("Exception stopping the server", e);
+			} finally {
+				serverStopped = true;
+			}
+		}
 	}
 	
 	@Override
@@ -284,7 +334,18 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 	
 	@Override
 	public ICommandManager getCommandManager() {
+		while (commandManager == null)
+			try {
+				Thread.sleep(20);
+			} catch (@SuppressWarnings("unused") InterruptedException e) {
+				LOG.warn("Error while waiting for CommandManager to be initialized");
+			}
 		return commandManager;
+	}
+	
+	@Override
+	public UUID getServerUUID() {
+		return serverUUID;
 	}
 	
 	@Override

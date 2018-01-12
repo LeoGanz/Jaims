@@ -24,31 +24,33 @@ import jaims_development_studio.jaims.server.Server;
 import jaims_development_studio.jaims.server.user.UserManager;
 
 public class ClientManager implements ITickable {
-
+	
 	private final Logger					LOG					= LoggerFactory.getLogger(ClientManager.class);
+	private final Server					server;
 	private final List<ClientConnection>	connections;
 	private int								nextConnectionID	= 0;
 	private int								nrConnections		= 0;
 	private final UserManager				userManager;
 	private boolean							terminatingAll;
-
+	
 	public ClientManager(Server server) {
+		this.server = server;
 		connections = new ObservableList<>(new LinkedList<>());
 		userManager = new UserManager(server);
 		server.subscribeToTicker(this);
 	}
-
+	
 	public void newConnection(Socket clientSocket) {
 		ClientConnection clientConnection = new ClientConnection(clientSocket, this);
 		clientConnection.setConnectionID(nextConnectionID++);
-
+		
 		connections.add(clientConnection);
 		Thread thread = new Thread(clientConnection, "ClientConnection-" + clientConnection.getConnectionID());
 		thread.start();
-
+		
 		nrConnections++;
 	}
-
+	
 	public void connectionTerminated(ClientConnection clientConnection) {
 		if (!terminatingAll)
 			connections.remove(clientConnection);
@@ -56,67 +58,72 @@ public class ClientManager implements ITickable {
 		userManager.save(clientConnection.getUser());
 		userManager.logoutUser(clientConnection.getUser());
 	}
-
+	
 	public void terminateAllConnections() {
 		terminatingAll = true;
 		connections.forEach(c -> c.terminate());
 		terminatingAll = false;
 		// TODO Handle connections not being removed from collection
 	}
+	
+	public Server getServer() {
+		return server;
+	}
 
 	public List<ClientConnection> getConnections() {
 		return connections;
 	}
-
+	
 	public int getNrConnections() {
 		return nrConnections;
 	}
-
+	
 	public UserManager getUserManager() {
 		return userManager;
 	}
-
+	
 	public void shutdown() {
 		LOG.info("Disconnecting all clients");
 		terminateAllConnections();
 	}
-
+	
 	@Override
 	public void tick() {
 		// TODO save batches of users from connections list
 		// userManager.save(user batch);
 	}
-
+	
 	// Method forwarding
-
+	
 	public User registerNewUser(SendableRegistration registration) throws UserNameNotAvailableException {
 		User user = userManager.registerNewUser(registration);
-
+		
 		SendableConfirmation sendableConfirmation = new SendableConfirmation(EConfirmationType.REGISTRATION_SUCCESSFUL);
 		user.enqueueSendable(sendableConfirmation);
-
+		
 		SendableUUID sendableUUID = new SendableUUID(user.getAccount().getUuid());
 		user.enqueueSendable(sendableUUID);
-
+		
 		return user;
 	}
-
+	
 	public User loginUser(SendableLogin login) throws UserNotFoundException, IncorrectPasswordException {
 		User user = userManager.loginUser(login);
-
+		
 		SendableConfirmation sendableConfirmation = new SendableConfirmation(EConfirmationType.LOGIN_SUCCESSFUL);
 		user.enqueueSendable(sendableConfirmation);
+		
 		SendableUUID sendableUUID = new SendableUUID(user.getAccount().getUuid());
 		user.enqueueSendable(sendableUUID);
 		return user;
 	}
-
+	
 	public void deleteUserAndAccount(UUID uuid) {
 		userManager.deleteUserAndAccount(uuid);
 	}
-
+	
 	public void deliverMessage(SendableMessage message) throws UserNotFoundException {
 		userManager.deliverMessage(message);
 	}
-
+	
 }
