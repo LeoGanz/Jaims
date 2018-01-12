@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -16,20 +18,31 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 public class JaimsFrame extends JFrame {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long	serialVersionUID	= 1L;
 	private static final Logger	LOG					= LoggerFactory.getLogger(JaimsFrame.class);
+	private List<Image>			iconImages;
 	private Image				img					= null;
 
 	private JFrame				frame;
 
 	public JaimsFrame() {
-
 		super("JAIMS Client");
+		
+		try {
+			iconImages = new ArrayList<>(4);
+			iconImages.add(ImageIO.read(getClass().getResourceAsStream("/images/logo_blue_simple - 16x.png")));
+			iconImages.add(ImageIO.read(getClass().getResourceAsStream("/images/logo_blue_simple - 32x.png")));
+			iconImages.add(ImageIO.read(getClass().getResourceAsStream("/images/logo_blue_simple - 64x.png")));
+			iconImages.add(ImageIO.read(getClass().getResourceAsStream("/images/logo_blue_simple - 128x.png")));
+		} catch (@SuppressWarnings("unused") IOException e) {
+			LOG.warn("Couldn't read IconImages");
+		}
 
 		initLoadingFrame();
 	}
@@ -41,13 +54,8 @@ public class JaimsFrame extends JFrame {
 		frame.setLocationRelativeTo(null);
 		frame.setUndecorated(true);
 		frame.setBackground(new Color(0, 0, 0, 0));
-		try {
-			frame.setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_icon.png")));
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
+		frame.setIconImages(iconImages);
+		
 		try {
 			img = ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_Logo.png"));
 			img = img.getScaledInstance(400, 400, Image.SCALE_SMOOTH);
@@ -66,17 +74,7 @@ public class JaimsFrame extends JFrame {
 		setMinimumSize(new Dimension(805, 505));
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout(10, 0));
-		try {
-			setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_icon.png")));
-		} catch (IOException e) {
-			LOG.error("Failed to create IconImage");
-			try {
-				setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_Logo.png")));
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
+		setIconImages(iconImages);
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException

@@ -69,7 +69,7 @@ public class ServerGui extends JComponent {
 			iconImages.add(ImageIO.read(ServerGui.class.getResourceAsStream("/images/logo_red_simple - 128x.png")));
 			frame.setIconImages(iconImages);
 		} catch (@SuppressWarnings("unused") IOException e) {
-			LOG.warn("Could set IconImage");
+			LOG.warn("Couldn't read IconImages");
 		}
 		frame.add(serverGui);
 		frame.pack();
