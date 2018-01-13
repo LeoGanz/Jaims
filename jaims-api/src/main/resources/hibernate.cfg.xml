@@ -24,6 +24,9 @@
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableException"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableLogin"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableMessage"/>
+  <mapping class="jaims_development_studio.jaims.api.sendables.SendableTextMessage"/>
+  <mapping class="jaims_development_studio.jaims.api.sendables.SendableImageMessage"/>
+  <mapping class="jaims_development_studio.jaims.api.sendables.SendableVoiceMessage"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableMessageResponse"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableProfile"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableRegistration"/>

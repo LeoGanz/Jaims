@@ -2,7 +2,10 @@ package jaims_development_studio.jaims.api.sendables;
 
 public enum ESendableType {
 	REGISTRATION(Values.REGISTRATION), LOGIN(Values.LOGIN), DELETE_ACCOUNT(Values.DELETE_ACCOUNT), //delete
-	MESSAGE(Values.MESSAGE), MESSAGE_RESPONSE(Values.MESSAGE_RESPONSE), EXCEPTION(Values.EXCEPTION), COMMAND(Values.COMMAND), STORED_UUID(Values.STORED_UUID), PROFILE(Values.PROFILE), CONFIRMATION(Values.CONFIRMATION), OTHER(Values.OTHER); //maybe friend request?
+	MESSAGE(Values.MESSAGE), TEXT_MESSAGE(Values.TEXT_MESSAGE), IMAGE_MESSAGE(Values.IMAGE_MESSAGE), 
+	VOICE_MESSAGE(Values.VOICE_MESSAGE), MESSAGE_RESPONSE(Values.MESSAGE_RESPONSE), EXCEPTION(Values.EXCEPTION), 
+	COMMAND(Values.COMMAND), STORED_UUID(Values.STORED_UUID), PROFILE(Values.PROFILE), 
+	CONFIRMATION(Values.CONFIRMATION), OTHER(Values.OTHER); //maybe friend request?
 
 	private String value;
 
@@ -23,6 +26,9 @@ public enum ESendableType {
 		public static final String	LOGIN				= "LOGIN";
 		public static final String	DELETE_ACCOUNT		= "DELETE_ACCOUNT";		//delete
 		public static final String	MESSAGE				= "MESSAGE";
+		public static final String	TEXT_MESSAGE		= "TEXT_MESSAGE";
+		public static final String	IMAGE_MESSAGE		= "IMAGE_MESSAGE";
+		public static final String	VOICE_MESSAGE		= "VOICE_MESSAGE";
 		public static final String	MESSAGE_RESPONSE	= "MESSAGE_RESPONSE";
 		public static final String	EXCEPTION			= "EXCEPTION";
 		public static final String	COMMAND				= "COMMAND";
