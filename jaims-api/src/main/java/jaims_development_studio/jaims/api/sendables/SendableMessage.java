@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.UUID;
 
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -15,7 +13,6 @@ import javax.persistence.TemporalType;
 
 @Entity(name = "SendableMessage")
 @DiscriminatorValue(value = ESendableType.Values.MESSAGE)
-@DiscriminatorColumn(name = "MESSAGE_TYPE", discriminatorType = DiscriminatorType.STRING, columnDefinition = "VARCHAR(64)", length = 64)
 public class SendableMessage extends Sendable {
 	
 	private static final long	serialVersionUID	= 1L;
@@ -26,7 +23,7 @@ public class SendableMessage extends Sendable {
 	@Column(name = "RECIPIENT_UUID", columnDefinition = "BINARY(16)")
 	private final UUID			recipient;
 
-	@Column(name = "MESSAGE_TYPE", columnDefinition = "VARCHAR(64)", insertable = false, updatable = false)
+	@Column(name = "MESSAGE_TYPE", columnDefinition = "VARCHAR(64)")
 	@Enumerated(EnumType.STRING)
 	private final EMessageType	messageType;
 
@@ -56,12 +53,15 @@ public class SendableMessage extends Sendable {
 	}
 	
 	public SendableMessage(UUID sender, UUID recipient, EMessageType messageType) {
-		super(ESendableType.MESSAGE, 5);
+		this(sender, recipient, messageType, 5);
+	}
+	
+	public SendableMessage(UUID sender, UUID recipient, EMessageType messageType, int priority) {
+		super(ESendableType.MESSAGE, priority);
 		this.messageType = messageType;
 		this.sender = sender;
 		this.recipient = recipient;
 	}
-	
 
 	public SendableMessageResponse buildMessageResponse() {
 		SendableMessageResponse messageResponse = new SendableMessageResponse(sender, getTimestampSent(), timestampServerReceived, timestampServerSent, timestampDelivered, timestampRead, state);

@@ -10,7 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Lob;
 
 @Entity(name = "SendableImageMessage")
-@DiscriminatorValue(value = EMessageType.Values.IMAGE)
+@DiscriminatorValue(value = ESendableType.Values.IMAGE_MESSAGE)
 public class SendableImageMessage extends SendableMessage {
 	
 	private static final long	serialVersionUID	= 1L;
@@ -19,6 +19,10 @@ public class SendableImageMessage extends SendableMessage {
 	@Lob
 	@Basic(fetch = FetchType.LAZY)
 	private final byte[]		image;
+	
+	public SendableImageMessage() {
+		this(null, null, null);
+	}
 	
 	public SendableImageMessage(UUID sender, UUID recipient, byte[] image) {
 		super(sender, recipient, EMessageType.IMAGE);

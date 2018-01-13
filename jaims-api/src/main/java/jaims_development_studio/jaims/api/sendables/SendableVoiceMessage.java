@@ -10,7 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Lob;
 
 @Entity(name = "SendableVoiceMessage")
-@DiscriminatorValue(value = EMessageType.Values.VOICE)
+@DiscriminatorValue(value = ESendableType.Values.VOICE_MESSAGE)
 public class SendableVoiceMessage extends SendableMessage {
 
 	private static final long	serialVersionUID	= 1L;
@@ -20,6 +20,10 @@ public class SendableVoiceMessage extends SendableMessage {
 	@Basic(fetch = FetchType.LAZY)
 	private final byte[]		voiceMessage;
 
+	public SendableVoiceMessage() {
+		this(null, null, null);
+	}
+	
 	public SendableVoiceMessage(UUID sender, UUID recipient, byte[] voiceMessage) {
 		super(sender, recipient, EMessageType.VOICE);
 		this.voiceMessage = voiceMessage;

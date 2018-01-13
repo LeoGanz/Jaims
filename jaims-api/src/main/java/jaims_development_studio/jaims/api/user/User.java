@@ -32,45 +32,45 @@ import jaims_development_studio.jaims.api.sendables.SendableTextMessage;
 @Entity(name = "User")
 @Table(name = "USERS")
 public class User implements Serializable, ICommandSender {
-	
+
 	private static final long		serialVersionUID	= 1L;
-	
+
 	@Transient
 	private IServer					server;
-	
+
 	@Column(name = "ACCOUNT_UUID", columnDefinition = "BINARY(16)")
 	@Id
 	private UUID					uuid;
-	
+
 	@OneToOne(cascade = CascadeType.ALL)
 	@MapsId
 	private Account					account;
-	
+
 	@Column(name = "LAST_SEEN", columnDefinition = "TIMESTAMP")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date					lastSeen;
-	
+
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user", fetch = FetchType.EAGER)
 	//	@JoinColumn(name = "SENDABLE_UUID", columnDefinition = "BINARY(16)")
 	//	@Transient
 	//	private final Collection<Sendable>	sendables			= new LinkedBlockingDeque<>();	//(with a deque) it will be possible to delete messages that aren't yet delivered
 	private final List<Sendable>	sendables			= new LinkedList<>();
-	
+
 	public User() {
-		
+
 	}
-	
+
 	public User(Account account) {
 		this.account = account;
 		//		sendables.sort((o1, o2) -> Integer.compare(o1.getPriority(), o2.getPriority()));
 	}
-	
+
 	public User(IServer server, Account account) {
 		this.server = server;
 		this.account = account;
 		//		sendables.sort((o1, o2) -> Integer.compare(o1.getPriority(), o2.getPriority()));
 	}
-	
+
 	public synchronized void enqueueSendable(Sendable sendable) {
 		sendables.add(sendable);
 		//		((LinkedBlockingDeque<Sendable>) sendables).addLast(sendable);
@@ -78,14 +78,14 @@ public class User implements Serializable, ICommandSender {
 		sendable.setUser(this);
 		notifyAll();
 	}
-	
+
 	public synchronized void enqueueAsFirstElement(Sendable sendable) {
 		enqueueSendable(sendable);
 		//		((LinkedBlockingDeque<Sendable>) sendables).addFirst(sendable);
 		//		sendable.setUser(this);
 		//		notify();
 	}
-	
+
 	public synchronized Sendable takeSendable() {
 		Sendable sendable = sendables.stream().sorted((o1, o2) -> Integer.compare(o1.getPriority(), o2.getPriority())).findFirst().get();
 		//			Sendable sendable = ((LinkedBlockingDeque<Sendable>) sendables).takeFirst();
@@ -95,28 +95,32 @@ public class User implements Serializable, ICommandSender {
 		}
 		return sendable;
 	}
-	
+
+	public synchronized int numberOfQueuedSendables() {
+		return sendables.size();
+	}
+
 	public void setServer(IServer server) {
 		this.server = server;
 	}
-
+	
 	public Account getAccount() {
 		return account;
 	}
-	
+
 	public Date getLastSeen() {
 		return lastSeen;
 	}
-	
+
 	public void updateLastSeen() {
 		lastSeen = new Date();
 	}
-	
+
 	@Override
 	public String toString() {
 		return account.toStringName();
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -132,7 +136,7 @@ public class User implements Serializable, ICommandSender {
 				//				.append(sendables, other.sendables) TODO uncomment when sendable saving is implmented
 				.isEquals();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder(17, 31)
@@ -141,16 +145,16 @@ public class User implements Serializable, ICommandSender {
 				//				.append(sendables)
 				.toHashCode();
 	}
-	
+
 	public synchronized boolean noSendableQueued() {
 		return sendables.isEmpty();
 	}
-	
+
 	@Override
 	public String getName() {
 		return account.getUsername();
 	}
-	
+
 	@Override
 	public void sendMessage(String msg) {
 		synchronized (this) {
@@ -162,17 +166,17 @@ public class User implements Serializable, ICommandSender {
 			notifyAll();
 		}
 	}
-	
+
 	@Override
 	public boolean canUseCommand(int permLevel, String commandName) {
 		// TODO different users can get different command levels
 		return permLevel <= CommandBase.PERMISSION_LEVEL_UTILITY;
 	}
-	
+
 	@Override
 	public boolean sendCommandFeedback() {
 		// TODO User setting
 		return true; //for now
 	}
-	
+
 }

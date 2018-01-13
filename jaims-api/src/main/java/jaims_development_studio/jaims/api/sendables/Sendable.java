@@ -34,74 +34,81 @@ import jaims_development_studio.jaims.api.user.User;
 @DiscriminatorColumn(name = "SENDABLE_TYPE", discriminatorType = DiscriminatorType.STRING, columnDefinition = "VARCHAR(64)", length = 64)
 @DiscriminatorValue(value = ESendableType.Values.OTHER)
 public class Sendable implements Serializable {
-	
+
 	private static final long	serialVersionUID	= 1L;
-	
+
 	@GeneratedValue(generator = "uuid2")
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
 	@Column(name = "UUID", columnDefinition = "BINARY(16)")
 	@Id
 	private UUID				uuid;
-	
+
 	@Column(name = "SENDABLE_TYPE", columnDefinition = "VARCHAR(64)", insertable = false, updatable = false)
 	@Enumerated(EnumType.STRING)
 	private final ESendableType	type;
-	
+
 	@Column(name = "PRIORITY")
 	private int					priority;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ACCOUNT_UUID")
 	private User				user;
-
+	
 	@Column(name = "TS_SENT", columnDefinition = "TIMESTAMP")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date				timestampSent;
-
+	
 	@SuppressWarnings("unused")
 	private Sendable() {
 		this(null);
 	}
-	
+
 	public Sendable(ESendableType type) {
 		this.type = type;
 	}
-
+	
 	public Sendable(ESendableType type, int priority) {
 		this.type = type;
 		if (priority < 0)
 			throw new IllegalArgumentException("priority must be greater zero");
 		this.priority = priority;
 	}
-	
+
 	protected UUID getUuid() {
 		return uuid;
 	}
-	
+
 	public ESendableType getType() {
-		return type;
+		switch (type) {
+			case TEXT_MESSAGE:
+			case IMAGE_MESSAGE:
+			case VOICE_MESSAGE:
+				return ESendableType.MESSAGE;
+			default:
+				return type;
+		}
 	}
-	
+
 	public int getPriority() {
 		return priority;
 	}
-
+	
 	public User getUser() {
 		return user;
 	}
-
+	
 	public void setUser(User user) {
 		this.user = user;
 	}
-
+	
 	public Date getTimestampSent() {
 		return timestampSent;
 	}
-	
+
 	public void setTimestampSent() {
 		timestampSent = new Date();
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -115,12 +122,12 @@ public class Sendable implements Serializable {
 				.append(uuid, other.uuid)
 				.isEquals();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder(17, 31)
 				.append(uuid)
 				.toHashCode();
 	}
-	
+
 }
