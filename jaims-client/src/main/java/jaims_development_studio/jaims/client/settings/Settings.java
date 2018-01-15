@@ -3,7 +3,9 @@ package jaims_development_studio.jaims.client.settings;
 import java.awt.Color;
 
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.Mixer;
 import javax.sound.sampled.TargetDataLine;
 
 /**
@@ -42,5 +44,16 @@ public class Settings {
 	public static AudioFormat	format						= new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100.0F,
 			16, 2, 4, 44100.0F, false);
 	public static DataLine.Info	info						= new DataLine.Info(TargetDataLine.class, format);
+
+	// Devices
+	public static Mixer.Info	inputMixerInfo;
+	public static Mixer.Info	outputMixerInfo;
+	public static float			inputGain;
+	public static Encoding		inputEncoding				= AudioFormat.Encoding.PCM_SIGNED;
+	public static float			inputSampleRate				= 44100;
+	public static int			inputSampleSize				= 16;
+	public static int			inputChannels				= 2;
+	public static boolean		inputBigEndian				= false;
+	public static int			frameSize					= 4;
 
 }

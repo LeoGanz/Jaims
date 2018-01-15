@@ -16,6 +16,7 @@ import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 
 import org.slf4j.Logger;
@@ -86,6 +87,7 @@ public class ClientMain {
 	 */
 	public ClientMain() {
 
+		UIManager.put("ScrollBarUI", "jaims_development_studio.jaims.client.gui.MyScrollBarUI");
 		initProgram();
 	}
 

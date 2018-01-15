@@ -2,7 +2,6 @@ package jaims_development_studio.jaims.client.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Image;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class JaimsFrame extends JFrame {
 
 	/**
@@ -32,8 +30,9 @@ public class JaimsFrame extends JFrame {
 	private JFrame				frame;
 
 	public JaimsFrame() {
+
 		super("JAIMS Client");
-		
+
 		try {
 			iconImages = new ArrayList<>(4);
 			iconImages.add(ImageIO.read(getClass().getResourceAsStream("/images/logo_blue_simple - 16x.png")));
@@ -55,7 +54,7 @@ public class JaimsFrame extends JFrame {
 		frame.setUndecorated(true);
 		frame.setBackground(new Color(0, 0, 0, 0));
 		frame.setIconImages(iconImages);
-		
+
 		try {
 			img = ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_Logo.png"));
 			img = img.getScaledInstance(400, 400, Image.SCALE_SMOOTH);
@@ -70,8 +69,8 @@ public class JaimsFrame extends JFrame {
 	public void initGUI() {
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(805, 505);
-		setMinimumSize(new Dimension(805, 505));
+		setSize(810, 510);
+		setMinimumSize(getSize());
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout(10, 0));
 		setIconImages(iconImages);
@@ -81,11 +80,43 @@ public class JaimsFrame extends JFrame {
 				| UnsupportedLookAndFeelException e) {
 			LOG.error("Failed to set Look and Feel");
 		}
+		frame.dispose();
 
 		setVisible(true);
 
-		frame.dispose();
-
 	}
+
+	// @Override
+	// public void setVisible(final boolean visible) {
+	//
+	// JFrame f = this;
+	// super.setVisible(visible);
+	//
+	// Timer uiChanger = new Timer(8, new ActionListener() {
+	//
+	// private int increment = 110;
+	//
+	// @Override
+	// public void actionPerformed(ActionEvent e) {
+	//
+	// if (f.getSize().getWidth() <= 810) {
+	// f.setSize(f.getWidth() + increment, f.getHeight());
+	// f.setLocation(f.getX() - increment / 2, f.getY());
+	// }
+	//
+	// if (f.getHeight() <= 510) {
+	// f.setSize(f.getWidth(), f.getHeight() + increment);
+	// f.setLocation(f.getX(), f.getY() - increment / 2);
+	// }
+	//
+	// if (f.getHeight() >= 810)
+	// ((Timer) e.getSource()).stop();
+	//
+	// f.setMinimumSize(new Dimension(f.getWidth(), f.getHeight()));
+	//
+	// }
+	// });
+	// uiChanger.start();
+	// }
 
 }

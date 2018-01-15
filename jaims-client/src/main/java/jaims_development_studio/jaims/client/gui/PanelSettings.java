@@ -43,6 +43,8 @@ public class PanelSettings extends JPanel {
 			jspIcons = new JScrollPane(panelIconsLineStart, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 					JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 			jspIcons.getVerticalScrollBar().setUI(new MyScrollBarUI());
+			jspIcons.setComponentZOrder(jspIcons.getVerticalScrollBar(), 0);
+			jspIcons.setComponentZOrder(jspIcons.getViewport(), 1);
 			jspIcons.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
 
 				@Override

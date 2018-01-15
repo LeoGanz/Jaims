@@ -7,8 +7,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-import jaims_development_studio.jaims.client.audio.SelectAudioDevices;
-
 public class CustomComboBoxRenderer extends JLabel implements ListCellRenderer {
 
 	/**
@@ -16,26 +14,39 @@ public class CustomComboBoxRenderer extends JLabel implements ListCellRenderer {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public CustomComboBoxRenderer(SelectAudioDevices sad) {
+	public CustomComboBoxRenderer() {
 
 	}
 
 	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
 			boolean cellHasFocus) {
 
-		String name = (String) value.toString();
-		setText(name);
+		setText(value.toString());
 
-		if (isSelected) {
-			setBackground(list.getSelectionBackground());
-			setForeground(Color.BLACK);
+		Color background;
+		Color foreground;
+
+		// check if this cell represents the current DnD drop location
+		JList.DropLocation dropLocation = list.getDropLocation();
+		if (dropLocation != null && !dropLocation.isInsert() && dropLocation.getIndex() == index) {
+
+			background = Color.BLUE;
+			foreground = Color.WHITE;
+
+			// check if this cell is selected
+		} else if (isSelected) {
+			background = Color.RED;
+			foreground = Color.WHITE;
+
+			// unselected, and not the DnD drop location
 		} else {
-			setBackground(list.getBackground());
-			setForeground(list.getForeground());
+			background = Color.WHITE;
+			foreground = Color.BLACK;
 		}
+		;
 
-		// Set the icon and text. If icon was null, say so.
-		setFont(list.getFont());
+		setBackground(background);
+		setForeground(foreground);
 
 		return this;
 	}

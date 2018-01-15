@@ -10,6 +10,7 @@ import java.awt.RenderingHints;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JScrollBar;
+import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
 public class MyScrollBarUI extends BasicScrollBarUI {
@@ -44,9 +45,8 @@ public class MyScrollBarUI extends BasicScrollBarUI {
 	@Override
 	protected void paintTrack(Graphics g, JComponent c, Rectangle r) {
 
-		Graphics2D g2 = (Graphics2D) g;
-		g2.setColor(transparent);
-		g2.fill(r);
+		g.setColor(c.getBackground());
+		g.fillRect(r.x, r.y, r.width, r.height);
 	}
 
 	@Override
@@ -59,15 +59,15 @@ public class MyScrollBarUI extends BasicScrollBarUI {
 		if (!sb.isEnabled() || r.width > r.height) {
 			return;
 		} else if (isDragging) {
-			color = Color.DARK_GRAY;
+			color = new Color(96, 96, 96, 200);
 		} else if (isThumbRollover()) {
-			color = Color.LIGHT_GRAY;
+			color = new Color(160, 160, 160, 200);
 		} else {
-			color = Color.GRAY;
+			color = new Color(160, 160, 160, 120);
 		}
 		g2.setPaint(color);
 		g2.fillRoundRect(r.x, r.y, r.width, r.height, 10, 10);
-		g2.setPaint(Color.WHITE);
+		g2.setColor(color);
 		g2.drawRoundRect(r.x, r.y, r.width, r.height, 10, 10);
 		g2.dispose();
 	}
@@ -75,8 +75,13 @@ public class MyScrollBarUI extends BasicScrollBarUI {
 	@Override
 	protected void setThumbBounds(int x, int y, int width, int height) {
 
-		super.setThumbBounds(x, y, 8, height);
+		super.setThumbBounds(x + width - 8, y, 8, height);
 		scrollbar.repaint();
+	}
+
+	public static ComponentUI createUI(JComponent c) {
+
+		return new MyScrollBarUI();
 	}
 
 }
