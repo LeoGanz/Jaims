@@ -62,7 +62,7 @@ public class ContactPanel {
 			}
 		});
 
-		if (messageListExists(co)) {
+		if (messagesExist(co)) {
 			chat = new Panel(Toolkit.getDefaultToolkit().createImage(getPicture(co.getProfileContact())),
 					co.getProfileContact().getNickname());
 			chat.addMouseListener(new MouseAdapter() {
@@ -104,9 +104,9 @@ public class ContactPanel {
 		return null;
 	}
 
-	private boolean messageListExists(ChatObject co) {
+	private boolean messagesExist(ChatObject co) {
 
-		return co.getList() != null;
+		return co.getList().size() >= 1 ? true : false;
 
 	}
 

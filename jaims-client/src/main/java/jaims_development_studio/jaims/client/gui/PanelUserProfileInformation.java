@@ -24,6 +24,7 @@ import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -168,13 +169,16 @@ public class PanelUserProfileInformation extends JPanel {
 
 			jsp = new JScrollPane(panelUserInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 					JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			jsp.getVerticalScrollBar().setBackground(new Color(255, 255, 255, 0));
+			jsp.setBorder(new EmptyBorder(0, 0, 0, 8));
 			jsp.getVerticalScrollBar().addComponentListener(new ComponentAdapter() {
 
 				@Override
 				public void componentShown(ComponentEvent e) {
 
-					panelUserInfo.setBorder(new EmptyBorder(0, 0, 0, jsp.getVerticalScrollBar().getWidth()));
-					panelUserInfo.repaint();
+					((JScrollBar) e.getSource()).repaint();
+					jsp.getViewport().repaint();
+					jsp.repaint();
 				}
 			});
 

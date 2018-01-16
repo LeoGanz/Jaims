@@ -43,12 +43,12 @@ public class PanelAudioSettings extends CenterPanelSettings {
 	private PanelSelectMixer	psm;
 	private String[]			arr;
 	private JPanel				panelInputDevice, panelMixerInfosInput, panelInputVolume, panelInputFormat,
-			panelSupported;
+			panelOutputVolume, panelOutputDevice, panelSupported;
 	private JScrollPane			jspSelectInputDevices;
 	private boolean				inputPanelIsShowing	= false;
 	private String[]			inputMixerNames, outputMixerNames;
 	private JComboBox<String>	jccInputDevices, jccOutputDevices;
-	private String				input				= "Aufnahme-Einstellungen";
+	private String				input				= "Aufnahme-Einstellungen", output = "Ausgabe-Einstellungen";
 	private String[]			encoding			= {"ALAW", "PCM_FLOAT", "PCM_SIGNED", "PCM_UNSIGNED", "ULAW"},
 			sampleRate = {"8,000 Hz", "11,025 Hz", "16,000 Hz", "22,050 Hz", "44,100 Hz", "48,000 Hz"},
 			sampleSize = {"8 bit", "16 bit"}, channels = {"1", "2", "5", "7"}, endian = {"Little Endian", "Big Endian"};
@@ -589,37 +589,190 @@ public class PanelAudioSettings extends CenterPanelSettings {
 		// panelSupported.setOpaque(false);
 		// panelSupported.setBackground(new Color(0, 0, 0, 0));
 		add(panelSupported);
+		add(Box.createRigidArea(new Dimension(0, 20)));
+
+		JLabel lblOutput = new JLabel() {
+			@Override
+			public void paintComponent(Graphics g) {
+
+				g.setColor(getBackground());
+				g.fillRect(0, 0, getWidth(), getHeight());
+
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g2.setFont(new Font("Arial", Font.BOLD, 17));
+				g2.setStroke(new BasicStroke(2.3F));
+
+				int xStart = getWidth() / 2 - g2.getFontMetrics(g2.getFont()).stringWidth(input) / 2;
+				int yFontStart = getHeight() / 2 + g2.getFontMetrics(g2.getFont()).getHeight() / 2;
+				int xEnd = getWidth() / 2 + g2.getFontMetrics(g2.getFont()).stringWidth(input) / 2;
+				int stringHeight = g2.getFontMetrics(g2.getFont()).getHeight();
+
+				g2.setColor(Color.BLACK);
+				g2.drawString(output, xStart, yFontStart);
+
+				g2.setColor(Color.BLUE);
+				g2.setStroke(new BasicStroke(3));
+				g2.drawLine(xStart - 20, yFontStart + 5, xStart - 20, yFontStart - stringHeight);
+				g2.drawLine(xStart - 19, yFontStart + 5, xStart - 13, yFontStart + 9);
+				g2.drawLine(xStart - 19, yFontStart - stringHeight, xStart - 13, yFontStart - stringHeight - 4);
+				g2.drawLine(xEnd + 20, yFontStart + 5, xEnd + 20, yFontStart - stringHeight);
+				g2.drawLine(xEnd + 19, yFontStart + 5, xEnd + 13, yFontStart + 9);
+				g2.drawLine(xEnd + 19, yFontStart - stringHeight, xEnd + 13, yFontStart - stringHeight - 4);
+
+				g2.dispose();
+			}
+		};
+		lblOutput.setPreferredSize(new Dimension(500, 70));
+		lblOutput.setMaximumSize(lblOutput.getPreferredSize());
+		lblOutput.setAlignmentX(Component.CENTER_ALIGNMENT);
+		lblOutput.setOpaque(false);
+		lblOutput.setBackground(new Color(0, 0, 0, 0));
+		add(lblOutput);
+		add(Box.createRigidArea(new Dimension(0, 5)));
+
+		JLabel lblOutputMixer = new JLabel() {
+			@Override
+			public void paintComponent(Graphics g) {
+
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g2.setFont(new Font("Arial", Font.BOLD, 14));
+				g2.drawString("Ausgabegerät", 2, g2.getFontMetrics(g2.getFont()).getHeight() + 4);
+				g2.setColor(Color.BLUE);
+				g2.setStroke(new BasicStroke(2));
+				g2.drawLine(2, g2.getFontMetrics(g2.getFont()).getHeight() + 7,
+						g2.getFontMetrics(g2.getFont()).stringWidth("Ausgabegerät"),
+						g2.getFontMetrics(g2.getFont()).getHeight() + 7);
+
+				g2.dispose();
+			}
+		};
+		lblOutputMixer.setPreferredSize(new Dimension(600, 40));
+		lblOutputMixer.setMaximumSize(lblOutputMixer.getPreferredSize());
+		lblOutputMixer.setAlignmentX(Component.CENTER_ALIGNMENT);
+		lblOutputMixer.setOpaque(false);
+		lblOutputMixer.setBackground(new Color(0, 0, 0, 0));
+		add(lblOutputMixer);
+
+		panelOutputDevice = new JPanel();
+		panelOutputDevice.setLayout(new BoxLayout(panelOutputDevice, BoxLayout.PAGE_AXIS));
+		panelOutputDevice.setBorder(new EmptyBorder(5, 10, 5, 10));
+		{
+			JLabel lblSelectOutput = new JLabel("Wählen Sie ein Wiedergabegerät aus", JLabel.LEFT);
+			lblSelectOutput.setAlignmentX(Component.CENTER_ALIGNMENT);
+			lblSelectOutput.setPreferredSize(new Dimension(500, 25));
+			lblSelectOutput.setMaximumSize(lblSelectOutput.getPreferredSize());
+			lblSelectOutput.setOpaque(false);
+			lblSelectOutput.setBackground(new Color(0, 0, 0, 0));
+			panelOutputDevice.add(lblSelectOutput);
+			panelOutputDevice.add(Box.createRigidArea(new Dimension(0, 2)));
+
+			outputMixerNames = new String[selectAudioDevices.getOutputDevices().size()];
+			for (int i = 0; i < selectAudioDevices.getOutputDevices().size(); i++) {
+				outputMixerNames[i] = selectAudioDevices.getOutputDevices().get(i).getName();
+
+			}
+
+			jccOutputDevices = new JComboBox<>(outputMixerNames);
+			jccOutputDevices.setOpaque(false);
+			jccOutputDevices.setMaximumRowCount(4);
+			jccOutputDevices.setPreferredSize(new Dimension(500, 40));
+			jccOutputDevices.setMaximumSize(jccOutputDevices.getPreferredSize());
+			jccOutputDevices.setBackground(new Color(0, 0, 0, 0));
+			jccOutputDevices.addItemListener(new ItemListener() {
+
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+
+					if (e.getStateChange() == ItemEvent.SELECTED) {
+						Settings.outputMixerInfo = selectAudioDevices.getOutputDevices()
+								.get(jccOutputDevices.getSelectedIndex());
+					}
+
+				}
+			});
+
+			panelOutputDevice.add(jccOutputDevices);
+		}
+		add(panelOutputDevice);
+		add(Box.createRigidArea(new Dimension(0, 5)));
+
+		JLabel lblOutputVolume = new JLabel() {
+			@Override
+			public void paintComponent(Graphics g) {
+
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g2.setFont(new Font("Arial", Font.BOLD, 14));
+				g2.drawString("Wiedergabelautstärke", 2, g2.getFontMetrics(g2.getFont()).getHeight() + 4);
+				g2.setColor(Color.BLUE);
+				g2.setStroke(new BasicStroke(2));
+				g2.drawLine(2, g2.getFontMetrics(g2.getFont()).getHeight() + 7,
+						g2.getFontMetrics(g2.getFont()).stringWidth("Wiedergabelautstärke"),
+						g2.getFontMetrics(g2.getFont()).getHeight() + 7);
+
+				g2.dispose();
+			}
+		};
+		lblOutputVolume.setPreferredSize(new Dimension(600, 40));
+		lblOutputVolume.setMaximumSize(lblOutputVolume.getPreferredSize());
+		lblOutputVolume.setAlignmentX(Component.CENTER_ALIGNMENT);
+		lblOutputVolume.setOpaque(false);
+		lblOutputVolume.setBackground(new Color(0, 0, 0, 0));
+		add(lblOutputVolume);
+
+		panelOutputVolume = new JPanel();
+		panelOutputVolume.setLayout(new BoxLayout(panelOutputVolume, BoxLayout.PAGE_AXIS));
+		panelOutputVolume.setBorder(new EmptyBorder(5, 10, 5, 10));
+		{
+			JLabel lblSelectGain = new JLabel("Wählen Sie die Wiedergabelautstärke:", JLabel.LEFT);
+			lblSelectGain.setAlignmentX(Component.CENTER_ALIGNMENT);
+			lblSelectGain.setPreferredSize(new Dimension(500, 25));
+			lblSelectGain.setMaximumSize(lblSelectGain.getPreferredSize());
+			lblSelectGain.setOpaque(false);
+			lblSelectGain.setBackground(new Color(0, 0, 0, 0));
+			panelOutputVolume.add(lblSelectGain);
+			panelOutputVolume.add(Box.createRigidArea(new Dimension(0, 2)));
+
+			JSlider sliderGain = new JSlider(JSlider.HORIZONTAL, 0, 200, 100);
+			sliderGain.setMajorTickSpacing(50);
+			sliderGain.setMinorTickSpacing(10);
+			sliderGain.setPaintTicks(true);
+			sliderGain.setPreferredSize(new Dimension(500, 40));
+			sliderGain.setMaximumSize(sliderGain.getPreferredSize());
+			sliderGain.setAlignmentX(Component.CENTER_ALIGNMENT);
+			sliderGain.setOpaque(false);
+			sliderGain.setBackground(new Color(0, 0, 0, 0));
+			sliderGain.addChangeListener(new ChangeListener() {
+
+				@Override
+				public void stateChanged(ChangeEvent e) {
+
+					JSlider source = (JSlider) e.getSource();
+					if (!source.getValueIsAdjusting()) {
+						Settings.outputVolume = source.getValue() / 100;
+					}
+				}
+			});
+
+			Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
+			labelTable.put(new Integer(0), new JLabel("0 %"));
+			labelTable.put(new Integer(50), new JLabel("50 %"));
+			labelTable.put(new Integer(100), new JLabel("100 %"));
+			labelTable.put(new Integer(150), new JLabel("150 %"));
+			labelTable.put(new Integer(200), new JLabel("200 %"));
+			sliderGain.setLabelTable(labelTable);
+			sliderGain.setPaintLabels(true);
+			panelOutputVolume.add(sliderGain);
+		}
+		add(panelOutputVolume);
+		add(Box.createRigidArea(new Dimension(0, 10)));
 
 		add(Box.createVerticalGlue());
 
 		updateInputLine();
 
-		// outputMixerNames = new String[selectAudioDevices.getOutputDevices().size()];
-		// for (int i = 0; i < selectAudioDevices.getOutputDevices().size(); i++) {
-		// outputMixerNames[i] = selectAudioDevices.getOutputDevices().get(i).getName();
-		//
-		// }
-		//
-		// jccOutputDevices = new JComboBox<>(outputMixerNames);
-		// jccOutputDevices.setOpaque(false);
-		// jccOutputDevices.setMaximumRowCount(4);
-		// jccOutputDevices.setPreferredSize(new Dimension(500, 40));
-		// jccOutputDevices.setMaximumSize(jccOutputDevices.getPreferredSize());
-		// jccOutputDevices.addItemListener(new ItemListener() {
-		//
-		// @Override
-		// public void itemStateChanged(ItemEvent e) {
-		//
-		// if (e.getStateChange() == ItemEvent.SELECTED) {
-		// Settings.outputMixerInfo = selectAudioDevices.getOutputDevices()
-		// .get(jccOutputDevices.getSelectedIndex());
-		// System.out.println(Settings.outputMixerInfo.getName());
-		// }
-		//
-		// }
-		// });
-		//
-		// panelInputDevices.add(jccOutputDevices);
 	}
 
 	private void updateInputLine() {

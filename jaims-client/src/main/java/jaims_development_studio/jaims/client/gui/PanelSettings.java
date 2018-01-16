@@ -20,7 +20,7 @@ public class PanelSettings extends JPanel {
 	private static final long	serialVersionUID	= 1L;
 	private PanelSettingIcons	panelIconsLineStart;
 	private JPanel				panelLineStart;
-	private JScrollPane			jspIcons;
+	private JScrollPane			jspIcons, jspCenterPanel;
 	private CenterPanelSettings	cps;
 
 	public PanelSettings(ClientMain cm) {
@@ -56,14 +56,34 @@ public class PanelSettings extends JPanel {
 			panelLineStart.add(panelIconsLineStart, BorderLayout.CENTER);
 		}
 		add(panelLineStart, BorderLayout.LINE_START);
+
+		jspCenterPanel = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		jspCenterPanel.setComponentZOrder(jspCenterPanel.getVerticalScrollBar(), 0);
+		jspCenterPanel.setComponentZOrder(jspCenterPanel.getViewport(), 1);
+		jspCenterPanel.setBackground(getBackground());
+		jspCenterPanel.setBorder(null);
+		jspCenterPanel.getVerticalScrollBar().setBackground(getBackground());
+		jspCenterPanel.getVerticalScrollBar().setUnitIncrement(10);
+		jspCenterPanel.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+
+				jspCenterPanel.getViewport().repaint();
+
+			}
+		});
+		add(jspCenterPanel, BorderLayout.CENTER);
 	}
 
 	public void addCenterPanel(CenterPanelSettings cp) {
 
 		if (cps != null)
-			remove(cps);
+			jspCenterPanel.remove(cps);
 
-		add(cp, BorderLayout.CENTER);
+		jspCenterPanel.setViewportView(cp);
+		jspCenterPanel.revalidate();
 		revalidate();
 		repaint();
 

@@ -49,11 +49,18 @@ public class Settings {
 	public static Mixer.Info	inputMixerInfo;
 	public static Mixer.Info	outputMixerInfo;
 	public static float			inputGain;
+	public static float			outputVolume;
 	public static Encoding		inputEncoding				= AudioFormat.Encoding.PCM_SIGNED;
 	public static float			inputSampleRate				= 44100;
 	public static int			inputSampleSize				= 16;
 	public static int			inputChannels				= 2;
 	public static boolean		inputBigEndian				= false;
 	public static int			frameSize					= 4;
+
+	public static AudioFormat getInputFormat() {
+
+		return new AudioFormat(inputEncoding, inputSampleRate, inputSampleSize, inputChannels, frameSize,
+				inputSampleRate, inputBigEndian);
+	}
 
 }

@@ -240,7 +240,6 @@ public class PanelChat extends JPanel implements Runnable {
 			}
 		});
 		add(pcwt, BorderLayout.PAGE_START);
-
 	}
 
 	@Override
@@ -257,7 +256,7 @@ public class PanelChat extends JPanel implements Runnable {
 			public void run() {
 
 				SendableTextMessage stm = new SendableTextMessage(ClientMain.userProfile.getUuid(),
-						ClientMain.serverUUID, message);
+						userProfile.getUuid(), message);
 				cp.getClientMain().getServerConnection().sendSendable(stm);
 
 			}
