@@ -64,7 +64,8 @@ public class PanelChatMessages extends JPanel implements Runnable {
 	private void initGUI() {
 
 		for (int i = 0; i < co.getList().size(); i++) {
-			if (co.getList().get(i).getSender() != ClientMain.userProfile.getUuid() && co.getList() != null) {
+			if (co.getList().get(i).getSender().equals(ClientMain.userProfile.getUuid()) == false
+					&& co.getList() != null) {
 				// Case Sender = Contact
 
 				JPanel p = new JPanel();
@@ -104,7 +105,6 @@ public class PanelChatMessages extends JPanel implements Runnable {
 				add(p);
 				add(Box.createRigidArea(new Dimension(0, 10)));
 			} else {
-				// Case Sender = User
 				if (co.getList() != null) {
 					JPanel p = new JPanel();
 					p.setOpaque(false);

@@ -40,16 +40,18 @@ public class PanelSettingIcons extends JPanel {
 			add(Box.createVerticalGlue());
 
 			img = Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/calendar.png"));
-			img = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+			img = img.getScaledInstance(60, 60, Image.SCALE_SMOOTH);
 
 			JPanel pCalendar = new JPanel();
 			pCalendar.setLayout(new BoxLayout(pCalendar, BoxLayout.LINE_AXIS));
+			pCalendar.setOpaque(false);
+			pCalendar.setBackground(new Color(0, 0, 0, 0));
 			{
 				pCalendar.add(Box.createHorizontalGlue());
 
 				JLabel lblCalendar = new JLabel();
 				lblCalendar.setIcon(new ImageIcon(img));
-				lblCalendar.setPreferredSize(new Dimension(51, 51));
+				lblCalendar.setPreferredSize(new Dimension(61, 61));
 				lblCalendar.setMaximumSize(lblCalendar.getPreferredSize());
 				lblCalendar.setToolTipText("Calendar settings");
 				lblCalendar.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -58,7 +60,8 @@ public class PanelSettingIcons extends JPanel {
 					@Override
 					public void mouseReleased(MouseEvent e) {
 
-						panelAudioSettings = new PanelAudioSettings();
+						if (panelAudioSettings == null)
+							panelAudioSettings = new PanelAudioSettings();
 						ps.addCenterPanel(panelAudioSettings);
 
 					}

@@ -16,12 +16,9 @@ import java.util.Date;
 
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
-import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.Mixer;
-import javax.sound.sampled.Port;
 import javax.sound.sampled.TargetDataLine;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -252,13 +249,7 @@ public class RecordingFrame extends JWindow {
 							}
 						});
 						line.flush();
-						Mixer m = AudioSystem.getMixer(Settings.inputMixerInfo);
-						Port lineIn = (Port) m.getLine(Port.Info.LINE_IN);
-						lineIn.open();
-						FloatControl vol = (FloatControl) lineIn.getControl(FloatControl.Type.VOLUME);
-						vol.setValue(Settings.inputGain);
-
-						line.open(Settings.format);
+						line.open(Settings.getInputFormat());
 
 					} catch (LineUnavailableException e1) {
 						// TODO Auto-generated catch block

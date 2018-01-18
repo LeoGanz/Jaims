@@ -62,30 +62,30 @@ public class ReadFromDatabase implements Runnable {
 			LOG.error("Failed to create resultSet!", e);
 		}
 
-		try {
-			Statement s = con.createStatement();
-			s.execute("TRUNCATE TABLE BU88LE");
-			con.commit();
-			PreparedStatement ps = con.prepareStatement("INSERT INTO " + tablename.toUpperCase()
-					+ "(ID,NICKNAME,DESCRIPTION,STATUS,PROFILE_PICTURE,TIMESTAMP,MESSAGE_ARRAY) VALUES (?,?,?,?,?,?,?)");
-			ps.setObject(1, UUID.randomUUID());
-			ps.setString(2, "Sebi");
-			ps.setString(3, "Test");
-			ps.setString(4, "Test");
-			ps.setBytes(5, IOUtils.toByteArray(getClass().getResourceAsStream("/images/Jaims_User.png")));
-			ps.setTimestamp(6, new Timestamp(new Date(System.currentTimeMillis()).getTime()));
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(bos);
-			oos.writeObject(new ArrayList<Message>());
-			ps.setBytes(7, bos.toByteArray());
-			bos.close();
-			oos.close();
-
-			ps.executeUpdate();
-			con.commit();
-		} catch (SQLException | IOException e) {
-			// TODO Auto-generated c
-		}
+//		try {
+//			Statement s = con.createStatement();
+//			s.execute("TRUNCATE TABLE BU88LE");
+//			con.commit();
+//			PreparedStatement ps = con.prepareStatement("INSERT INTO " + tablename.toUpperCase()
+//					+ "(ID,NICKNAME,DESCRIPTION,STATUS,PROFILE_PICTURE,TIMESTAMP,MESSAGE_ARRAY) VALUES (?,?,?,?,?,?,?)");
+//			ps.setObject(1, UUID.randomUUID());
+//			ps.setString(2, "Sebi");
+//			ps.setString(3, "Test");
+//			ps.setString(4, "Test");
+//			ps.setBytes(5, IOUtils.toByteArray(getClass().getResourceAsStream("/images/Jaims_User.png")));
+//			ps.setTimestamp(6, new Timestamp(new Date(System.currentTimeMillis()).getTime()));
+//			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//			ObjectOutputStream oos = new ObjectOutputStream(bos);
+//			oos.writeObject(new ArrayList<Message>());
+//			ps.setBytes(7, bos.toByteArray());
+//			bos.close();
+//			oos.close();
+//
+//			ps.executeUpdate();
+//			con.commit();
+//		} catch (SQLException | IOException e) {
+//			// TODO Auto-generated c
+//		}
 		// try {
 		//
 		// Statement s = con.createStatement();

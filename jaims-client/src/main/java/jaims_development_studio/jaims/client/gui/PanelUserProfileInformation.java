@@ -38,7 +38,7 @@ import jaims_development_studio.jaims.client.chatObjects.ClientProfile;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
 import jaims_development_studio.jaims.client.logic.ClientMain;
 
-public class PanelUserProfileInformation extends JPanel {
+public class PanelUserProfileInformation extends ContainerPanel {
 
 	private ClientMain			cm;
 	private ClientProfile		userProfile;

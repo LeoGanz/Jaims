@@ -12,6 +12,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Hashtable;
 
+import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
@@ -51,7 +52,8 @@ public class PanelAudioSettings extends CenterPanelSettings {
 	private String				input				= "Aufnahme-Einstellungen", output = "Ausgabe-Einstellungen";
 	private String[]			encoding			= {"ALAW", "PCM_FLOAT", "PCM_SIGNED", "PCM_UNSIGNED", "ULAW"},
 			sampleRate = {"8,000 Hz", "11,025 Hz", "16,000 Hz", "22,050 Hz", "44,100 Hz", "48,000 Hz"},
-			sampleSize = {"8 bit", "16 bit"}, channels = {"1", "2", "5", "7"}, endian = {"Little Endian", "Big Endian"};
+			sampleSize = {"8 bit", "16 bit"}, channels = {"1", "2", "5", "7"}, endian = {"Little Endian", "Big Endian"},
+			fileFormat = {".wav", ".au", ".aif", ".aifc", ".snd"};
 	private boolean				lineSupported;
 
 	public PanelAudioSettings() {
@@ -249,6 +251,80 @@ public class PanelAudioSettings extends CenterPanelSettings {
 		add(panelInputVolume);
 		add(Box.createRigidArea(new Dimension(0, 10)));
 
+		JLabel lblSelectFileFormat = new JLabel() {
+			@Override
+			public void paintComponent(Graphics g) {
+
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g2.setFont(new Font("Arial", Font.BOLD, 14));
+				g2.drawString("Dateiformat", 2, g2.getFontMetrics(g2.getFont()).getHeight() + 4);
+				g2.setColor(Color.BLUE);
+				g2.setStroke(new BasicStroke(2));
+				g2.drawLine(2, g2.getFontMetrics(g2.getFont()).getHeight() + 7,
+						g2.getFontMetrics(g2.getFont()).stringWidth("Dateiformat"),
+						g2.getFontMetrics(g2.getFont()).getHeight() + 7);
+
+				g2.dispose();
+			}
+		};
+		lblSelectFileFormat.setPreferredSize(new Dimension(600, 40));
+		lblSelectFileFormat.setMaximumSize(lblSelectFileFormat.getPreferredSize());
+		lblSelectFileFormat.setAlignmentX(Component.CENTER_ALIGNMENT);
+		lblSelectFileFormat.setOpaque(false);
+		lblSelectFileFormat.setBackground(new Color(0, 0, 0, 0));
+		add(lblSelectFileFormat);
+
+		JPanel panelSelectFileFormat = new JPanel();
+		panelSelectFileFormat.setBorder(new EmptyBorder(5, 10, 5, 10));
+		panelSelectFileFormat.setLayout(new BoxLayout(panelSelectFileFormat, BoxLayout.PAGE_AXIS));
+		{
+			JLabel lblSelectFFormat = new JLabel("Wählen Sie das gewünschte Dateiformat:", JLabel.LEFT);
+			lblSelectFFormat.setAlignmentX(Component.CENTER_ALIGNMENT);
+			lblSelectFFormat.setPreferredSize(new Dimension(500, 25));
+			lblSelectFFormat.setMaximumSize(lblSelectFFormat.getPreferredSize());
+			lblSelectFFormat.setOpaque(false);
+			lblSelectFFormat.setBackground(new Color(0, 0, 0, 0));
+			panelSelectFileFormat.add(lblSelectFFormat);
+			panelSelectFileFormat.add(Box.createRigidArea(new Dimension(0, 2)));
+
+			JComboBox<String> jccFileFormat = new JComboBox<>(fileFormat);
+			jccFileFormat.setOpaque(false);
+			jccFileFormat.setPreferredSize(new Dimension(500, 30));
+			jccFileFormat.setMaximumSize(jccFileFormat.getPreferredSize());
+			jccFileFormat.setSelectedIndex(0);
+			jccFileFormat.setEditable(false);
+			jccFileFormat.setAlignmentX(Component.CENTER_ALIGNMENT);
+			jccFileFormat.addItemListener(new ItemListener() {
+
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+
+					if (e.getStateChange() == ItemEvent.SELECTED) {
+						@SuppressWarnings("unchecked")
+						int i = ((JComboBox<String>) e.getSource()).getSelectedIndex();
+						if (i == 0)
+							Settings.inputFileFormat = AudioFileFormat.Type.WAVE;
+						else if (i == 1)
+							Settings.inputFileFormat = AudioFileFormat.Type.AU;
+						else if (i == 2)
+							Settings.inputFileFormat = AudioFileFormat.Type.AIFF;
+						else if (i == 3)
+							Settings.inputFileFormat = AudioFileFormat.Type.AIFC;
+						else if (i == 4)
+							Settings.inputFileFormat = AudioFileFormat.Type.SND;
+
+						updateInputLine();
+					}
+
+				}
+			});
+			panelSelectFileFormat.add(jccFileFormat);
+
+		}
+		add(panelSelectFileFormat);
+		add(Box.createRigidArea(new Dimension(0, 10)));
+
 		JLabel lblInputFormat = new JLabel() {
 			@Override
 			public void paintComponent(Graphics g) {
@@ -275,6 +351,7 @@ public class PanelAudioSettings extends CenterPanelSettings {
 
 		panelInputFormat = new JPanel();
 		panelInputFormat.setLayout(new BoxLayout(panelInputFormat, BoxLayout.PAGE_AXIS));
+		panelInputFormat.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panelInputFormat.setBorder(new EmptyBorder(5, 10, 5, 10));
 		{
 			JPanel panelFirstFormats = new JPanel();
@@ -529,7 +606,7 @@ public class PanelAudioSettings extends CenterPanelSettings {
 					panelEndian.add(jccEndian);
 				}
 				panelSecondFormats.add(panelEndian);
-				panelEndian.add(Box.createHorizontalGlue());
+				panelSecondFormats.add(Box.createHorizontalGlue());
 			}
 
 			panelInputFormat.add(Box.createRigidArea(new Dimension(0, 5)));

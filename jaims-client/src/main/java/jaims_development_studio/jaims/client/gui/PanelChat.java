@@ -35,7 +35,7 @@ import jaims_development_studio.jaims.client.chatObjects.ChatObject;
 import jaims_development_studio.jaims.client.chatObjects.ClientProfile;
 import jaims_development_studio.jaims.client.logic.ClientMain;
 
-public class PanelChat extends JPanel implements Runnable {
+public class PanelChat extends ContainerPanel implements Runnable {
 
 	private static final Logger	LOG				= LoggerFactory.getLogger(PanelChat.class);
 	JPanel						panelPageEnd;

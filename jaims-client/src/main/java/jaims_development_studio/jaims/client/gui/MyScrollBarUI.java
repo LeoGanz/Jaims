@@ -61,7 +61,7 @@ public class MyScrollBarUI extends BasicScrollBarUI {
 		} else if (isDragging) {
 			color = new Color(96, 96, 96, 200);
 		} else if (isThumbRollover()) {
-			color = new Color(160, 160, 160, 200);
+			color = new Color(160, 160, 160, 220);
 		} else {
 			color = new Color(160, 160, 160, 120);
 		}

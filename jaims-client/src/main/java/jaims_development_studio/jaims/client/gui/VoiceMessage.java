@@ -215,7 +215,7 @@ public class VoiceMessage extends JPanel {
 		} catch (SQLException e) {
 			BufferedImage bi;
 			try {
-				bi = ImageIO.read(getClass().getClassLoader().getResourceAsStream("images/JAIMS_Penguin.png"));
+				bi = ImageIO.read(getClass().getClassLoader().getResourceAsStream("images/Jaims_User.png"));
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				ImageIO.write(bi, "jpg", baos);
 				baos.flush();

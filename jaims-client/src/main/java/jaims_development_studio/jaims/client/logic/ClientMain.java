@@ -28,9 +28,11 @@ import jaims_development_studio.jaims.client.database.DatabaseConnection;
 import jaims_development_studio.jaims.client.database.WriteToDatabase;
 import jaims_development_studio.jaims.client.gui.AddSign;
 import jaims_development_studio.jaims.client.gui.ContactPanel;
+import jaims_development_studio.jaims.client.gui.ContainerPanel;
 import jaims_development_studio.jaims.client.gui.JaimsFrame;
 import jaims_development_studio.jaims.client.gui.LoginPanel;
 import jaims_development_studio.jaims.client.gui.PanelAccount;
+import jaims_development_studio.jaims.client.gui.PanelAddUser;
 import jaims_development_studio.jaims.client.gui.PanelChat;
 import jaims_development_studio.jaims.client.gui.PanelChatMessages;
 import jaims_development_studio.jaims.client.gui.PanelContactsAndChats;
@@ -58,6 +60,7 @@ public class ClientMain {
 	private LoginPanel					lp;
 	private PanelEditUser				panelEditUser;
 	private PanelUserProfileInformation	panelUserProfileInformation;
+	private ContainerPanel				container				= new ContainerPanel();
 
 	/**
 	 * Static profile which represents the logged-in user.
@@ -239,47 +242,35 @@ public class ClientMain {
 	 */
 	public void setMessagePanel(PanelChat panelChat) {
 
-		// if panelSettings is shown then it is first removed before adding the
-		// panelChat
-		if (panelSettings != null) {
-			jf.getContentPane().remove(panelSettings);
-			// panelSettings.getPF().dispose();
-			panelSettings = null;
-			jf.revalidate();
-		}
-		// if there is a activePanelChat then it is first removed before adding the
-		// panelChat
-		if (activePanelChat != null) {
-			jf.getContentPane().remove(activePanelChat);
-			jf.getContentPane().revalidate();
-			jf.getContentPane().revalidate();
-		}
-		// if there is a PanelEditUser displayed then it is first removed before adding
-		// the PanelChat
-		if (panelEditUser != null) {
-			jf.getContentPane().remove(panelEditUser);
-			panelEditUser = null;
-			jf.revalidate();
+		jf.getContentPane().remove(container);
+		jf.revalidate();
 
-		}
-		if (panelUserProfileInformation != null) {
-			jf.getContentPane().remove(panelUserProfileInformation);
-			panelUserProfileInformation = null;
-			jf.getContentPane().revalidate();
-		}
 		jf.getContentPane().add(panelChat, BorderLayout.CENTER);
 		jf.getContentPane().revalidate();
 		jf.getContentPane().repaint();
 
+		container = panelChat;
 		activePanelChat = panelChat;
 	}
 
 	public void setSettingPanel() {
 
 		jf.getContentPane().removeAll();
-		panelSettings = new PanelSettings(this);
+		if (panelSettings == null)
+			panelSettings = new PanelSettings(this);
 
 		jf.getContentPane().add(panelSettings, BorderLayout.CENTER);
+		jf.getContentPane().revalidate();
+		jf.getContentPane().repaint();
+	}
+
+	public void removeSettingPanel() {
+
+		jf.getContentPane().remove(panelSettings);
+		jf.getContentPane().revalidate();
+
+		jf.getContentPane().add(userUILeftSide, BorderLayout.LINE_START);
+		jf.getContentPane().add(container, BorderLayout.CENTER);
 		jf.getContentPane().revalidate();
 		jf.getContentPane().repaint();
 	}
@@ -318,29 +309,33 @@ public class ClientMain {
 
 	public void addPanelEditUser() {
 
-		if (panelEditUser != null)
-			return;
-		if (panelUserProfileInformation != null) {
-			jf.getContentPane().remove(panelUserProfileInformation);
-			panelUserProfileInformation = null;
-			jf.getContentPane().revalidate();
-		}
+		jf.getContentPane().remove(container);
+		jf.getContentPane().revalidate();
 
-		if (panelSettings != null) {
-			jf.getContentPane().remove(panelSettings);
-			// panelSettings.getPF().dispose();
-			panelSettings = null;
-			jf.revalidate();
-		}
-		// if there is a activePanelChat then it is first removed before adding the
-		// panelChat
-		if (activePanelChat != null) {
-			jf.getContentPane().remove(activePanelChat);
-			jf.getContentPane().revalidate();
-		}
+		container = new PanelEditUser(this);
+		jf.getContentPane().add(container, BorderLayout.CENTER);
+		jf.getContentPane().revalidate();
+		jf.getContentPane().repaint();
+	}
 
-		panelEditUser = new PanelEditUser(this);
-		jf.getContentPane().add(panelEditUser, BorderLayout.CENTER);
+	public void addPanelAddUser() {
+
+		jf.getContentPane().removeAll();
+		jf.getContentPane().revalidate();
+
+		PanelAddUser pa = new PanelAddUser(this);
+		jf.getContentPane().add(pa, BorderLayout.CENTER);
+		jf.getContentPane().revalidate();
+		jf.getContentPane().repaint();
+	}
+
+	public void removePanelAddUser() {
+
+		jf.getContentPane().removeAll();
+		jf.getContentPane().revalidate();
+
+		jf.getContentPane().add(userUILeftSide, BorderLayout.LINE_START);
+		jf.getContentPane().add(container, BorderLayout.CENTER);
 		jf.getContentPane().revalidate();
 		jf.getContentPane().repaint();
 	}
@@ -355,32 +350,15 @@ public class ClientMain {
 
 	public void addPanelUserProfileInformation(PanelChatMessages pcm, ClientProfile userProfile) {
 
-		// if panelSettings is shown then it is first removed before adding the
-		// panelChat
-		if (panelSettings != null) {
-			jf.getContentPane().remove(panelSettings);
-			// panelSettings.getPF().dispose();
-			panelSettings = null;
-			jf.revalidate();
-		}
-		// if there is a activePanelChat then it is first removed before adding the
-		// panelChat
-		if (activePanelChat != null) {
-			jf.getContentPane().remove(activePanelChat);
-			jf.getContentPane().revalidate();
-		}
-		// if there is a PanelEditUser displayed then it is first removed before adding
-		// the PanelChat
-		if (panelEditUser != null) {
-			jf.getContentPane().remove(panelEditUser);
-			panelEditUser = null;
-			jf.revalidate();
-		}
+		jf.getContentPane().remove(container);
+		jf.getContentPane().revalidate();
 
 		jf.getContentPane().add(panelUserProfileInformation = new PanelUserProfileInformation(this, userProfile, pcm),
 				BorderLayout.CENTER);
 		jf.getContentPane().revalidate();
 		jf.getContentPane().repaint();
+
+		container = panelUserProfileInformation;
 	}
 
 	/**
@@ -433,5 +411,10 @@ public class ClientMain {
 	public ServerConnection getServerConnection() {
 
 		return sc;
+	}
+
+	public PanelChat getActivePanelChat() {
+
+		return activePanelChat;
 	}
 }

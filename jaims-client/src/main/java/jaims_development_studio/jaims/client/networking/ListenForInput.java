@@ -66,7 +66,9 @@ public class ListenForInput implements Runnable {
 					LOG.error("Socket isn't connected", se);
 				} catch (EOFException e) {
 					LOG.error("Server connection closed. Trying to reconnect", e);
+					firstSendable = true;
 					cm.getServerConnection().initConnection();
+					break;
 				} catch (IOException ie) {
 					LOG.error("IO Exception", ie);
 				}
@@ -98,7 +100,7 @@ public class ListenForInput implements Runnable {
 				case "TEXT":
 					SendableTextMessage stm = (SendableTextMessage) sm;
 					LOG.info("Received sendable of type " + sm.getType().toString());
-					System.out.println(stm.getMessage());
+					cm.getPCC().addMessageToChat(stm);
 					break;
 				case "IMAGE":
 
