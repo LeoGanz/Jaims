@@ -379,17 +379,6 @@ public class ClientMain {
 	}
 
 	/**
-	 * Receives a ContactPanel and sets it to the activeContactPanel.
-	 *
-	 * @param cp
-	 *            the last clicked ContactPanel
-	 */
-	public void setAcvtiveContactPanel(ContactPanel cp) {
-
-		// activeContactPanel = cp;
-	}
-
-	/**
 	 *
 	 * @return a JaimsFrame object
 	 */
