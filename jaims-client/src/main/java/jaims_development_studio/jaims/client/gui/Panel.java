@@ -1,5 +1,6 @@
 package jaims_development_studio.jaims.client.gui;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -37,9 +38,11 @@ public class Panel extends JPanel {
 		g2d.setColor(Color.BLACK);
 		g2d.setFont(new Font("Calibri", Font.BOLD, 15));
 		g2d.drawString(username, 75, 30);
-		g2d.drawRoundRect(9, 2, 51, 51, 15, 15);
 		g2d.setClip(new RoundRectangle2D.Double(10, 3, img.getWidth(this), img.getHeight(this), 15, 15));
 		g2d.drawImage(img, 10, 3, this);
+		g2d.setClip(0, 0, getWidth(), getHeight());
+		g2d.setStroke(new BasicStroke(1.8F));
+		g2d.drawRoundRect(10, 3, 50, 50, 15, 15);
 
 		g2d.dispose();
 

@@ -11,11 +11,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -42,7 +42,7 @@ public class PanelUserProfileInformation extends ContainerPanel {
 
 	private ClientMain			cm;
 	private ClientProfile		userProfile;
-	private JPanel				panelUserInfo, panelStatus, panelDescription, panelStats;
+	private JPanel				panelUserInfo, panelStatus, panelDescription, panelStats, panelProfilePicture;
 	private JLabel				lblProfilePicture;
 	private JTextArea			jtaStatus, jtaDescription;
 	private PanelChatMessages	pcm;
@@ -61,7 +61,7 @@ public class PanelUserProfileInformation extends ContainerPanel {
 	private void initGUI() {
 
 		profileImage = getPicture(userProfile);
-		profileImage = profileImage.getScaledInstance(220, 220, Image.SCALE_SMOOTH);
+		// profileImage = profileImage.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
 
 		setLayout(new BorderLayout());
 		setBackground(Color.white);
@@ -69,7 +69,7 @@ public class PanelUserProfileInformation extends ContainerPanel {
 		panelUserInfo.setBorder(new EmptyBorder(10, 10, 10, 6));
 		panelUserInfo.setLayout(new BoxLayout(panelUserInfo, BoxLayout.PAGE_AXIS));
 		{
-			lblProfilePicture = new JLabel() {
+			panelProfilePicture = new JPanel() {
 				@Override
 				public void paintComponent(Graphics g) {
 
@@ -78,21 +78,20 @@ public class PanelUserProfileInformation extends ContainerPanel {
 					Graphics2D g2d = (Graphics2D) g;
 					g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-					g2d.setColor(Color.BLACK);
-					g2d.setStroke(new BasicStroke(1.8F));
-					g2d.drawRoundRect(1, 1, 221, 221, 15, 15);
-					g2d.setClip(new RoundRectangle2D.Double(2, 2, profileImage.getWidth(this),
-							profileImage.getHeight(this), 15, 15));
-					g2d.setStroke(new BasicStroke(1));
+					g2d.setClip(new RoundRectangle2D.Double(2, 3, 220, 220, 15, 15));
 					g2d.drawImage(profileImage, 2, 2, this);
+					g2d.setClip(0, 0, getWidth(), getHeight());
+					g2d.setColor(Color.BLACK);
+					g2d.setStroke(new BasicStroke(2.0F));
+					g2d.drawRoundRect(1, 1, 221, 221, 15, 15);
 
 					g2d.dispose();
 				}
 			};
-			lblProfilePicture.setPreferredSize(new Dimension(225, 225));
-			lblProfilePicture.setMaximumSize(new Dimension(225, 225));
-			lblProfilePicture.setAlignmentX(Component.CENTER_ALIGNMENT);
-			panelUserInfo.add(lblProfilePicture);
+			panelProfilePicture.setPreferredSize(new Dimension(225, 225));
+			panelProfilePicture.setMaximumSize(new Dimension(225, 225));
+			panelProfilePicture.setAlignmentX(Component.CENTER_ALIGNMENT);
+			panelUserInfo.add(panelProfilePicture);
 			panelUserInfo.add(Box.createRigidArea(new Dimension(0, 5)));
 
 			panelStatus = new JPanel();
@@ -202,8 +201,10 @@ public class PanelUserProfileInformation extends ContainerPanel {
 			con.commit();
 
 			rs.next();
-
-			return ImageIO.read(new ByteArrayInputStream(rs.getBytes(1)));
+			// ImageIO.read(new ByteArrayInputStream(rs.getBytes(1)))
+			Image img = Toolkit.getDefaultToolkit().createImage(rs.getBytes(1));
+			img = img.getScaledInstance(220, 220, Image.SCALE_SMOOTH);
+			return img;
 		} catch (SQLException e) {
 			BufferedImage bi;
 			try {
@@ -214,9 +215,6 @@ public class PanelUserProfileInformation extends ContainerPanel {
 				e1.printStackTrace();
 			}
 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		return null;
 	}
