@@ -9,6 +9,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentAdapter;
@@ -24,6 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
@@ -107,6 +110,7 @@ public class PanelAddUser extends JPanel {
 				panelEntries.add(jta);
 				panelEntries.add(Box.createRigidArea(new Dimension(0, 2)));
 			}
+			panelTop.add(Box.createRigidArea(new Dimension(0, 3)));
 			panelTop.add(panelEntries);
 			panelTop.add(Box.createRigidArea(new Dimension(10, 48)));
 
@@ -132,6 +136,19 @@ public class PanelAddUser extends JPanel {
 				public void mouseReleased(MouseEvent e) {
 
 					sendEnquiry(jta.getText());
+					Timer t = new Timer(5, new ActionListener() {
+
+						@Override
+						public void actionPerformed(ActionEvent e) {
+
+							panelShowUser.setLocation(panelShowUser.getX() + 10, panelShowUser.getY());
+
+							if (panelShowUser.getX() >= cm.getJaimsFrame().getWidth())
+								((Timer) e.getSource()).stop();
+
+						}
+					});
+					t.start();
 				}
 
 			});

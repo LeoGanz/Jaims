@@ -15,6 +15,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
 
+import jaims_development_studio.jaims.client.audio.SelectAudioDevices;
+import jaims_development_studio.jaims.client.logic.ClientMain;
+
 public class PanelSettingIcons extends JPanel {
 
 	/**
@@ -22,12 +25,16 @@ public class PanelSettingIcons extends JPanel {
 	 */
 	private static final long	serialVersionUID	= 1L;
 	private PanelSettings		ps;
+	private ClientMain			cm;
 	Image						img;
 	private PanelAudioSettings	panelAudioSettings;
+	private SelectAudioDevices	sad;
 
-	public PanelSettingIcons(PanelSettings ps) {
+	public PanelSettingIcons(PanelSettings ps, ClientMain cm, SelectAudioDevices sad) {
 
 		this.ps = ps;
+		this.cm = cm;
+		this.sad = sad;
 		initGUI();
 	}
 
@@ -61,7 +68,7 @@ public class PanelSettingIcons extends JPanel {
 					public void mouseReleased(MouseEvent e) {
 
 						if (panelAudioSettings == null)
-							panelAudioSettings = new PanelAudioSettings();
+							panelAudioSettings = new PanelAudioSettings(cm, sad);
 						ps.addCenterPanel(panelAudioSettings);
 
 					}

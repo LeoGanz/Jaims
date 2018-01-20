@@ -19,6 +19,7 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.Mixer;
 import javax.sound.sampled.TargetDataLine;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -30,8 +31,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import jaims_development_studio.jaims.client.chatObjects.ChatObject;
+import jaims_development_studio.jaims.client.logic.ClientMain;
 import jaims_development_studio.jaims.client.logic.RecordAudio;
-import jaims_development_studio.jaims.client.settings.Settings;
 
 public class RecordingFrame extends JWindow {
 
@@ -45,10 +46,12 @@ public class RecordingFrame extends JWindow {
 	long					pauseStarted	= 0, pauseEnded = 0, timeStarted;
 	Thread					thread			= null;
 	RecordAudio				ra				= null;
+	private ClientMain		cm;
 
-	public RecordingFrame(PanelChat activePanelChat, ChatObject co) {
+	public RecordingFrame(PanelChat activePanelChat, ChatObject co, ClientMain cm) {
 
 		super();
+		this.cm = cm;
 		initGUI(activePanelChat, co);
 	}
 
@@ -231,15 +234,26 @@ public class RecordingFrame extends JWindow {
 
 				if (recording == false) {
 					try {
-						line = (TargetDataLine) AudioSystem
-								.getLine(new DataLine.Info(TargetDataLine.class, Settings.getInputFormat()));
+
+						Mixer m = null;
+						for (Mixer.Info mi : cm.getSAD().getInputDevices()) {
+							if (mi.getName().equals(cm.getSetting().getInputMixerInfoName())) {
+								m = AudioSystem.getMixer(mi);
+								break;
+							}
+						}
+						if (m == null)
+							m = AudioSystem.getMixer(cm.getSAD().getInputDevices().get(0));
+
+						line = (TargetDataLine) m
+								.getLine(new DataLine.Info(TargetDataLine.class, cm.getSetting().getAudioFormat()));
 						line.addLineListener(new LineListener() {
 
 							@Override
 							public void update(LineEvent arg0) {
 
 								if (arg0.getType() == LineEvent.Type.OPEN && thread == null) {
-									thread = new Thread(ra = new RecordAudio(line));
+									thread = new Thread(ra = new RecordAudio(line, cm));
 									recording = true;
 									timeStarted = System.currentTimeMillis();
 									thread.start();
@@ -249,7 +263,7 @@ public class RecordingFrame extends JWindow {
 							}
 						});
 						line.flush();
-						line.open(Settings.getInputFormat());
+						line.open(cm.getSetting().getAudioFormat());
 
 					} catch (LineUnavailableException e1) {
 						// TODO Auto-generated catch block

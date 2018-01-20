@@ -39,8 +39,8 @@ import javax.swing.plaf.basic.BasicSliderUI;
 
 import jaims_development_studio.jaims.client.chatObjects.ClientProfile;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
+import jaims_development_studio.jaims.client.logic.ClientMain;
 import jaims_development_studio.jaims.client.logic.PlayAudio;
-import jaims_development_studio.jaims.client.settings.Settings;
 
 public class VoiceMessage extends JPanel {
 
@@ -57,12 +57,14 @@ public class VoiceMessage extends JPanel {
 	JSlider						slider;
 	Thread						thread;
 	JPanel						start;
+	private ClientMain			cm;
 
-	public VoiceMessage(ClientProfile contactProfile, String pathToFile, boolean own) {
+	public VoiceMessage(ClientProfile contactProfile, String pathToFile, boolean own, ClientMain cm) {
 
 		path = pathToFile;
 		this.contactProfile = contactProfile;
 		this.own = own;
+		this.cm = cm;
 		initGUI(contactProfile);
 	}
 
@@ -74,9 +76,9 @@ public class VoiceMessage extends JPanel {
 		setPreferredSize(new Dimension(330, 50));
 		setMaximumSize(getPreferredSize());
 		if (own)
-			setBorder(new RoundBorder(330, 50, Settings.colorOwnMessageBorder));
+			setBorder(new RoundBorder(330, 50, cm.getSetting().getColorContactMessageBorder()));
 		else
-			setBorder(new RoundBorder(330, 50, Settings.colorContactMessageBorder));
+			setBorder(new RoundBorder(330, 50, cm.getSetting().getColorContactMessageBorder()));
 
 		add(Box.createRigidArea(new Dimension(65, 0)));
 		long length = getAudioFileLength();
@@ -92,10 +94,10 @@ public class VoiceMessage extends JPanel {
 				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 				if (own) {
-					g2d.setColor(Settings.colorOwnMessages);
+					g2d.setColor(cm.getSetting().getColorOwnMessages());
 					g2d.fillRect(0, 0, getWidth(), getHeight());
 				} else {
-					g2d.setColor(Settings.colorContactMessages);
+					g2d.setColor(cm.getSetting().getColorContactMessages());
 					g2d.fillRect(0, 0, getWidth(), getHeight());
 				}
 
@@ -240,11 +242,11 @@ public class VoiceMessage extends JPanel {
 	public void paintComponent(Graphics g) {
 
 		if (own) {
-			maxTime.setForeground(Settings.colorOwnMessageFont);
-			currentTime.setForeground(Settings.colorOwnMessageFont);
+			maxTime.setForeground(cm.getSetting().getColorOwnMessageFont());
+			currentTime.setForeground(cm.getSetting().getColorOwnMessageFont());
 		} else {
-			maxTime.setForeground(Settings.colorContactMessageFont);
-			currentTime.setForeground(Settings.colorContactMessageFont);
+			maxTime.setForeground(cm.getSetting().getColorContactMessageFont());
+			currentTime.setForeground(cm.getSetting().getColorContactMessageFont());
 		}
 
 		g.setColor(getBackground());
@@ -253,10 +255,10 @@ public class VoiceMessage extends JPanel {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		if (own) {
-			g2d.setColor(Settings.colorOwnMessages);
+			g2d.setColor(cm.getSetting().getColorOwnMessages());
 			g2d.fillRoundRect(0, 1, getWidth() - 1, getHeight() - 1, 20, 20);
 		} else {
-			g2d.setColor(Settings.colorContactMessages);
+			g2d.setColor(cm.getSetting().getColorContactMessages());
 			g2d.fillRoundRect(0, 1, getWidth() - 1, getHeight() - 1, 20, 20);
 		}
 

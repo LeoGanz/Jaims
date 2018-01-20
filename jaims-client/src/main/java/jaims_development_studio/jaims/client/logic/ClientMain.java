@@ -8,7 +8,13 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.UUID;
 
@@ -22,6 +28,7 @@ import javax.swing.border.LineBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.client.audio.SelectAudioDevices;
 import jaims_development_studio.jaims.client.chatObjects.ChatObject;
 import jaims_development_studio.jaims.client.chatObjects.ClientProfile;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
@@ -42,6 +49,7 @@ import jaims_development_studio.jaims.client.gui.PanelUserProfileInformation;
 import jaims_development_studio.jaims.client.gui.RecordingFrame;
 import jaims_development_studio.jaims.client.gui.SettingDots;
 import jaims_development_studio.jaims.client.networking.ServerConnection;
+import jaims_development_studio.jaims.client.settings.Settings;
 
 public class ClientMain {
 
@@ -61,6 +69,9 @@ public class ClientMain {
 	private PanelEditUser				panelEditUser;
 	private PanelUserProfileInformation	panelUserProfileInformation;
 	private ContainerPanel				container				= new ContainerPanel();
+	private Settings					settings;
+	private String						username;
+	private SelectAudioDevices			selectAudioDevices;
 
 	/**
 	 * Static profile which represents the logged-in user.
@@ -141,6 +152,9 @@ public class ClientMain {
 	 *            the name used by the user for login
 	 */
 	public void startCreatingChatWindow(String username) {
+
+		this.username = username;
+		deserializeSettings(username);
 
 		// creates a new WriteToDatabase Object with the username and the connection
 		// object stored in DatabaseConnection
@@ -231,6 +245,7 @@ public class ClientMain {
 		jf.getContentPane().setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); // sets the Cursor from Waiting Cursor back to
 																			// Default cursor
 
+		selectAudioDevices = new SelectAudioDevices(this);
 	}
 
 	/**
@@ -249,6 +264,8 @@ public class ClientMain {
 		jf.getContentPane().revalidate();
 		jf.getContentPane().repaint();
 
+		panelChat.getSP().getVerticalScrollBar().setValue(1000);
+		panelChat.getSP().repaint();
 		container = panelChat;
 		activePanelChat = panelChat;
 	}
@@ -257,7 +274,7 @@ public class ClientMain {
 
 		jf.getContentPane().removeAll();
 		if (panelSettings == null)
-			panelSettings = new PanelSettings(this);
+			panelSettings = new PanelSettings(this, selectAudioDevices);
 
 		jf.getContentPane().add(panelSettings, BorderLayout.CENTER);
 		jf.getContentPane().revalidate();
@@ -284,7 +301,7 @@ public class ClientMain {
 	 */
 	public void showRecordFrame(ChatObject co) {
 
-		RecordingFrame rf = new RecordingFrame(activePanelChat, co);
+		RecordingFrame rf = new RecordingFrame(activePanelChat, co, this);
 		rf.setLocationRelativeTo(activePanelChat);
 		jf.addComponentListener(new ComponentAdapter() {
 
@@ -416,5 +433,81 @@ public class ClientMain {
 	public PanelChat getActivePanelChat() {
 
 		return activePanelChat;
+	}
+
+	public Settings getSetting() {
+
+		return settings;
+	}
+
+	private void deserializeSettings(String username) {
+
+		String userHome = System.getProperty("user.home").replace("\\", "/");
+		String filename = userHome + "/Jaims/" + username + "/settings/settings.set";
+		String path = userHome + "/Jaims/" + username;
+
+		FileInputStream fin = null;
+		ObjectInputStream ois = null;
+
+		try {
+
+			fin = new FileInputStream(filename);
+			ois = new ObjectInputStream(fin);
+			settings = (Settings) ois.readObject();
+
+		} catch (FileNotFoundException fnfe) {
+			settings = new Settings();
+			createDirectory(path);
+			File settingFile = new File(filename);
+			try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(settingFile))) {
+
+				oos.writeObject(settings);
+				System.out.println("Done");
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		} finally {
+
+			if (fin != null) {
+				try {
+					fin.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+			if (ois != null) {
+				try {
+					ois.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+		}
+	}
+
+	private void createDirectory(String path) {
+
+		File f = new File(path);
+		if (!f.exists())
+			f.mkdirs();
+
+		File settings = new File(path + "/settings");
+		if (!settings.exists())
+			settings.mkdirs();
+	}
+
+	public String getUsername() {
+
+		return username;
+	}
+
+	public SelectAudioDevices getSAD() {
+
+		return selectAudioDevices;
 	}
 }

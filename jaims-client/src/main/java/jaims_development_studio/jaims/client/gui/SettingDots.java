@@ -15,8 +15,6 @@ import jaims_development_studio.jaims.client.logic.ClientMain;
 
 public class SettingDots extends JPanel {
 
-	PreviewFrame pf;
-
 	public SettingDots(ClientMain cm) {
 
 		setPreferredSize(new Dimension(38, 38));

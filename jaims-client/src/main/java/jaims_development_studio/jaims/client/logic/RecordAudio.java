@@ -10,8 +10,6 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.TargetDataLine;
 
-import jaims_development_studio.jaims.client.settings.Settings;
-
 public class RecordAudio implements Runnable {
 
 	TargetDataLine			line;
@@ -19,6 +17,7 @@ public class RecordAudio implements Runnable {
 	ByteArrayOutputStream	out			= new ByteArrayOutputStream();
 	File					audioFile	= null;
 	AudioInputStream		ais;
+	private ClientMain		cm;
 
 	/**
 	 * Constructor of this class. Initialises only the fields, recording has to be
@@ -26,10 +25,14 @@ public class RecordAudio implements Runnable {
 	 *
 	 * @param line
 	 *            TargetDataLine from which audio data can be read.
+	 * @param cm
+	 *            A ClientMain object the class need to access the settings.
+	 * 
 	 */
-	public RecordAudio(TargetDataLine line) {
+	public RecordAudio(TargetDataLine line, ClientMain cm) {
 
 		this.line = line;
+		this.cm = cm;
 	}
 
 	/**
@@ -41,8 +44,16 @@ public class RecordAudio implements Runnable {
 																		// month; dd: day; HH: hour; mm: minute;
 																		// ss: second
 		Date dt = new Date(System.currentTimeMillis());
-		audioFile = new File(
-				"C:/Jaims/VoiceMessages/VoiceMessage" + df.format(dt) + "." + Settings.inputFileFormat.getExtension());
+		File f = new File(
+				System.getProperty("user.home").replace("\\", "/") + "/Jaims/" + cm.getUsername() + "/VoiceMessages");
+		if (f.exists())
+			audioFile = new File(System.getProperty("user.home").replace("\\", "/") + "/Jaims/" + cm.getUsername()
+					+ "/VoiceMessages/vm" + df.format(dt) + "." + cm.getSetting().getInputFileFormat().getExtension());
+		else {
+			f.mkdirs();
+			audioFile = new File(System.getProperty("user.home").replace("\\", "/") + "/Jaims/" + cm.getUsername()
+					+ "/VoiceMessages/vm" + df.format(dt) + "." + cm.getSetting().getInputFileFormat().getExtension());
+		}
 
 	}
 
@@ -55,7 +66,7 @@ public class RecordAudio implements Runnable {
 		ais = new AudioInputStream(line);
 		line.start();
 		try {
-			AudioSystem.write(ais, Settings.inputFileFormat, audioFile);
+			AudioSystem.write(ais, cm.getSetting().getInputFileFormat(), audioFile);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

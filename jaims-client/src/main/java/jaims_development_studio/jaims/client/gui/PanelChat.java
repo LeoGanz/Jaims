@@ -210,13 +210,8 @@ public class PanelChat extends ContainerPanel implements Runnable {
 		jsp = new JScrollPane(pcm, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		jsp.setOpaque(false);
 		jsp.getVerticalScrollBar().addAdjustmentListener(e -> jsp.getViewport().repaint());
-		try {
-			jsp.getVerticalScrollBar().setUI(new MyScrollBarUI());
-		} catch (NullPointerException npe) {
-			LOG.error("Failed to start timer in BasicScrollBarUI.java", npe);
-		}
 		jsp.getVerticalScrollBar().setUnitIncrement(16);
-		jsp.getVerticalScrollBar().setOpaque(false);
+		jsp.getVerticalScrollBar().setBackground(getBackground());
 		jsp.addPropertyChangeListener(new PropertyChangeListener() {
 
 			@Override
@@ -278,6 +273,11 @@ public class PanelChat extends ContainerPanel implements Runnable {
 	public JScrollPane getSP() {
 
 		return jsp;
+	}
+
+	public ContactPanel getContactPanel() {
+
+		return cp;
 	}
 
 }

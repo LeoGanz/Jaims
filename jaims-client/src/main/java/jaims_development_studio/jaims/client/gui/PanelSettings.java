@@ -12,11 +12,18 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.MatteBorder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import jaims_development_studio.jaims.client.audio.SelectAudioDevices;
 import jaims_development_studio.jaims.client.logic.ClientMain;
 
 public class PanelSettings extends ContainerPanel {
@@ -25,17 +32,19 @@ public class PanelSettings extends ContainerPanel {
 	 * 
 	 */
 	private static final long	serialVersionUID	= 1L;
+	private static final Logger	LOG					= LoggerFactory.getLogger(PanelSettings.class);
+
 	private PanelSettingIcons	panelIconsLineStart;
 	private JPanel				panelLineStart;
 	private JScrollPane			jspIcons, jspCenterPanel;
 	private CenterPanelSettings	cps;
 
-	public PanelSettings(ClientMain cm) {
+	public PanelSettings(ClientMain cm, SelectAudioDevices sad) {
 
-		initGUI(cm);
+		initGUI(cm, sad);
 	}
 
-	private void initGUI(ClientMain cm) {
+	private void initGUI(ClientMain cm, SelectAudioDevices sad) {
 
 		setLayout(new BorderLayout());
 		panelLineStart = new JPanel();
@@ -43,7 +52,7 @@ public class PanelSettings extends ContainerPanel {
 		panelLineStart.setBorder(new MatteBorder(0, 0, 0, 2, Color.GRAY));
 		{
 
-			panelIconsLineStart = new PanelSettingIcons(this);
+			panelIconsLineStart = new PanelSettingIcons(this, cm, sad);
 			panelIconsLineStart.setMaximumSize(new Dimension(100, 60));
 			panelIconsLineStart.setPreferredSize(panelIconsLineStart.getMaximumSize());
 
@@ -91,6 +100,7 @@ public class PanelSettings extends ContainerPanel {
 				public void mouseReleased(MouseEvent e) {
 
 					cm.removeSettingPanel();
+					updateSettingFile(cm);
 
 				}
 			});
@@ -131,4 +141,16 @@ public class PanelSettings extends ContainerPanel {
 		cps = cp;
 	}
 
+	private void updateSettingFile(ClientMain cm) {
+
+		File settingFile = new File(System.getProperty("user.home").replace("\\", "/") + "/Jaims/" + cm.getUsername()
+				+ "/settings/settings.set");
+		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(settingFile, false))) {
+
+			oos.writeObject(cm.getSetting());
+			LOG.info("Successfuly updated settings file");
+		} catch (Exception ex) {
+			LOG.error("Couldn't overwrite file", ex);
+		}
+	}
 }

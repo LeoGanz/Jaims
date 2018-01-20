@@ -12,7 +12,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Hashtable;
 
-import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
@@ -34,9 +33,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jaims_development_studio.jaims.client.audio.SelectAudioDevices;
-import jaims_development_studio.jaims.client.settings.Settings;
+import jaims_development_studio.jaims.client.logic.ClientMain;
 
 public class PanelAudioSettings extends CenterPanelSettings {
+
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
 
 	private static final Logger	LOG					= LoggerFactory.getLogger(PanelAudioSettings.class);
 
@@ -51,24 +55,30 @@ public class PanelAudioSettings extends CenterPanelSettings {
 	private JComboBox<String>	jccInputDevices, jccOutputDevices;
 	private String				input				= "Aufnahme-Einstellungen", output = "Ausgabe-Einstellungen";
 	private String[]			encoding			= {"ALAW", "PCM_FLOAT", "PCM_SIGNED", "PCM_UNSIGNED", "ULAW"},
-			sampleRate = {"8,000 Hz", "11,025 Hz", "16,000 Hz", "22,050 Hz", "44,100 Hz", "48,000 Hz"},
+			sampleRate = {"8000 Hz", "11025 Hz", "16000 Hz", "22050 Hz", "44100 Hz", "48000 Hz"},
 			sampleSize = {"8 bit", "16 bit"}, channels = {"1", "2", "5", "7"}, endian = {"Little Endian", "Big Endian"},
 			fileFormat = {".wav", ".au", ".aif", ".aifc", ".snd"};
 	private boolean				lineSupported;
+	private ClientMain			cm;
 
-	public PanelAudioSettings() {
+	public PanelAudioSettings(ClientMain cm, SelectAudioDevices sad) {
 
+		this.cm = cm;
+		selectAudioDevices = sad;
 		initGUI();
 	}
 
 	private void initGUI() {
 
-		selectAudioDevices = new SelectAudioDevices();
-
 		setBorder(new EmptyBorder(20, 40, 20, 40));
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
 		JLabel lbl = new JLabel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -109,6 +119,11 @@ public class PanelAudioSettings extends CenterPanelSettings {
 		add(Box.createRigidArea(new Dimension(0, 5)));
 
 		JLabel lblInputMixer = new JLabel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -158,14 +173,26 @@ public class PanelAudioSettings extends CenterPanelSettings {
 			jccInputDevices.setPreferredSize(new Dimension(500, 30));
 			jccInputDevices.setMaximumSize(jccInputDevices.getPreferredSize());
 			jccInputDevices.setAlignmentX(Component.CENTER_ALIGNMENT);
+			if (cm.getSetting().getInputMixerInfoName() != null) {
+				for (int i = 0; i < inputMixerNames.length; i++) {
+					if (inputMixerNames[i].equals(cm.getSetting().getInputMixerInfoName())) {
+						jccInputDevices.setSelectedIndex(i);
+						break;
+					} else
+						jccInputDevices.setSelectedIndex(0);
+				}
+			} else {
+				jccInputDevices.setSelectedIndex(0);
+				cm.getSetting().setInputMixerInfo(inputMixerNames[0]);
+			}
 			jccInputDevices.addItemListener(new ItemListener() {
 
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 
 					if (e.getStateChange() == ItemEvent.SELECTED) {
-						Settings.inputMixerInfo = selectAudioDevices.getInputDevices()
-								.get(jccInputDevices.getSelectedIndex());
+						cm.getSetting().setInputMixerInfo(
+								selectAudioDevices.getInputDevices().get(jccInputDevices.getSelectedIndex()).getName());
 
 						updateInputLine();
 					}
@@ -180,6 +207,11 @@ public class PanelAudioSettings extends CenterPanelSettings {
 		add(Box.createRigidArea(new Dimension(0, 10)));
 
 		JLabel lblSelectInputVolume = new JLabel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -217,7 +249,7 @@ public class PanelAudioSettings extends CenterPanelSettings {
 			panelInputVolume.add(lblSelectGain);
 			panelInputVolume.add(Box.createRigidArea(new Dimension(0, 2)));
 
-			JSlider sliderGain = new JSlider(JSlider.HORIZONTAL, 0, 200, 100);
+			JSlider sliderGain = new JSlider(JSlider.HORIZONTAL, 0, 200, (int) (cm.getSetting().getInputGain() * 100));
 			sliderGain.setMajorTickSpacing(50);
 			sliderGain.setMinorTickSpacing(10);
 			sliderGain.setPaintTicks(true);
@@ -233,7 +265,7 @@ public class PanelAudioSettings extends CenterPanelSettings {
 
 					JSlider source = (JSlider) e.getSource();
 					if (!source.getValueIsAdjusting()) {
-						Settings.inputGain = source.getValue() / 100;
+						cm.getSetting().setInputGain((float) source.getValue() / 100);
 					}
 				}
 			});
@@ -252,6 +284,11 @@ public class PanelAudioSettings extends CenterPanelSettings {
 		add(Box.createRigidArea(new Dimension(0, 10)));
 
 		JLabel lblSelectFileFormat = new JLabel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -292,9 +329,16 @@ public class PanelAudioSettings extends CenterPanelSettings {
 			jccFileFormat.setOpaque(false);
 			jccFileFormat.setPreferredSize(new Dimension(500, 30));
 			jccFileFormat.setMaximumSize(jccFileFormat.getPreferredSize());
-			jccFileFormat.setSelectedIndex(0);
 			jccFileFormat.setEditable(false);
 			jccFileFormat.setAlignmentX(Component.CENTER_ALIGNMENT);
+			for (int i = 0; i < fileFormat.length; i++) {
+
+				if (fileFormat[i].equals(cm.getSetting().getInputFileFormatString())) {
+					jccFileFormat.setSelectedIndex(i);
+					break;
+				} else
+					jccFileFormat.setSelectedIndex(0);
+			}
 			jccFileFormat.addItemListener(new ItemListener() {
 
 				@Override
@@ -304,21 +348,22 @@ public class PanelAudioSettings extends CenterPanelSettings {
 						@SuppressWarnings("unchecked")
 						int i = ((JComboBox<String>) e.getSource()).getSelectedIndex();
 						if (i == 0)
-							Settings.inputFileFormat = AudioFileFormat.Type.WAVE;
+							cm.getSetting().setInputFileFormat(".wav");
 						else if (i == 1)
-							Settings.inputFileFormat = AudioFileFormat.Type.AU;
+							cm.getSetting().setInputFileFormat(".au");
 						else if (i == 2)
-							Settings.inputFileFormat = AudioFileFormat.Type.AIFF;
+							cm.getSetting().setInputFileFormat(".aif");
 						else if (i == 3)
-							Settings.inputFileFormat = AudioFileFormat.Type.AIFC;
+							cm.getSetting().setInputFileFormat(".aifc");
 						else if (i == 4)
-							Settings.inputFileFormat = AudioFileFormat.Type.SND;
+							cm.getSetting().setInputFileFormat(".snd");
 
 						updateInputLine();
 					}
 
 				}
 			});
+
 			panelSelectFileFormat.add(jccFileFormat);
 
 		}
@@ -326,6 +371,11 @@ public class PanelAudioSettings extends CenterPanelSettings {
 		add(Box.createRigidArea(new Dimension(0, 10)));
 
 		JLabel lblInputFormat = new JLabel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -376,9 +426,15 @@ public class PanelAudioSettings extends CenterPanelSettings {
 					jccSelectEncoding.setOpaque(false);
 					jccSelectEncoding.setPreferredSize(new Dimension(160, 25));
 					jccSelectEncoding.setMaximumSize(jccSelectEncoding.getPreferredSize());
-					jccSelectEncoding.setSelectedIndex(2);
 					jccSelectEncoding.setEditable(false);
 					jccSelectEncoding.setAlignmentX(Component.CENTER_ALIGNMENT);
+					for (int i = 0; i < encoding.length; i++) {
+						if (encoding[i].equals(cm.getSetting().getInputEncoding())) {
+							jccSelectEncoding.setSelectedIndex(i);
+							break;
+						} else
+							jccSelectEncoding.setSelectedIndex(2);
+					}
 					jccSelectEncoding.addItemListener(new ItemListener() {
 
 						@Override
@@ -388,15 +444,15 @@ public class PanelAudioSettings extends CenterPanelSettings {
 								@SuppressWarnings("unchecked")
 								int i = ((JComboBox<String>) e.getSource()).getSelectedIndex();
 								if (i == 0)
-									Settings.inputEncoding = AudioFormat.Encoding.ALAW;
+									cm.getSetting().setInputEncoding("ALAW");
 								else if (i == 1)
-									Settings.inputEncoding = AudioFormat.Encoding.PCM_FLOAT;
+									cm.getSetting().setInputEncoding("PCM_FLOAT");
 								else if (i == 2)
-									Settings.inputEncoding = AudioFormat.Encoding.PCM_SIGNED;
+									cm.getSetting().setInputEncoding("PCM_SIGNED");
 								else if (i == 3)
-									Settings.inputEncoding = AudioFormat.Encoding.PCM_UNSIGNED;
+									cm.getSetting().setInputEncoding("PCM_UNSIGNED");
 								else if (i == 4)
-									Settings.inputEncoding = AudioFormat.Encoding.ULAW;
+									cm.getSetting().setInputEncoding("ULAW");
 
 								updateInputLine();
 							}
@@ -427,9 +483,16 @@ public class PanelAudioSettings extends CenterPanelSettings {
 					jccSampleRate.setMaximumSize(jccSampleRate.getPreferredSize());
 					jccSampleRate.setMaximumRowCount(4);
 					jccSampleRate.setBackground(new Color(0, 0, 0, 0));
-					jccSampleRate.setSelectedIndex(4);
 					jccSampleRate.setEditable(false);
 					jccSampleRate.setAlignmentX(Component.CENTER_ALIGNMENT);
+					for (int i = 0; i < sampleRate.length; i++) {
+						String s = cm.getSetting().getInputSampleRate() + "";
+						if (sampleRate[i].equals(s.substring(0, s.length() - 2) + " Hz")) {
+							jccSampleRate.setSelectedIndex(i);
+							break;
+						} else
+							jccSampleRate.setSelectedIndex(2);
+					}
 					jccSampleRate.addItemListener(new ItemListener() {
 
 						@Override
@@ -439,17 +502,17 @@ public class PanelAudioSettings extends CenterPanelSettings {
 								@SuppressWarnings("unchecked")
 								int i = ((JComboBox<String>) e.getSource()).getSelectedIndex();
 								if (i == 0)
-									Settings.inputSampleRate = 8000;
+									cm.getSetting().setInputSampleRate(8000);
 								else if (i == 1)
-									Settings.inputSampleRate = 11025;
+									cm.getSetting().setInputSampleRate(11025);
 								else if (i == 2)
-									Settings.inputSampleRate = 16000;
+									cm.getSetting().setInputSampleRate(16000);
 								else if (i == 3)
-									Settings.inputSampleRate = 22050;
+									cm.getSetting().setInputSampleRate(22050);
 								else if (i == 4)
-									Settings.inputSampleRate = 44100;
+									cm.getSetting().setInputSampleRate(44100);
 								else if (i == 5)
-									Settings.inputSampleRate = 48000;
+									cm.getSetting().setInputSampleRate(48000);
 
 								updateInputLine();
 							}
@@ -483,9 +546,15 @@ public class PanelAudioSettings extends CenterPanelSettings {
 					jccSampleSize.setPreferredSize(new Dimension(160, 25));
 					jccSampleSize.setMaximumSize(jccSampleSize.getPreferredSize());
 					jccSampleSize.setBackground(new Color(0, 0, 0, 0));
-					jccSampleSize.setSelectedIndex(1);
 					jccSampleSize.setEditable(false);
 					jccSampleSize.setAlignmentX(Component.CENTER_ALIGNMENT);
+					for (int i = 0; i < sampleSize.length; i++) {
+						if (sampleSize[i].equals(cm.getSetting().getInputSampleSize() + " bit")) {
+							jccSampleSize.setSelectedIndex(i);
+							break;
+						} else
+							jccSampleSize.setSelectedIndex(1);
+					}
 					jccSampleSize.addItemListener(new ItemListener() {
 
 						@Override
@@ -495,9 +564,9 @@ public class PanelAudioSettings extends CenterPanelSettings {
 								@SuppressWarnings("unchecked")
 								int i = ((JComboBox<String>) e.getSource()).getSelectedIndex();
 								if (i == 0)
-									Settings.inputSampleSize = 8;
+									cm.getSetting().setInputSampleSize(8);
 								else if (i == 1)
-									Settings.inputSampleSize = 16;
+									cm.getSetting().setInputSampleSize(16);
 
 								updateInputLine();
 
@@ -535,9 +604,15 @@ public class PanelAudioSettings extends CenterPanelSettings {
 					jccChannels.setPreferredSize(new Dimension(180, 25));
 					jccChannels.setMaximumSize(jccChannels.getPreferredSize());
 					jccChannels.setBackground(new Color(0, 0, 0, 0));
-					jccChannels.setSelectedIndex(1);
 					jccChannels.setEditable(false);
 					jccChannels.setAlignmentX(Component.CENTER_ALIGNMENT);
+					for (int i = 0; i < channels.length; i++) {
+						if (channels[i].equals(cm.getSetting().getInputChannels() + "")) {
+							jccChannels.setSelectedIndex(i);
+							break;
+						} else
+							jccChannels.setSelectedIndex(1);
+					}
 					jccChannels.addItemListener(new ItemListener() {
 
 						@Override
@@ -547,13 +622,13 @@ public class PanelAudioSettings extends CenterPanelSettings {
 								@SuppressWarnings("unchecked")
 								int i = ((JComboBox<String>) e.getSource()).getSelectedIndex();
 								if (i == 0)
-									Settings.inputChannels = 1;
+									cm.getSetting().setInputChannels(1);
 								else if (i == 1)
-									Settings.inputChannels = 2;
+									cm.getSetting().setInputChannels(2);
 								else if (i == 2)
-									Settings.inputChannels = 5;
+									cm.getSetting().setInputChannels(5);
 								else if (i == 3)
-									Settings.inputChannels = 7;
+									cm.getSetting().setInputChannels(7);
 
 								updateInputLine();
 							}
@@ -582,9 +657,12 @@ public class PanelAudioSettings extends CenterPanelSettings {
 					jccEndian.setPreferredSize(new Dimension(180, 25));
 					jccEndian.setMaximumSize(jccEndian.getPreferredSize());
 					jccEndian.setBackground(new Color(0, 0, 0, 0));
-					jccEndian.setSelectedIndex(0);
 					jccEndian.setEditable(false);
 					jccEndian.setAlignmentX(Component.CENTER_ALIGNMENT);
+					if (cm.getSetting().isInputBigEndian())
+						jccEndian.setSelectedIndex(1);
+					else
+						jccEndian.setSelectedIndex(0);
 					jccEndian.addItemListener(new ItemListener() {
 
 						@Override
@@ -594,9 +672,9 @@ public class PanelAudioSettings extends CenterPanelSettings {
 								@SuppressWarnings("unchecked")
 								int i = ((JComboBox<String>) e.getSource()).getSelectedIndex();
 								if (i == 0)
-									Settings.inputBigEndian = false;
+									cm.getSetting().setInputBigEndian(false);
 								else if (i == 1)
-									Settings.inputBigEndian = true;
+									cm.getSetting().setInputBigEndian(true);
 
 								updateInputLine();
 
@@ -616,6 +694,11 @@ public class PanelAudioSettings extends CenterPanelSettings {
 		add(Box.createRigidArea(new Dimension(0, 10)));
 
 		panelSupported = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -669,6 +752,11 @@ public class PanelAudioSettings extends CenterPanelSettings {
 		add(Box.createRigidArea(new Dimension(0, 20)));
 
 		JLabel lblOutput = new JLabel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -709,6 +797,11 @@ public class PanelAudioSettings extends CenterPanelSettings {
 		add(Box.createRigidArea(new Dimension(0, 5)));
 
 		JLabel lblOutputMixer = new JLabel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -757,25 +850,42 @@ public class PanelAudioSettings extends CenterPanelSettings {
 			jccOutputDevices.setPreferredSize(new Dimension(500, 40));
 			jccOutputDevices.setMaximumSize(jccOutputDevices.getPreferredSize());
 			jccOutputDevices.setBackground(new Color(0, 0, 0, 0));
+			if (cm.getSetting().getOutputMixerInfoName() != null
+					&& !cm.getSetting().getOutputMixerInfoName().equals("")) {
+				for (int i = 0; i < outputMixerNames.length; i++) {
+					if (outputMixerNames[i].equals(cm.getSetting().getOutputMixerInfoName())) {
+						jccOutputDevices.setSelectedIndex(i);
+						break;
+					} else
+						jccOutputDevices.setSelectedIndex(0);
+				}
+			} else {
+				jccOutputDevices.setSelectedIndex(0);
+				cm.getSetting().setOutputMixerInfo(outputMixerNames[0]);
+			}
 			jccOutputDevices.addItemListener(new ItemListener() {
 
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 
 					if (e.getStateChange() == ItemEvent.SELECTED) {
-						Settings.outputMixerInfo = selectAudioDevices.getOutputDevices()
-								.get(jccOutputDevices.getSelectedIndex());
+						cm.getSetting().setOutputMixerInfo(selectAudioDevices.getOutputDevices()
+								.get(jccOutputDevices.getSelectedIndex()).getName());
 					}
 
 				}
 			});
-
 			panelOutputDevice.add(jccOutputDevices);
 		}
 		add(panelOutputDevice);
 		add(Box.createRigidArea(new Dimension(0, 5)));
 
 		JLabel lblOutputVolume = new JLabel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -812,7 +922,8 @@ public class PanelAudioSettings extends CenterPanelSettings {
 			panelOutputVolume.add(lblSelectGain);
 			panelOutputVolume.add(Box.createRigidArea(new Dimension(0, 2)));
 
-			JSlider sliderGain = new JSlider(JSlider.HORIZONTAL, 0, 200, 100);
+			JSlider sliderGain = new JSlider(JSlider.HORIZONTAL, 0, 200,
+					(int) (cm.getSetting().getOutputVolume() * 100));
 			sliderGain.setMajorTickSpacing(50);
 			sliderGain.setMinorTickSpacing(10);
 			sliderGain.setPaintTicks(true);
@@ -828,7 +939,7 @@ public class PanelAudioSettings extends CenterPanelSettings {
 
 					JSlider source = (JSlider) e.getSource();
 					if (!source.getValueIsAdjusting()) {
-						Settings.outputVolume = source.getValue() / 100;
+						cm.getSetting().setOutputVolume((float) source.getValue() / 100);
 					}
 				}
 			});
@@ -854,15 +965,19 @@ public class PanelAudioSettings extends CenterPanelSettings {
 
 	private void updateInputLine() {
 
-		LOG.info("Encoding: " + Settings.inputEncoding);
-		LOG.info("Sample Rate: " + Settings.inputSampleRate);
-		LOG.info("Sample size: " + Settings.inputSampleSize);
-		LOG.info("Channels: " + Settings.inputChannels);
-		LOG.info("Big Endian: " + Settings.inputBigEndian);
-
-		AudioFormat af = new AudioFormat(Settings.inputEncoding, Settings.inputSampleRate, Settings.inputSampleSize,
-				Settings.inputChannels, Settings.frameSize, Settings.inputSampleRate, Settings.inputBigEndian);
-		Mixer m = AudioSystem.getMixer(Settings.inputMixerInfo);
+		AudioFormat af = cm.getSetting().getAudioFormat();
+		Mixer m = null;
+		if (cm.getSetting().getInputMixerInfoName() != null) {
+			for (Mixer.Info mi : AudioSystem.getMixerInfo()) {
+				if (mi.getName().equals(cm.getSetting().getInputMixerInfoName()))
+					m = AudioSystem.getMixer(mi);
+			}
+			if (m == null) {
+				m = AudioSystem.getMixer(AudioSystem.getMixerInfo()[0]);
+			}
+		} else {
+			m = AudioSystem.getMixer(AudioSystem.getMixerInfo()[0]);
+		}
 		LOG.info("Is Line supported: " + m.isLineSupported(new DataLine.Info(TargetDataLine.class, af)));
 		if (m.isLineSupported(new DataLine.Info(TargetDataLine.class, af)))
 			lineSupported = true;

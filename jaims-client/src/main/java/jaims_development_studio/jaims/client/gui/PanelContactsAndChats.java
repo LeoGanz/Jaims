@@ -253,4 +253,8 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 
 	}
 
+	public void addNewContact() {
+
+	}
+
 }

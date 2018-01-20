@@ -1,13 +1,10 @@
 package jaims_development_studio.jaims.client.settings;
 
 import java.awt.Color;
+import java.io.Serializable;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioFormat.Encoding;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.Mixer;
-import javax.sound.sampled.TargetDataLine;
 
 /**
  * Holds all the fields for customisable user settings.
@@ -15,54 +12,336 @@ import javax.sound.sampled.TargetDataLine;
  * @author Bu88le
  *
  */
-public class Settings {
+public class Settings implements Serializable {
 
-	public static int					arcMessages					= 20;
-	public static int					arcContactImage				= 15;
-	public static int					arcProfileImage				= 15;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID			= 1176941652188927120L;
+	private int					arcMessages					= 20;
+	private int					arcContactImage				= 15;
+	private int					arcProfileImage				= 15;
 
 	// Font attributes for User-Message
-	public static String				ownFontName					= "Serif";
-	public static int					ownFontStyle				= 0;
-	public static int					ownFontSize					= 14;
+	private String				ownFontName					= "Serif";
+	private int					ownFontStyle				= 0;
+	private int					ownFontSize					= 14;
 
 	// Color Attributes for User-Message
-	public static Color					colorOwnMessages			= new Color(191, 225, 14);
-	public static Color					colorOwnMessageBorder		= Color.GRAY;
-	public static Color					colorOwnMessageFont			= Color.BLACK;
+	private Color				colorOwnMessages			= new Color(191, 225, 14);
+	private Color				colorOwnMessageBorder		= Color.GRAY;
+	private Color				colorOwnMessageFont			= Color.BLACK;
 
 	// Font attributes for Contact-Message
-	public static String				contactFontName				= "Serif";
-	public static int					contactFontStyle			= 0;
-	public static int					contactFontSize				= 14;
+	private String				contactFontName				= "Serif";
+	private int					contactFontStyle			= 0;
+	private int					contactFontSize				= 14;
 
 	// Color attributes for Contact-Message
-	public static Color					colorContactMessages		= new Color(191, 225, 14);
-	public static Color					colorContactMessageBorder	= Color.GRAY;
-	public static Color					colorContactMessageFont		= Color.BLACK;
+	private Color				colorContactMessages		= new Color(191, 225, 14);
+	private Color				colorContactMessageBorder	= Color.GRAY;
+	private Color				colorContactMessageFont		= Color.BLACK;
 
 	// Input for Voice-Messages
-	public static AudioFormat			format						= new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-			44100.0F, 16, 2, 4, 44100.0F, false);
-	public static DataLine.Info			info						= new DataLine.Info(TargetDataLine.class, format);
 
 	// Devices
-	public static Mixer.Info			inputMixerInfo;
-	public static Mixer.Info			outputMixerInfo;
-	public static float					inputGain;
-	public static float					outputVolume;
-	public static Encoding				inputEncoding				= AudioFormat.Encoding.PCM_SIGNED;
-	public static float					inputSampleRate				= 44100;
-	public static int					inputSampleSize				= 16;
-	public static int					inputChannels				= 2;
-	public static boolean				inputBigEndian				= false;
-	public static int					frameSize					= 4;
-	public static AudioFileFormat.Type	inputFileFormat				= AudioFileFormat.Type.WAVE;
+	private String				inputMixerInfoName			= null;
+	private String				outputMixerInfoName			= null;
+	private float				inputGain					= 1.0F;
+	private float				outputVolume				= 1.0F;
+	private String				inputEncoding				= "PCM_SIGNED";
+	private float				inputSampleRate				= 16000;
+	private int					inputSampleSize				= 16;
+	private int					inputChannels				= 2;
+	private boolean				inputBigEndian				= false;
+	private int					frameSize					= 4;
+	private String				inputFileFormat				= "WAVE";
 
-	public static AudioFormat getInputFormat() {
+	public AudioFormat getAudioFormat() {
 
-		return new AudioFormat(inputEncoding, inputSampleRate, inputSampleSize, inputChannels, frameSize,
-				inputSampleRate, inputBigEndian);
+		switch (inputEncoding) {
+		case "ALAW":
+			return new AudioFormat(AudioFormat.Encoding.ALAW, inputSampleRate, inputSampleSize, inputChannels,
+					frameSize, inputSampleRate, inputBigEndian);
+		case "PCM_FLOAT":
+			return new AudioFormat(AudioFormat.Encoding.PCM_FLOAT, inputSampleRate, inputSampleSize, inputChannels,
+					frameSize, inputSampleRate, inputBigEndian);
+		case "PCM_SIGNED":
+			return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, inputSampleRate, inputSampleSize, inputChannels,
+					frameSize, inputSampleRate, inputBigEndian);
+		case "PCM_UNSIGNED":
+			return new AudioFormat(AudioFormat.Encoding.PCM_UNSIGNED, inputSampleRate, inputSampleSize, inputChannels,
+					frameSize, inputSampleRate, inputBigEndian);
+		case "ULAW":
+			return new AudioFormat(AudioFormat.Encoding.ULAW, inputSampleRate, inputSampleSize, inputChannels,
+					frameSize, inputSampleRate, inputBigEndian);
+		default:
+			return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, inputSampleRate, inputSampleSize, inputChannels,
+					frameSize, inputSampleRate, inputBigEndian);
+		}
+	}
+
+	public String getOwnFontName() {
+
+		return ownFontName;
+	}
+
+	public void setOwnFontName(String ownFontName) {
+
+		this.ownFontName = ownFontName;
+	}
+
+	public int getOwnFontStyle() {
+
+		return ownFontStyle;
+	}
+
+	public void setOwnFontStyle(int ownFontStyle) {
+
+		this.ownFontStyle = ownFontStyle;
+	}
+
+	public int getOwnFontSize() {
+
+		return ownFontSize;
+	}
+
+	public void setOwnFontSize(int ownFontSize) {
+
+		this.ownFontSize = ownFontSize;
+	}
+
+	public Color getColorOwnMessages() {
+
+		return colorOwnMessages;
+	}
+
+	public void setColorOwnMessages(Color colorOwnMessages) {
+
+		this.colorOwnMessages = colorOwnMessages;
+	}
+
+	public Color getColorOwnMessageBorder() {
+
+		return colorOwnMessageBorder;
+	}
+
+	public void setColorOwnMessageBorder(Color colorOwnMessageBorder) {
+
+		this.colorOwnMessageBorder = colorOwnMessageBorder;
+	}
+
+	public Color getColorOwnMessageFont() {
+
+		return colorOwnMessageFont;
+	}
+
+	public void setColorOwnMessageFont(Color colorOwnMessageFont) {
+
+		this.colorOwnMessageFont = colorOwnMessageFont;
+	}
+
+	public String getContactFontName() {
+
+		return contactFontName;
+	}
+
+	public void setContactFontName(String contactFontName) {
+
+		this.contactFontName = contactFontName;
+	}
+
+	public int getContactFontStyle() {
+
+		return contactFontStyle;
+	}
+
+	public void setContactFontStyle(int contactFontStyle) {
+
+		this.contactFontStyle = contactFontStyle;
+	}
+
+	public int getContactFontSize() {
+
+		return contactFontSize;
+	}
+
+	public void setContactFontSize(int contactFontSize) {
+
+		this.contactFontSize = contactFontSize;
+	}
+
+	public Color getColorContactMessages() {
+
+		return colorContactMessages;
+	}
+
+	public void setColorContactMessages(Color colorContactMessages) {
+
+		this.colorContactMessages = colorContactMessages;
+	}
+
+	public Color getColorContactMessageBorder() {
+
+		return colorContactMessageBorder;
+	}
+
+	public void setColorContactMessageBorder(Color colorContactMessageBorder) {
+
+		this.colorContactMessageBorder = colorContactMessageBorder;
+	}
+
+	public Color getColorContactMessageFont() {
+
+		return colorContactMessageFont;
+	}
+
+	public void setColorContactMessageFont(Color colorContactMessageFont) {
+
+		this.colorContactMessageFont = colorContactMessageFont;
+	}
+
+	public String getInputMixerInfoName() {
+
+		return inputMixerInfoName;
+	}
+
+	public void setInputMixerInfo(String inputMixerInfo) {
+
+		this.inputMixerInfoName = inputMixerInfo;
+	}
+
+	public String getOutputMixerInfoName() {
+
+		return outputMixerInfoName;
+	}
+
+	public void setOutputMixerInfo(String outputMixerInfo) {
+
+		this.outputMixerInfoName = outputMixerInfo;
+	}
+
+	public float getInputGain() {
+
+		return inputGain;
+	}
+
+	public void setInputGain(float inputGain) {
+
+		this.inputGain = inputGain;
+	}
+
+	public float getOutputVolume() {
+
+		return outputVolume;
+	}
+
+	public void setOutputVolume(float outputVolume) {
+
+		this.outputVolume = outputVolume;
+	}
+
+	public String getInputEncoding() {
+
+		return inputEncoding;
+	}
+
+	public void setInputEncoding(String inputEncoding) {
+
+		this.inputEncoding = inputEncoding;
+	}
+
+	public float getInputSampleRate() {
+
+		return inputSampleRate;
+	}
+
+	public void setInputSampleRate(float inputSampleRate) {
+
+		this.inputSampleRate = inputSampleRate;
+	}
+
+	public int getInputSampleSize() {
+
+		return inputSampleSize;
+	}
+
+	public void setInputSampleSize(int inputSampleSize) {
+
+		this.inputSampleSize = inputSampleSize;
+	}
+
+	public int getInputChannels() {
+
+		return inputChannels;
+	}
+
+	public void setInputChannels(int inputChannels) {
+
+		this.inputChannels = inputChannels;
+	}
+
+	public boolean isInputBigEndian() {
+
+		return inputBigEndian;
+	}
+
+	public void setInputBigEndian(boolean inputBigEndian) {
+
+		this.inputBigEndian = inputBigEndian;
+	}
+
+	public int getFrameSize() {
+
+		return frameSize;
+	}
+
+	public void setFrameSize(int frameSize) {
+
+		this.frameSize = frameSize;
+	}
+
+	public AudioFileFormat.Type getInputFileFormat() {
+
+		switch (inputFileFormat) {
+		case "AIFC":
+			return AudioFileFormat.Type.AIFC;
+		case "AIFF":
+			return AudioFileFormat.Type.AIFF;
+		case "AU":
+			return AudioFileFormat.Type.AU;
+		case "SND":
+			return AudioFileFormat.Type.SND;
+		case "WAVE":
+			return AudioFileFormat.Type.WAVE;
+		default:
+			return AudioFileFormat.Type.WAVE;
+		}
+	}
+
+	public String getInputFileFormatString() {
+
+		return inputFileFormat;
+	}
+
+	public void setInputFileFormat(String inputFileFormat) {
+
+		this.inputFileFormat = inputFileFormat;
+	}
+
+	public int getArcMessages() {
+
+		return arcMessages;
+	}
+
+	public int getArcContactImage() {
+
+		return arcContactImage;
+	}
+
+	public int getArcProfileImage() {
+
+		return arcProfileImage;
 	}
 
 }
