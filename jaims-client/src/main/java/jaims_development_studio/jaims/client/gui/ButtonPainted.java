@@ -1,14 +1,17 @@
 package jaims_development_studio.jaims.client.gui;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
-import java.awt.Toolkit;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 
 public class ButtonPainted extends JButton {
@@ -21,7 +24,13 @@ public class ButtonPainted extends JButton {
 		this.paintString = paintString;
 		setPreferredSize(new Dimension(250, 75));
 		setMaximumSize(getPreferredSize());
-		img = Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/button.png"));
+		setCursor(new Cursor(Cursor.HAND_CURSOR));
+		try {
+			img = ImageIO.read(getClass().getClassLoader().getResource("images/button.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -34,7 +43,8 @@ public class ButtonPainted extends JButton {
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.drawImage(img, 0, 0, this);
 
-		g2d.setColor(Color.BLACK);
+		g2d.setColor(Color.WHITE);
+		g2d.setStroke(new BasicStroke(1.8F));
 		g2d.setFont(new Font("Sans Serif", Font.BOLD, 16));
 
 		int width = g2d.getFontMetrics(g2d.getFont()).stringWidth(paintString);
