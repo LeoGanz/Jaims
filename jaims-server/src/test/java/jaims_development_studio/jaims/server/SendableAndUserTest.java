@@ -8,13 +8,17 @@ import org.junit.Test;
 
 import jaims_development_studio.jaims.api.account.Account;
 import jaims_development_studio.jaims.api.account.UserNameNotAvailableException;
+import jaims_development_studio.jaims.api.profile.Profile;
+import jaims_development_studio.jaims.api.profile.ProfileAlreadyExistsException;
 import jaims_development_studio.jaims.api.sendables.EConfirmationType;
 import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.api.sendables.SendableConfirmation;
 import jaims_development_studio.jaims.api.sendables.SendableLogin;
+import jaims_development_studio.jaims.api.sendables.SendableProfile;
 import jaims_development_studio.jaims.api.sendables.SendableTextMessage;
 import jaims_development_studio.jaims.api.user.User;
 import jaims_development_studio.jaims.server.account.AccountDAO;
+import jaims_development_studio.jaims.server.profile.ProfileManager;
 import jaims_development_studio.jaims.server.user.UserDAO;
 
 public class SendableAndUserTest {
@@ -62,7 +66,7 @@ public class SendableAndUserTest {
 
 	@SuppressWarnings("static-method")
 	@Test
-	public void testSendables() {
+	public void testSendables() throws ProfileAlreadyExistsException {
 		String username = "SendableTester2";
 		AccountDAO accountDAO = new AccountDAO();
 		UserDAO userDAO = new UserDAO();
@@ -94,6 +98,13 @@ public class SendableAndUserTest {
 		sendables.add(new SendableConfirmation(EConfirmationType.LOGIN_SUCCESSFUL));
 		sendables.add(new SendableTextMessage(account.getUuid(), account.getUuid(), "Hi!"));
 		sendables.add(new SendableLogin(username, "PW"));
+
+		ProfileManager profileManager = new ProfileManager(null);
+		Profile profile = profileManager.get(account.getUuid());
+		if (profile == null)
+			profile = profileManager.newProfile(account, "ProfileTester", "A Profile", "testing", null);
+
+		sendables.add(new SendableProfile(profile));
 
 		for (Sendable s : sendables)
 			user.enqueueSendable(s);

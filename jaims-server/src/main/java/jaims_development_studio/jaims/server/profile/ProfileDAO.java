@@ -1,4 +1,4 @@
-package jaims_development_studio.jaims.server.user;
+package jaims_development_studio.jaims.server.profile;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,61 +14,63 @@ import javax.transaction.Transactional;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import jaims_development_studio.jaims.api.user.User;
+import jaims_development_studio.jaims.api.profile.Profile;
 import jaims_development_studio.jaims.api.util.HibernateUtil;
 
+/**
+ * This is the DAO (Data Access Object) for Profiles. It provides utility methods for accessing profiles in the
+ * database.
+ *
+ * @author WilliGross
+ */
 @Transactional
-public class UserDAO {
+public class ProfileDAO {
 
 	@SuppressWarnings("static-method")
-	public void saveOrUpdate(User user) {
+	public void saveOrUpdate(Profile profile) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			Transaction transaction = session.beginTransaction();
-			session.saveOrUpdate(user);
+			session.saveOrUpdate(profile);
 			transaction.commit();
 		}
 	}
-	
+
 	@SuppressWarnings("static-method")
 	public void delete(UUID uuid) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-			CriteriaDelete<User> criteriaDelete = criteriaBuilder.createCriteriaDelete(User.class);
-			Root<User> root = criteriaDelete.from(User.class);
+			CriteriaDelete<Profile> criteriaDelete = criteriaBuilder.createCriteriaDelete(Profile.class);
+			Root<Profile> root = criteriaDelete.from(Profile.class);
 			Predicate condition = criteriaBuilder.equal(root.get("uuid"), uuid);
 			criteriaDelete.where(condition);
-			TypedQuery<User> query = session.createQuery(criteriaDelete);
+			TypedQuery<Profile> query = session.createQuery(criteriaDelete);
 			query.executeUpdate();
 		}
 	}
 	
-	//	public void delete(String username) {
-	//		Account account = (new AccountDAO()).get(username);
-	//		delete(account.getUuid());
-	//	}
-	
 	@SuppressWarnings("static-method")
-	public List<User> getAll() {
+	public List<Profile> getAll() {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			CriteriaQuery<User> criteriaQuery = session.getCriteriaBuilder().createQuery(User.class);
-			criteriaQuery.from(User.class);
-			List<User> users = session.createQuery(criteriaQuery).getResultList();
+			CriteriaQuery<Profile> criteriaQuery = session.getCriteriaBuilder().createQuery(Profile.class);
+			criteriaQuery.from(Profile.class);
+			List<Profile> users = session.createQuery(criteriaQuery).getResultList();
 			return users;
 		}
 	}
-	
+
 	@SuppressWarnings("static-method")
-	public User get(UUID uuid) {
+	public Profile get(UUID uuid) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-			CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
-			Root<User> root = criteriaQuery.from(User.class);
+			CriteriaQuery<Profile> criteriaQuery = criteriaBuilder.createQuery(Profile.class);
+			Root<Profile> root = criteriaQuery.from(Profile.class);
 			Predicate condition = criteriaBuilder.equal(root.get("uuid"), uuid);
 			criteriaQuery.where(condition);
-			TypedQuery<User> query = session.createQuery(criteriaQuery);
-			List<User> result = query.getResultList();
+			TypedQuery<Profile> query = session.createQuery(criteriaQuery);
+			List<Profile> result = query.getResultList();
 			return result.isEmpty() ? null : result.get(0);
 		}
 	}
+
 }

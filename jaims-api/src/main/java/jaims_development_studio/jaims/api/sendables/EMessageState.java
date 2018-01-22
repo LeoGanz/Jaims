@@ -1,7 +1,12 @@
 package jaims_development_studio.jaims.api.sendables;
 
 public enum EMessageState {
-	UNSENT(Values.UNSENT), SENT(Values.SENT), SERVER_RECEIVED(Values.SERVER_RECEIVED), SERVER_SENT(Values.SERVER_SENT), DELIVERED(Values.DELIVERED), READ(Values.READ);
+	UNSENT(Values.UNSENT), 
+	SENT(Values.SENT), 
+	SERVER_RECEIVED(Values.SERVER_RECEIVED), 
+	SERVER_SENT(Values.SERVER_SENT), 
+	DELIVERED(Values.DELIVERED), 
+	READ(Values.READ);
 
 	private String value;
 	

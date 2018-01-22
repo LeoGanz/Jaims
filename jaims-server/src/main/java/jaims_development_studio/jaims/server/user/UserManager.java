@@ -13,23 +13,30 @@ import org.slf4j.LoggerFactory;
 import jaims_development_studio.jaims.api.account.Account;
 import jaims_development_studio.jaims.api.account.IncorrectPasswordException;
 import jaims_development_studio.jaims.api.account.UserNameNotAvailableException;
+import jaims_development_studio.jaims.api.profile.NoProfileAvailableException;
+import jaims_development_studio.jaims.api.profile.Profile;
 import jaims_development_studio.jaims.api.sendables.EMessageType;
+import jaims_development_studio.jaims.api.sendables.InvalidSendableTypeException;
 import jaims_development_studio.jaims.api.sendables.SendableLogin;
 import jaims_development_studio.jaims.api.sendables.SendableMessage;
+import jaims_development_studio.jaims.api.sendables.SendableProfile;
 import jaims_development_studio.jaims.api.sendables.SendableRegistration;
+import jaims_development_studio.jaims.api.sendables.SendableRequest;
 import jaims_development_studio.jaims.api.sendables.SendableTextMessage;
 import jaims_development_studio.jaims.api.user.User;
 import jaims_development_studio.jaims.api.user.UserNotFoundException;
 import jaims_development_studio.jaims.api.util.ObservableList;
 import jaims_development_studio.jaims.server.Server;
 import jaims_development_studio.jaims.server.account.AccountManager;
+import jaims_development_studio.jaims.server.profile.ProfileManager;
 
 public class UserManager implements Serializable {
 	
 	private final Logger			LOG					= LoggerFactory.getLogger(UserManager.class);
 	private static final long		serialVersionUID	= 1L;
 	private final AccountManager	accountManager;
-	private final UserDAO			userDAO				= new UserDAO();
+	private final ProfileManager	profileManager;
+	private final UserDAO			userDAO;
 	private final Server			server;
 	private final Map<UUID, User>	loadedUsers;
 	private final List<User>		onlineUsers;
@@ -37,6 +44,8 @@ public class UserManager implements Serializable {
 	public UserManager(Server server) {
 		this.server = server;
 		accountManager = new AccountManager();
+		profileManager = new ProfileManager(this);
+		userDAO = new UserDAO();
 		loadedUsers = new HashMap<>();
 		onlineUsers = new ObservableList<>(new LinkedList<>());
 		new Thread(() -> userDAO.get(UUID.randomUUID()), "Database Initializer").start();
@@ -146,4 +155,34 @@ public class UserManager implements Serializable {
 	public AccountManager getAccountManager() {
 		return accountManager;
 	}
+	
+	public Profile getProfile(UUID uuid) {
+		return profileManager.get(uuid);
+	}
+
+	public void manageRequest(SendableRequest request) throws InvalidSendableTypeException, NoProfileAvailableException {
+
+		switch (request.getRequestType()) {
+			case DELETE_ACCOUNT:
+				deleteUserAndAccount(request.getUniversalUuid());
+				break;
+			case PROFILE:
+				try {
+					profileManager.manageProfileRequest(request);
+				} catch (InvalidSendableTypeException e) {
+					LOG.error("No InvalidSendableTypeException should have occured in this environment!", e);
+				} catch (NoProfileAvailableException e) {
+					throw e;
+				}
+				break;
+			default:
+				throw new InvalidSendableTypeException("Cannot process SendableRequest of type " + request.getRequestType(), request);
+		}
+
+	}
+	
+	public void manageReceiveProfile(SendableProfile profile) {
+		profileManager.saveOrUpdateProfile(profile);
+	}
+	
 }

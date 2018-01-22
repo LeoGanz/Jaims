@@ -27,6 +27,20 @@ import jaims_development_studio.jaims.server.command.ServerCommandManager;
 import jaims_development_studio.jaims.server.gui.ServerGui;
 import jaims_development_studio.jaims.server.network.NetworkSystem;
 
+/**
+ * This type represents the server side of JAIMS ( = Just Another Instant Messaging Service). The server can accept
+ * multiple clients over a TCP connection. Furthermore it manages all the data received by clients. Everything is
+ * persisted in a local database.
+ * <br><br>
+ * This type contains the {@link #main(String[])} method that accepts command line arguments for configuring the server.
+ * It is the intended way of instantiating the {@link Server}.
+ *
+ * @author WilliGross
+ * @see #main(String[]) command line arguments
+ * @see IServer
+ * @see ICommandSender
+ * @see ITickable
+ */
 public class Server implements Runnable, IServer, ICommandSender, ITickable {
 	
 	private static final Logger			LOG					= LoggerFactory.getLogger(Server.class);
@@ -206,7 +220,12 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 		
 		return true;
 	}
-	
+
+	/**
+	 * This is the server's main loop. It first initiates initialization and afterwards notifies all threads waiting on
+	 * this specific instance of {@link Server} that the server is running. The main loop keeps the Server-Thread alive
+	 * until it receives a shutdown signal. When a Exception is caught the main loop initiates a controlled shutdown.
+	 */
 	@Override
 	public void run() {
 		
@@ -222,7 +241,7 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 			while (serverRunning)
 				Thread.sleep(50);
 			LOG.info("Server stopping...");
-			//Saving data is handled by shutdown hook
+			//Saving data is handled by a controlled shutdown of the network system initiated automatically when server is stopped
 		} catch (Exception e) {
 			LOG.error("Encountered an unexpected exception", e);
 			//Implement crash reports
@@ -237,32 +256,70 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 		}
 	}
 	
+	/**
+	 * Every tick (specified by command line arguments on server startup) all {@link PendingCommand}s are executed.
+	 *
+	 * @see ITickable#tick()
+	 */
 	@Override
 	public void tick() {
 		executePendingCommands();
 	}
 	
-	public void subscribeToTicker(ITickable subscriber) {
+	/**
+	 * This method subscribes a type implementing the interface {@link ITickable} to the {@link Server}'s ticker. The
+	 * argument's {@link ITickable#tick()} method is executed at the {@link Server}'s tick rate which can be retrieved
+	 * via {@link #getTickRate()}.
+	 *
+	 * @param subscriber the tickable that shall be subscribed to the {@link Server}'s ticker
+	 * @see ITickable
+	 */
+	public synchronized void subscribeToTicker(ITickable subscriber) {
 		tickables.add(subscriber);
 	}
 	
-	public void unsubscribeFromTicker(ITickable subscriber) {
+	/**
+	 * This method unsubscribes a type implementing the interface {@link ITickable} from the {@link Server}'s ticker.
+	 * The argument's {@link ITickable#tick()} method will not be executed anymore.
+	 *
+	 * @param subscriber the tickable that shall be unsubscribed from the {@link Server}'s ticker
+	 * @see ITickable
+	 */
+	public synchronized void unsubscribeFromTicker(ITickable subscriber) {
 		tickables.remove(subscriber);
 	}
 	
 	/**
-	 * Sets the serverRunning variable to false, in order to get the server to shut down.
+	 * This method initiates a shutdown by setting the serverRunning variable to false. This is only a signal to the
+	 * server thread that it is kindly asked to stop what ever it is doing. This means that no immediate shutdown is
+	 * forced.
 	 */
-	public void initiateShutdown() {
+	public synchronized void initiateShutdown() {
 		LOG.info("Shutdown initiated");
 		serverRunning = false;
 	}
 	
+	/**
+	 * At first this method initializes a new Thread with a reference to the instance of this class which implements the
+	 * interface {@link Runnable}. Afterwards the thread is started which causes it to run the {@link Server}'s main
+	 * loop.
+	 *
+	 * @see Runnable
+	 */
 	private void startServerThread() {
 		serverThread = new Thread(this, "Server thread");
 		serverThread.start();
 	}
 	
+	/**
+	 * This method stops the server after releasing all vital components that need to be closed explicitly, mainly the
+	 * {@link NetworkSystem}.
+	 * <br><br>
+	 * Even though it might seem tempting this method shall not be called outside the main loop. 
+	 * Use {@link #initiateShutdown()} instead. 
+	 * 
+	 * @see #initiateShutdown()
+	 */
 	private void stopServer() {
 		// Save data and control shutdown
 		
@@ -296,11 +353,11 @@ public class Server implements Runnable, IServer, ICommandSender, ITickable {
 		return serverPort;
 	}
 	
-	public void addPendingCommand(String input, ICommandSender sender) {
+	public synchronized void addPendingCommand(String input, ICommandSender sender) {
 		pendingCommandList.add(new PendingCommand(input, sender));
 	}
 	
-	public void executePendingCommands() {
+	private synchronized void executePendingCommands() {
 		while (!pendingCommandList.isEmpty()) {
 			PendingCommand command = pendingCommandList.remove(0);
 			getCommandManager().executeCommand(command.getSender(), command.getCommand());

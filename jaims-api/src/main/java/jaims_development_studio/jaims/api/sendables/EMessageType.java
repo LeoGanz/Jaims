@@ -2,7 +2,12 @@ package jaims_development_studio.jaims.api.sendables;
 
 
 public enum EMessageType {
-	TEXT(Values.TEXT), IMAGE(Values.IMAGE), VOICE(Values.VOICE), FILE(Values.FILE), LOCATION(Values.LOCATION), OTHER(Values.OTHER);
+	TEXT(Values.TEXT), 
+	IMAGE(Values.IMAGE), 
+	VOICE(Values.VOICE), 
+	FILE(Values.FILE), 
+	LOCATION(Values.LOCATION), 
+	OTHER(Values.OTHER);
 
 	private String value;
 	

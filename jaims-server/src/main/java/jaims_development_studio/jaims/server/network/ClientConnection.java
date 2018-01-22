@@ -15,6 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import jaims_development_studio.jaims.api.account.IncorrectPasswordException;
 import jaims_development_studio.jaims.api.account.UserNameNotAvailableException;
+import jaims_development_studio.jaims.api.profile.InsufficientPermissionException;
+import jaims_development_studio.jaims.api.profile.NoProfileAvailableException;
+import jaims_development_studio.jaims.api.sendables.ERequestType;
 import jaims_development_studio.jaims.api.sendables.ESendableType;
 import jaims_development_studio.jaims.api.sendables.InvalidSendableTypeException;
 import jaims_development_studio.jaims.api.sendables.Sendable;
@@ -22,7 +25,9 @@ import jaims_development_studio.jaims.api.sendables.SendableException;
 import jaims_development_studio.jaims.api.sendables.SendableLogin;
 import jaims_development_studio.jaims.api.sendables.SendableMessage;
 import jaims_development_studio.jaims.api.sendables.SendableMessageResponse;
+import jaims_development_studio.jaims.api.sendables.SendableProfile;
 import jaims_development_studio.jaims.api.sendables.SendableRegistration;
+import jaims_development_studio.jaims.api.sendables.SendableRequest;
 import jaims_development_studio.jaims.api.sendables.SendableUUID;
 import jaims_development_studio.jaims.api.user.User;
 import jaims_development_studio.jaims.api.user.UserNotFoundException;
@@ -141,8 +146,7 @@ public class ClientConnection implements Runnable {
 		if (user == null)
 			if (!((sendable.getType() == ESendableType.LOGIN) || (sendable.getType() == ESendableType.REGISTRATION))) {
 				InvalidSendableTypeException invalidSendableTypeException = new InvalidSendableTypeException("No user is logged in!", sendable);
-				SendableException sendableException = new SendableException(invalidSendableTypeException);
-				manageSendSendable(sendableException);
+				error(invalidSendableTypeException);
 				return;
 			}
 		
@@ -156,8 +160,14 @@ public class ClientConnection implements Runnable {
 			case MESSAGE:
 				manageReceiveMessage((SendableMessage) sendable);
 				break;
+			case REQUEST:
+				manageReceiveRequest((SendableRequest) sendable);
+				break;
 			case DELETE_ACCOUNT:
 				manageReceiveAccountDeletion();
+				break;
+			case PROFILE:
+				manageReceiveProfile((SendableProfile) sendable);
 				break;
 			default:
 				manageReceiveInvalidSendable(sendable);
@@ -171,8 +181,7 @@ public class ClientConnection implements Runnable {
 
 			startSendableAutoSender();
 		} catch (NullPointerException | UserNameNotAvailableException e) {
-			SendableException sendableException = new SendableException(e);
-			manageSendSendable(sendableException);
+			error(e);
 		} catch (UserNotLoggedInException e) {
 			LOG.warn("Could not start SendableAutoSender eventhough the user should be logged in by now", e);
 		}
@@ -184,8 +193,7 @@ public class ClientConnection implements Runnable {
 
 			startSendableAutoSender();
 		} catch (NullPointerException | UserNotFoundException | IncorrectPasswordException e) {
-			SendableException sendableException = new SendableException(e);
-			manageSendSendable(sendableException);
+			error(e);
 		} catch (UserNotLoggedInException e) {
 			LOG.warn("Could not start SendableAutoSender eventhough the user should be logged in by now", e);
 		}
@@ -198,19 +206,70 @@ public class ClientConnection implements Runnable {
 			SendableMessageResponse messageResponse = message.buildMessageResponse();
 			manageSendSendable(messageResponse);
 		} catch (UserNotFoundException e) {
-			SendableException sendableException = new SendableException(e);
-			manageSendSendable(sendableException);
+			error(e);
 		}
 	}
 	
+	private void manageReceiveRequest(SendableRequest request) {
+		try {
+			if (user != null)
+				switch (request.getRequestType()) {
+					case DELETE_ACCOUNT:
+						request.setUniversalUuid(user.getAccount().getUuid());
+						user = null;
+						break;
+					case PROFILE:
+						if (request.getUniversalUuid() == null)
+							request.setUniversalUuid(user.getAccount().getUuid());
+						break;
+					default:
+						clientManager.manageRequest(request);
+				}
+			else if (request.getRequestType() == ERequestType.DELETE_ACCOUNT)
+				throw new UserNotFoundException("User not logged in!");
+			else
+				clientManager.manageRequest(request);
+		} catch (InvalidSendableTypeException e) {
+			error(e);
+		} catch (UserNotFoundException e) {
+			error(e);
+		} catch (NoProfileAvailableException e) {
+			error(e);
+		}
+	}
+	
+	@Deprecated
 	private void manageReceiveAccountDeletion() {
 		if (user != null) {
 			clientManager.deleteUserAndAccount(user.getAccount().getUuid());
 			user = null;
 		} else {
 			UserNotFoundException userNotFoundException = new UserNotFoundException("User not logged in!");
-			SendableException sendableException = new SendableException(userNotFoundException);
-			manageSendSendable(sendableException);
+			error(userNotFoundException);
+		}
+	}
+	
+	private void manageReceiveProfile(SendableProfile profile) {
+		if (user != null) {
+			if (profile.getProfile() == null) {
+				NullPointerException nullPointerException = new NullPointerException("SendableProfile contains no profile");
+				error(nullPointerException);
+				return;
+			}
+
+			if (!user.getAccount().getUuid().equals(profile.getProfile().getUuid())) {
+				InsufficientPermissionException insufficientPermissionException = new InsufficientPermissionException("No permission to alter other user's profiles!");
+				error(insufficientPermissionException);
+				return;
+			}
+
+			if (profile.getProfile().getAccount() != null)
+				profile.getProfile().setAccount(null);
+
+			clientManager.manageReceiveProfile(profile);
+		} else {
+			UserNotFoundException userNotFoundException = new UserNotFoundException("User not logged in!");
+			error(userNotFoundException);
 		}
 	}
 
@@ -220,10 +279,14 @@ public class ClientConnection implements Runnable {
 
 		InvalidSendableTypeException invalidSendableTypeException = new InvalidSendableTypeException(
 				"Unknown sendable type!", sendable);
-		SendableException sendableException = new SendableException(invalidSendableTypeException);
+		error(invalidSendableTypeException);
+	}
+	
+	private void error(Exception e) {
+		SendableException sendableException = new SendableException(e);
 		manageSendSendable(sendableException);
 	}
-
+	
 	private void manageSendSendable(Sendable sendable) {
 		LOG.debug("Sending sendable of type: " + sendable.getType());
 
@@ -250,7 +313,7 @@ public class ClientConnection implements Runnable {
 			terminate();
 		}
 	}
-
+	
 	public synchronized void terminate() {
 		if (connectionTerminated)
 			return;
@@ -268,22 +331,22 @@ public class ClientConnection implements Runnable {
 			LOG.error("An unexpected exception occurred while closing client connection" + connectionID, e);
 		}
 	}
-
+	
 	@Override
 	protected void finalize() {
 		terminate();
 	}
-
+	
 	public User getUser() {
 		return user;
 	}
-
+	
 	public int getConnectionID() {
 		return connectionID;
 	}
-
+	
 	public void setConnectionID(int connectionID) {
 		this.connectionID = connectionID;
 	}
-
+	
 }

@@ -18,18 +18,21 @@ import org.hibernate.Session;
 import jaims_development_studio.jaims.api.account.Account;
 import jaims_development_studio.jaims.api.account.UserNameNotAvailableException;
 import jaims_development_studio.jaims.api.util.HibernateUtil;
+import jaims_development_studio.jaims.server.profile.ProfileDAO;
 import jaims_development_studio.jaims.server.user.UserDAO;
 
 @SuppressWarnings("static-method")
 @Transactional
 public class AccountDAO {
-
-	private final UserDAO userDAO;
-
+	
+	private final UserDAO		userDAO;
+	private final ProfileDAO	profileDAO;
+	
 	public AccountDAO() {
 		userDAO = new UserDAO();
+		profileDAO = new ProfileDAO();
 	}
-	
+
 	public void saveOrUpdate(Account account) throws UserNameNotAvailableException {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			session.beginTransaction();
@@ -40,9 +43,10 @@ public class AccountDAO {
 			throw new UserNameNotAvailableException(account.getUsername());
 		}
 	}
-	
+
 	public void delete(UUID uuid) {
 		userDAO.delete(uuid);
+		profileDAO.delete(uuid);
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
@@ -54,7 +58,7 @@ public class AccountDAO {
 			query.executeUpdate();
 		}
 	}
-	
+
 	public void delete(String username) {
 		Account account = get(username);
 		if (account != null)
@@ -70,7 +74,7 @@ public class AccountDAO {
 			query.executeUpdate();
 		}
 	}
-
+	
 	public List<Account> getAll() {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			CriteriaQuery<Account> criteriaQuery = session.getCriteriaBuilder().createQuery(Account.class);
@@ -79,7 +83,7 @@ public class AccountDAO {
 			return accounts;
 		}
 	}
-
+	
 	public List<String> getAllUsernames() {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
@@ -89,10 +93,10 @@ public class AccountDAO {
 			TypedQuery<String> query = session.createQuery(criteriaQuery);
 			List<String> result = query.getResultList();
 			return result;
-			
+
 		}
 	}
-
+	
 	public Account get(UUID uuid) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
@@ -105,7 +109,7 @@ public class AccountDAO {
 			return result.isEmpty() ? null : result.get(0);
 		}
 	}
-	
+
 	public Account get(String username) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
@@ -119,7 +123,7 @@ public class AccountDAO {
 			return result.isEmpty() ? null : result.get(0);
 		}
 	}
-	
+
 	public UUID getUUID(String username) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
@@ -133,7 +137,7 @@ public class AccountDAO {
 			return result.isEmpty() ? null : result.get(0);
 		}
 	}
-
+	
 	public String getUsername(UUID uuid) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
@@ -147,7 +151,7 @@ public class AccountDAO {
 			return result.isEmpty() ? null : result.get(0);
 		}
 	}
-
+	
 	public boolean isUsernameAvailable(String username) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
@@ -162,7 +166,7 @@ public class AccountDAO {
 			return count == 0 ? true : false;
 		}
 	}
-
+	
 	public boolean isUuidRegistered(UUID uuid) {
 		if (uuid == null) {
 			System.out.println("isUuidRegistered: uuid is null");
@@ -181,5 +185,5 @@ public class AccountDAO {
 			return count == 0 ? false : true;
 		}
 	}
-
+	
 }
