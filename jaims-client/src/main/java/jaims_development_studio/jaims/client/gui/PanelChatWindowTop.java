@@ -1,5 +1,6 @@
 package jaims_development_studio.jaims.client.gui;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -61,17 +62,18 @@ public class PanelChatWindowTop extends JPanel {
 				Graphics2D g2d = (Graphics2D) g;
 				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+				g2d.setClip(new RoundRectangle2D.Double(4, 4, 45, 45, 15, 15));
+				g2d.drawImage(profileImage, 4, 4, 45, 45, this);
 				g2d.setColor(Color.BLACK);
-				g2d.drawRoundRect(3, 3, 34, 34, 15, 15);
-				g2d.setClip(new RoundRectangle2D.Double(4, 4, profileImage.getWidth(this), profileImage.getHeight(this),
-						15, 15));
-				g2d.drawImage(profileImage, 4, 4, this);
+				g2d.setClip(0, 0, getWidth(), getHeight());
+				g2d.setStroke(new BasicStroke(1.5F));
+				g2d.drawRoundRect(3, 3, 45, 45, 15, 15);
 
 				g2d.dispose();
 			}
 
 		};
-		p.setPreferredSize(new Dimension(39, 39));
+		p.setPreferredSize(new Dimension(57, 52));
 		add(p);
 		// add(Box.createRigidArea(new Dimension(0, 15)));
 
@@ -89,7 +91,7 @@ public class PanelChatWindowTop extends JPanel {
 
 		image.getHeight(this);
 		image.getWidth(this);
-		Image returnImg = image.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+		Image returnImg = image.getScaledInstance(45, 45, Image.SCALE_SMOOTH);
 		return returnImg;
 	}
 

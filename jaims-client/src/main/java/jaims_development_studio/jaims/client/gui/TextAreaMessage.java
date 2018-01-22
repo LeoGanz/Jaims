@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import jaims_development_studio.jaims.client.settings.Settings;
+import jaims_development_studio.jaims.client.logic.ClientMain;
 
 public class TextAreaMessage extends JPanel {
 
@@ -30,12 +30,14 @@ public class TextAreaMessage extends JPanel {
 	JTextArea					jta;
 	boolean						own;
 	private int					height, width;
+	private ClientMain			cm;
 
-	public TextAreaMessage(String message, JaimsFrame jf, JPanel panel, boolean own) {
+	public TextAreaMessage(String message, JaimsFrame jf, JPanel panel, boolean own, ClientMain cm) {
 
 		super();
 		this.jf = jf;
 		this.own = own;
+		this.cm = cm;
 		setLayout(new BorderLayout(0, 5));
 		initGUI(message, panel);
 	}
@@ -45,11 +47,15 @@ public class TextAreaMessage extends JPanel {
 		jta = new JTextArea();
 		jta.setOpaque(false);
 
-		if (own)
-			jta.setFont(new Font(Settings.ownFontName, Settings.ownFontStyle, Settings.ownFontSize));
-		else
-			jta.setFont(new Font(Settings.contactFontName, Settings.contactFontStyle, Settings.contactFontSize));
-
+		if (own) {
+			jta.setFont(new Font(cm.getSetting().getOwnFontName(), cm.getSetting().getOwnFontStyle(),
+					cm.getSetting().getOwnFontSize()));
+			jta.setForeground(cm.getSetting().getColorOwnMessageFont());
+		} else {
+			jta.setFont(new Font(cm.getSetting().getContactFontName(), cm.getSetting().getContactFontStyle(),
+					cm.getSetting().getContactFontSize()));
+			jta.setForeground(cm.getSetting().getColorContactMessageFont());
+		}
 		height = getStringHeight(message, jta) + 10;
 		width = getStringWidth(message, jta) + 15;
 
@@ -58,9 +64,9 @@ public class TextAreaMessage extends JPanel {
 		jta.setEditable(false);
 		setCursor(new Cursor(Cursor.TEXT_CURSOR));
 		if (own)
-			setBorder(new RoundBorder(width, height, Settings.colorOwnMessageBorder));
+			setBorder(new RoundBorder(width, height, cm.getSetting().getColorOwnMessageBorder()));
 		else
-			setBorder(new RoundBorder(width, height, Settings.colorContactMessageBorder));
+			setBorder(new RoundBorder(width, height, cm.getSetting().getColorContactMessageBorder()));
 		// setBorder(new LineBorder(Color.BLACK));
 		if (multipleLines) {
 			panel.addComponentListener(new ComponentAdapter() {
@@ -69,10 +75,11 @@ public class TextAreaMessage extends JPanel {
 				public void componentShown(ComponentEvent e) {
 
 					if (own)
-						jta.setFont(new Font(Settings.ownFontName, Settings.ownFontStyle, Settings.ownFontSize));
+						jta.setFont(new Font(cm.getSetting().getOwnFontName(), cm.getSetting().getOwnFontStyle(),
+								cm.getSetting().getOwnFontSize()));
 					else
-						jta.setFont(new Font(Settings.contactFontName, Settings.contactFontStyle,
-								Settings.contactFontSize));
+						jta.setFont(new Font(cm.getSetting().getContactFontName(),
+								cm.getSetting().getContactFontStyle(), cm.getSetting().getContactFontSize()));
 
 					int height = getStringHeight(message, jta) + 10;
 					int width = getStringWidth(message, jta) + 10;
@@ -185,31 +192,16 @@ public class TextAreaMessage extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 
-		// if (own) {
-		// jta.setForeground(Settings.colorOwnMessageFont);
-		// jta.setFont(new Font(Settings.ownFontName, Settings.ownFontStyle,
-		// Settings.ownFontSize));
-		// // setBorder(new RoundBorder(width, height, Settings.colorOwnMessageBorder));
-		// } else {
-		// jta.setForeground(Settings.colorContactMessageFont);
-		// jta.setFont(new Font(Settings.contactFontName, Settings.contactFontStyle,
-		// Settings.contactFontSize));
-		// // setBorder(new RoundBorder(width, height,
-		// // Settings.colorContactMessageBorder));
-		// }
-		// // jta.revalidate();
-		// // jta.repaint();
-
 		Graphics2D g2d = (Graphics2D) g.create();
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		if (own) {
-			g2d.setColor(Settings.colorOwnMessages);
+			g2d.setColor(cm.getSetting().getColorOwnMessages());
 			g2d.fillRoundRect(0, 0, (int) getPreferredSize().getWidth() - 1, (int) getPreferredSize().getHeight() - 1,
 					20, 20);
 			g2d.dispose();
 		} else {
-			g2d.setColor(Settings.colorContactMessages);
+			g2d.setColor(cm.getSetting().getColorContactMessages());
 			g2d.fillRoundRect(0, 0, (int) getPreferredSize().getWidth() - 1, (int) getPreferredSize().getHeight() - 1,
 					20, 20);
 

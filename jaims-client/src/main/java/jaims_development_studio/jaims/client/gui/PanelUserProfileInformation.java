@@ -1,7 +1,9 @@
 package jaims_development_studio.jaims.client.gui;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -9,11 +11,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,29 +25,30 @@ import java.sql.SQLException;
 import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
 
 import jaims_development_studio.jaims.client.chatObjects.ClientProfile;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
 import jaims_development_studio.jaims.client.logic.ClientMain;
 
-public class PanelUserProfileInformation extends JPanel {
+public class PanelUserProfileInformation extends ContainerPanel {
 
 	private ClientMain			cm;
 	private ClientProfile		userProfile;
 	private JPanel				panelUserInfo, panelStatus, panelDescription, panelStats, panelProfilePicture;
+	private JLabel				lblProfilePicture;
 	private JTextArea			jtaStatus, jtaDescription;
 	private PanelChatMessages	pcm;
 	private JScrollPane			jsp;
 	private JTable				tableStats;
+	private Image				profileImage;
 
 	public PanelUserProfileInformation(ClientMain cm, ClientProfile userProfile, PanelChatMessages pcm) {
 
@@ -57,10 +60,13 @@ public class PanelUserProfileInformation extends JPanel {
 
 	private void initGUI() {
 
+		profileImage = getPicture(userProfile);
+		// profileImage = profileImage.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+
 		setLayout(new BorderLayout());
 		setBackground(Color.white);
-		setBorder(new EmptyBorder(0, 0, 0, 8));
 		panelUserInfo = new JPanel();
+		panelUserInfo.setBorder(new EmptyBorder(10, 10, 10, 6));
 		panelUserInfo.setLayout(new BoxLayout(panelUserInfo, BoxLayout.PAGE_AXIS));
 		{
 			panelProfilePicture = new JPanel() {
@@ -69,30 +75,28 @@ public class PanelUserProfileInformation extends JPanel {
 
 					g.setColor(getBackground());
 					g.fillRect(0, 0, getWidth(), getHeight());
-
 					Graphics2D g2d = (Graphics2D) g;
 					g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-					int width = (cm.getJaimsFrame().getWidth() - 260) / 2;
-					int startingPoint = width - (width / 2);
 
-					setPreferredSize(new Dimension(width * 2, width + 3));
-
+					g2d.setClip(new RoundRectangle2D.Double(2, 3, 220, 220, 15, 15));
+					g2d.drawImage(profileImage, 2, 2, this);
+					g2d.setClip(0, 0, getWidth(), getHeight());
 					g2d.setColor(Color.BLACK);
-					g2d.drawRoundRect(startingPoint, 0, width + 1, width + 2, 15, 15);
-					g2d.setClip(new RoundRectangle2D.Double(startingPoint + 1, 1, width, width, 15, 15));
-
-					g2d.drawImage(getPicture(userProfile).getScaledInstance(width, width, Image.SCALE_SMOOTH),
-							startingPoint + 1, 1, this);
+					g2d.setStroke(new BasicStroke(2.0F));
+					g2d.drawRoundRect(1, 1, 221, 221, 15, 15);
 
 					g2d.dispose();
 				}
 			};
+			panelProfilePicture.setPreferredSize(new Dimension(225, 225));
+			panelProfilePicture.setMaximumSize(new Dimension(225, 225));
+			panelProfilePicture.setAlignmentX(Component.CENTER_ALIGNMENT);
 			panelUserInfo.add(panelProfilePicture);
 			panelUserInfo.add(Box.createRigidArea(new Dimension(0, 5)));
 
 			panelStatus = new JPanel();
-			panelStatus
-					.setBorder(new CompoundBorder(new TitledBorder("Status"), new MatteBorder(1, 0, 1, 0, Color.GRAY)));
+			panelStatus.setBorder(new TitledBorder(new LineBorder(Color.GRAY, 2), "Status"));
+			panelStatus.setAlignmentX(Component.CENTER_ALIGNMENT);
 			panelStatus.setLayout(new BoxLayout(panelStatus, BoxLayout.LINE_AXIS));
 			{
 				panelStatus.add(Box.createRigidArea(new Dimension(10, 50)));
@@ -113,8 +117,9 @@ public class PanelUserProfileInformation extends JPanel {
 			panelUserInfo.add(Box.createVerticalGlue());
 
 			panelDescription = new JPanel();
-			panelDescription.setBorder(new CompoundBorder(new TitledBorder("Über " + userProfile.getNickname()),
-					new MatteBorder(0, 0, 1, 0, Color.GRAY)));
+			panelDescription
+					.setBorder(new TitledBorder(new LineBorder(Color.GRAY, 2), "Über " + userProfile.getNickname()));
+			panelDescription.setAlignmentX(Component.CENTER_ALIGNMENT);
 			panelDescription.setLayout(new BoxLayout(panelDescription, BoxLayout.LINE_AXIS));
 			{
 				panelDescription.add(Box.createRigidArea(new Dimension(10, 50)));
@@ -134,8 +139,8 @@ public class PanelUserProfileInformation extends JPanel {
 			Box.createVerticalGlue();
 
 			panelStats = new JPanel();
-			panelStats.setBorder(
-					new CompoundBorder(new TitledBorder("Chat-Statistiken"), new MatteBorder(0, 0, 1, 0, Color.GRAY)));
+			panelStats.setBorder(new TitledBorder(new LineBorder(Color.GRAY, 2), "Chat-Statistiken"));
+			panelStats.setAlignmentX(Component.CENTER_ALIGNMENT);
 			panelStats.setLayout(new BoxLayout(panelStats, BoxLayout.PAGE_AXIS));
 			{
 				panelStats.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -158,23 +163,25 @@ public class PanelUserProfileInformation extends JPanel {
 				tableStats.setFont(new Font("SansSerif", Font.PLAIN, 13));
 				tableStats.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 				tableStats.getColumnModel().getColumn(1).setMaxWidth(100);
+				tableStats.getColumnModel().getColumn(1).setMinWidth(95);
+				tableStats.getColumnModel().getColumn(1).setResizable(false);
 				tableStats.setBorder(new LineBorder(Color.BLACK));
+				tableStats.setAlignmentX(Component.CENTER_ALIGNMENT);
+				tableStats.setRowHeight(25);
 				panelStats.add(tableStats);
-				panelStats.add(Box.createVerticalGlue());
-
 			}
 			panelUserInfo.add(panelStats);
 			panelUserInfo.add(Box.createVerticalGlue());
 
 			jsp = new JScrollPane(panelUserInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 					JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			jsp.getVerticalScrollBar().setBackground(panelUserInfo.getBackground());
 			jsp.getVerticalScrollBar().addComponentListener(new ComponentAdapter() {
 
 				@Override
 				public void componentShown(ComponentEvent e) {
 
-					panelUserInfo.setBorder(new EmptyBorder(0, 0, 0, jsp.getVerticalScrollBar().getWidth()));
-					panelUserInfo.repaint();
+					jsp.getViewport().repaint();
 				}
 			});
 
@@ -194,8 +201,10 @@ public class PanelUserProfileInformation extends JPanel {
 			con.commit();
 
 			rs.next();
-
-			return ImageIO.read(new ByteArrayInputStream(rs.getBytes(1)));
+			// ImageIO.read(new ByteArrayInputStream(rs.getBytes(1)))
+			Image img = Toolkit.getDefaultToolkit().createImage(rs.getBytes(1));
+			img = img.getScaledInstance(220, 220, Image.SCALE_SMOOTH);
+			return img;
 		} catch (SQLException e) {
 			BufferedImage bi;
 			try {
@@ -206,9 +215,6 @@ public class PanelUserProfileInformation extends JPanel {
 				e1.printStackTrace();
 			}
 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		return null;
 	}

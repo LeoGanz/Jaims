@@ -35,7 +35,7 @@ import jaims_development_studio.jaims.client.chatObjects.ChatObject;
 import jaims_development_studio.jaims.client.chatObjects.ClientProfile;
 import jaims_development_studio.jaims.client.logic.ClientMain;
 
-public class PanelChat extends JPanel implements Runnable {
+public class PanelChat extends ContainerPanel implements Runnable {
 
 	private static final Logger	LOG				= LoggerFactory.getLogger(PanelChat.class);
 	JPanel						panelPageEnd;
@@ -210,13 +210,8 @@ public class PanelChat extends JPanel implements Runnable {
 		jsp = new JScrollPane(pcm, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		jsp.setOpaque(false);
 		jsp.getVerticalScrollBar().addAdjustmentListener(e -> jsp.getViewport().repaint());
-		try {
-			jsp.getVerticalScrollBar().setUI(new MyScrollBarUI());
-		} catch (NullPointerException npe) {
-			LOG.error("Failed to start timer in BasicScrollBarUI.java", npe);
-		}
 		jsp.getVerticalScrollBar().setUnitIncrement(16);
-		jsp.getVerticalScrollBar().setOpaque(false);
+		jsp.getVerticalScrollBar().setBackground(getBackground());
 		jsp.addPropertyChangeListener(new PropertyChangeListener() {
 
 			@Override
@@ -240,7 +235,6 @@ public class PanelChat extends JPanel implements Runnable {
 			}
 		});
 		add(pcwt, BorderLayout.PAGE_START);
-
 	}
 
 	@Override
@@ -257,7 +251,7 @@ public class PanelChat extends JPanel implements Runnable {
 			public void run() {
 
 				SendableTextMessage stm = new SendableTextMessage(ClientMain.userProfile.getUuid(),
-						ClientMain.serverUUID, message);
+						userProfile.getUuid(), message);
 				cp.getClientMain().getServerConnection().sendSendable(stm);
 
 			}
@@ -279,6 +273,11 @@ public class PanelChat extends JPanel implements Runnable {
 	public JScrollPane getSP() {
 
 		return jsp;
+	}
+
+	public ContactPanel getContactPanel() {
+
+		return cp;
 	}
 
 }

@@ -232,18 +232,28 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 	public void addMessageToChat(SendableMessage sm) {
 
 		Thread thread = new Thread() {
+
 			@Override
 			public void run() {
 
 				for (ContactPanel cp : list) {
 					if (cp.getChatObject().getProfileContact().getUuid().equals(sm.getSender())) {
-						cp.getPanelChatMessages().addMessageFromContact(sm);
+						if (cp.chatExists())
+							cp.getPanelChatMessages().addMessageFromContact(sm);
+						else {
+							cp.createChatPanel();
+							cp.getPanelChatMessages().addMessageFromContact(sm);
+						}
 						break;
 					}
 				}
 			}
 		};
 		thread.start();
+
+	}
+
+	public void addNewContact() {
 
 	}
 

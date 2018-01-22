@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.api.sendables.SendableMessage;
 import jaims_development_studio.jaims.client.chatObjects.ChatObject;
 import jaims_development_studio.jaims.client.chatObjects.ClientProfile;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
@@ -62,7 +63,7 @@ public class ContactPanel {
 			}
 		});
 
-		if (messageListExists(co)) {
+		if (messagesExist(co)) {
 			chat = new Panel(Toolkit.getDefaultToolkit().createImage(getPicture(co.getProfileContact())),
 					co.getProfileContact().getNickname());
 			chat.addMouseListener(new MouseAdapter() {
@@ -104,9 +105,9 @@ public class ContactPanel {
 		return null;
 	}
 
-	private boolean messageListExists(ChatObject co) {
+	private boolean messagesExist(ChatObject co) {
 
-		return co.getList() != null;
+		return co.getList().size() >= 1 ? true : false;
 
 	}
 
@@ -139,6 +140,20 @@ public class ContactPanel {
 	}
 
 	public void createChatPanel() {
+
+		chat = new Panel(Toolkit.getDefaultToolkit().createImage(getPicture(co.getProfileContact())),
+				co.getProfileContact().getNickname());
+		chat.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+
+				setPanel();
+			}
+		});
+	}
+
+	public void createChatPanel(SendableMessage sm) {
 
 		chat = new Panel(Toolkit.getDefaultToolkit().createImage(getPicture(co.getProfileContact())),
 				co.getProfileContact().getNickname());

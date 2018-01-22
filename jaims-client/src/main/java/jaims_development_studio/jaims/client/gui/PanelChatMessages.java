@@ -64,7 +64,8 @@ public class PanelChatMessages extends JPanel implements Runnable {
 	private void initGUI() {
 
 		for (int i = 0; i < co.getList().size(); i++) {
-			if (co.getList().get(i).getSender() != ClientMain.userProfile.getUuid() && co.getList() != null) {
+			if (co.getList().get(i).getSender().equals(ClientMain.userProfile.getUuid()) == false
+					&& co.getList() != null) {
 				// Case Sender = Contact
 
 				JPanel p = new JPanel();
@@ -73,7 +74,7 @@ public class PanelChatMessages extends JPanel implements Runnable {
 				if (co.getList().get(i).getMessageObject() instanceof String) {
 					if (co.getList().get(i).getVoiceMessage() == false) {
 						TextAreaMessage tam = new TextAreaMessage((String) co.getList().get(i).getMessageObject(), jf,
-								this, false);
+								this, false, cp.getClientMain());
 
 						p.add(tam);
 						p.add(Box.createHorizontalGlue());
@@ -85,7 +86,7 @@ public class PanelChatMessages extends JPanel implements Runnable {
 						allWords += c;
 					} else if (co.getList().get(i).getVoiceMessage() == true) {
 						VoiceMessage vm = new VoiceMessage(userProfile, (String) co.getList().get(i).getMessageObject(),
-								false);
+								false, cp.getClientMain());
 
 						p.add(vm);
 						p.add(Box.createHorizontalGlue());
@@ -104,7 +105,6 @@ public class PanelChatMessages extends JPanel implements Runnable {
 				add(p);
 				add(Box.createRigidArea(new Dimension(0, 10)));
 			} else {
-				// Case Sender = User
 				if (co.getList() != null) {
 					JPanel p = new JPanel();
 					p.setOpaque(false);
@@ -112,7 +112,7 @@ public class PanelChatMessages extends JPanel implements Runnable {
 					if (co.getList().get(i).getMessageObject() instanceof String) {
 						if (co.getList().get(i).getVoiceMessage() == false) {
 							TextAreaMessage tam = new TextAreaMessage((String) co.getList().get(i).getMessageObject(),
-									jf, this, true);
+									jf, this, true, cp.getClientMain());
 
 							p.add(Box.createHorizontalGlue());
 							p.add(tam);
@@ -125,7 +125,7 @@ public class PanelChatMessages extends JPanel implements Runnable {
 							allWords += c;
 						} else if (co.getList().get(i).getVoiceMessage() == true) {
 							VoiceMessage vm = new VoiceMessage(ClientMain.userProfile,
-									(String) co.getList().get(i).getMessageObject(), true);
+									(String) co.getList().get(i).getMessageObject(), true, cp.getClientMain());
 
 							p.add(Box.createHorizontalGlue());
 							p.add(vm);
@@ -233,7 +233,7 @@ public class PanelChatMessages extends JPanel implements Runnable {
 
 				JPanel p = new JPanel();
 				p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
-				TextAreaMessage tam = new TextAreaMessage(s.trim(), jf, pcm, true);
+				TextAreaMessage tam = new TextAreaMessage(s.trim(), jf, pcm, true, cp.getClientMain());
 
 				p.add(Box.createHorizontalGlue());
 				p.add(tam);
@@ -273,7 +273,7 @@ public class PanelChatMessages extends JPanel implements Runnable {
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
 
-		VoiceMessage vm = new VoiceMessage(userProfile, path, true);
+		VoiceMessage vm = new VoiceMessage(userProfile, path, true, cp.getClientMain());
 		p.add(Box.createHorizontalGlue());
 		p.add(vm);
 		add(p);

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.TargetDataLine;
@@ -18,6 +17,7 @@ public class RecordAudio implements Runnable {
 	ByteArrayOutputStream	out			= new ByteArrayOutputStream();
 	File					audioFile	= null;
 	AudioInputStream		ais;
+	private ClientMain		cm;
 
 	/**
 	 * Constructor of this class. Initialises only the fields, recording has to be
@@ -25,20 +25,35 @@ public class RecordAudio implements Runnable {
 	 *
 	 * @param line
 	 *            TargetDataLine from which audio data can be read.
+	 * @param cm
+	 *            A ClientMain object the class need to access the settings.
+	 * 
 	 */
-	public RecordAudio(TargetDataLine line) {
+	public RecordAudio(TargetDataLine line, ClientMain cm) {
+
 		this.line = line;
+		this.cm = cm;
 	}
 
 	/**
 	 * Creates a new audio file with the current date as its name.
 	 */
 	private void createFile() {
+
 		SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss"); // date example: 20171231_014523 (yyyy: year; MM:
 																		// month; dd: day; HH: hour; mm: minute;
 																		// ss: second
 		Date dt = new Date(System.currentTimeMillis());
-		audioFile = new File("C:/Jaims/VoiceMessages/VoiceMessage" + df.format(dt) + ".wav");
+		File f = new File(
+				System.getProperty("user.home").replace("\\", "/") + "/Jaims/" + cm.getUsername() + "/VoiceMessages");
+		if (f.exists())
+			audioFile = new File(System.getProperty("user.home").replace("\\", "/") + "/Jaims/" + cm.getUsername()
+					+ "/VoiceMessages/vm" + df.format(dt) + "." + cm.getSetting().getInputFileFormat().getExtension());
+		else {
+			f.mkdirs();
+			audioFile = new File(System.getProperty("user.home").replace("\\", "/") + "/Jaims/" + cm.getUsername()
+					+ "/VoiceMessages/vm" + df.format(dt) + "." + cm.getSetting().getInputFileFormat().getExtension());
+		}
 
 	}
 
@@ -47,10 +62,11 @@ public class RecordAudio implements Runnable {
 	 * data to the file.
 	 */
 	private void record() {
+
 		ais = new AudioInputStream(line);
 		line.start();
 		try {
-			AudioSystem.write(ais, AudioFileFormat.Type.WAVE, audioFile);
+			AudioSystem.write(ais, cm.getSetting().getInputFileFormat(), audioFile);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -61,6 +77,7 @@ public class RecordAudio implements Runnable {
 	 * Stops the recording and deletes the already created file.
 	 */
 	public void stopRecording() {
+
 		recording = false;
 		line.stop();
 
@@ -72,6 +89,7 @@ public class RecordAudio implements Runnable {
 	 * the line. Keeps the file to be able to restart recording.
 	 */
 	public void pauseRecording() {
+
 		try {
 			Thread.sleep(200);
 		} catch (InterruptedException e) {
@@ -85,6 +103,7 @@ public class RecordAudio implements Runnable {
 	 * Restarts the recording.
 	 */
 	public void restartRecording() {
+
 		this.run();
 	}
 
@@ -94,6 +113,7 @@ public class RecordAudio implements Runnable {
 	 * data still in the line.
 	 */
 	public void sendRecording() {
+
 		try {
 			Thread.sleep(200);
 		} catch (InterruptedException e) {
@@ -108,6 +128,7 @@ public class RecordAudio implements Runnable {
 	 * @return the absolut path of the audio file
 	 */
 	public String getPath() {
+
 		return audioFile.getAbsolutePath();
 	}
 
@@ -117,6 +138,7 @@ public class RecordAudio implements Runnable {
 	 */
 	@Override
 	public void run() {
+
 		if (audioFile == null) {
 			createFile();
 		}

@@ -8,37 +8,51 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.UUID;
 
 import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.client.audio.SelectAudioDevices;
 import jaims_development_studio.jaims.client.chatObjects.ChatObject;
 import jaims_development_studio.jaims.client.chatObjects.ClientProfile;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
 import jaims_development_studio.jaims.client.database.WriteToDatabase;
 import jaims_development_studio.jaims.client.gui.AddSign;
 import jaims_development_studio.jaims.client.gui.ContactPanel;
+import jaims_development_studio.jaims.client.gui.ContainerPanel;
 import jaims_development_studio.jaims.client.gui.JaimsFrame;
 import jaims_development_studio.jaims.client.gui.LoginPanel;
 import jaims_development_studio.jaims.client.gui.PanelAccount;
+import jaims_development_studio.jaims.client.gui.PanelAddUser;
 import jaims_development_studio.jaims.client.gui.PanelChat;
 import jaims_development_studio.jaims.client.gui.PanelChatMessages;
 import jaims_development_studio.jaims.client.gui.PanelContactsAndChats;
 import jaims_development_studio.jaims.client.gui.PanelEditUser;
+import jaims_development_studio.jaims.client.gui.PanelSelectProfileImage;
 import jaims_development_studio.jaims.client.gui.PanelSettings;
 import jaims_development_studio.jaims.client.gui.PanelUserProfileInformation;
 import jaims_development_studio.jaims.client.gui.RecordingFrame;
 import jaims_development_studio.jaims.client.gui.SettingDots;
 import jaims_development_studio.jaims.client.networking.ServerConnection;
+import jaims_development_studio.jaims.client.settings.Settings;
 
 public class ClientMain {
 
@@ -57,6 +71,11 @@ public class ClientMain {
 	private LoginPanel					lp;
 	private PanelEditUser				panelEditUser;
 	private PanelUserProfileInformation	panelUserProfileInformation;
+	private ContainerPanel				container				= new ContainerPanel();
+	private Settings					settings;
+	private String						username;
+	private SelectAudioDevices			selectAudioDevices;
+	private PanelSelectProfileImage		pspi;
 
 	/**
 	 * Static profile which represents the logged-in user.
@@ -86,6 +105,7 @@ public class ClientMain {
 	 */
 	public ClientMain() {
 
+		UIManager.put("ScrollBarUI", "jaims_development_studio.jaims.client.gui.MyScrollBarUI");
 		initProgram();
 	}
 
@@ -136,6 +156,9 @@ public class ClientMain {
 	 *            the name used by the user for login
 	 */
 	public void startCreatingChatWindow(String username) {
+
+		this.username = username;
+		deserializeSettings(username);
 
 		// creates a new WriteToDatabase Object with the username and the connection
 		// object stored in DatabaseConnection
@@ -226,6 +249,7 @@ public class ClientMain {
 		jf.getContentPane().setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); // sets the Cursor from Waiting Cursor back to
 																			// Default cursor
 
+		selectAudioDevices = new SelectAudioDevices(this);
 	}
 
 	/**
@@ -237,47 +261,37 @@ public class ClientMain {
 	 */
 	public void setMessagePanel(PanelChat panelChat) {
 
-		// if panelSettings is shown then it is first removed before adding the
-		// panelChat
-		if (panelSettings != null) {
-			jf.getContentPane().remove(panelSettings);
-			// panelSettings.getPF().dispose();
-			panelSettings = null;
-			jf.revalidate();
-		}
-		// if there is a activePanelChat then it is first removed before adding the
-		// panelChat
-		if (activePanelChat != null) {
-			jf.getContentPane().remove(activePanelChat);
-			jf.getContentPane().revalidate();
-			jf.getContentPane().revalidate();
-		}
-		// if there is a PanelEditUser displayed then it is first removed before adding
-		// the PanelChat
-		if (panelEditUser != null) {
-			jf.getContentPane().remove(panelEditUser);
-			panelEditUser = null;
-			jf.revalidate();
+		jf.getContentPane().remove(container);
+		jf.revalidate();
 
-		}
-		if (panelUserProfileInformation != null) {
-			jf.getContentPane().remove(panelUserProfileInformation);
-			panelUserProfileInformation = null;
-			jf.getContentPane().revalidate();
-		}
 		jf.getContentPane().add(panelChat, BorderLayout.CENTER);
 		jf.getContentPane().revalidate();
 		jf.getContentPane().repaint();
 
+		panelChat.getSP().getVerticalScrollBar().setValue(1000);
+		panelChat.getSP().repaint();
+		container = panelChat;
 		activePanelChat = panelChat;
 	}
 
 	public void setSettingPanel() {
 
 		jf.getContentPane().removeAll();
-		panelSettings = new PanelSettings(this);
+		if (panelSettings == null)
+			panelSettings = new PanelSettings(this, selectAudioDevices);
 
 		jf.getContentPane().add(panelSettings, BorderLayout.CENTER);
+		jf.getContentPane().revalidate();
+		jf.getContentPane().repaint();
+	}
+
+	public void removeSettingPanel() {
+
+		jf.getContentPane().remove(panelSettings);
+		jf.getContentPane().revalidate();
+
+		jf.getContentPane().add(userUILeftSide, BorderLayout.LINE_START);
+		jf.getContentPane().add(container, BorderLayout.CENTER);
 		jf.getContentPane().revalidate();
 		jf.getContentPane().repaint();
 	}
@@ -291,7 +305,7 @@ public class ClientMain {
 	 */
 	public void showRecordFrame(ChatObject co) {
 
-		RecordingFrame rf = new RecordingFrame(activePanelChat, co);
+		RecordingFrame rf = new RecordingFrame(activePanelChat, co, this);
 		rf.setLocationRelativeTo(activePanelChat);
 		jf.addComponentListener(new ComponentAdapter() {
 
@@ -316,80 +330,83 @@ public class ClientMain {
 
 	public void addPanelEditUser() {
 
-		if (panelEditUser != null)
-			return;
-		if (panelUserProfileInformation != null) {
-			jf.getContentPane().remove(panelUserProfileInformation);
-			panelUserProfileInformation = null;
-			jf.getContentPane().revalidate();
-		}
+		jf.getContentPane().remove(container);
+		jf.getContentPane().revalidate();
 
-		if (panelSettings != null) {
-			jf.getContentPane().remove(panelSettings);
-			// panelSettings.getPF().dispose();
-			panelSettings = null;
-			jf.revalidate();
-		}
-		// if there is a activePanelChat then it is first removed before adding the
-		// panelChat
-		if (activePanelChat != null) {
-			jf.getContentPane().remove(activePanelChat);
-			jf.getContentPane().revalidate();
-		}
+		container = new PanelEditUser(this);
+		jf.getContentPane().add(container, BorderLayout.CENTER);
+		jf.getContentPane().revalidate();
+		jf.getContentPane().repaint();
+	}
 
-		panelEditUser = new PanelEditUser(this);
-		jf.getContentPane().add(panelEditUser, BorderLayout.CENTER);
+	public void addPanelAddUser() {
+
+		jf.getContentPane().removeAll();
+		jf.getContentPane().revalidate();
+
+		PanelAddUser pa = new PanelAddUser(this);
+		jf.getContentPane().add(pa, BorderLayout.CENTER);
+		jf.getContentPane().revalidate();
+		jf.getContentPane().repaint();
+	}
+
+	public void removePanelAddUser() {
+
+		jf.getContentPane().removeAll();
+		jf.getContentPane().revalidate();
+
+		jf.getContentPane().add(userUILeftSide, BorderLayout.LINE_START);
+		jf.getContentPane().add(container, BorderLayout.CENTER);
 		jf.getContentPane().revalidate();
 		jf.getContentPane().repaint();
 	}
 
 	public void addPanelSelectProfileImage() {
+		JFileChooser jfc = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Bilder (*.bmp, *.jpg, *.jpeg, *.png)", "bmp",
+				"jpg", "jpeg", "png");
+		jfc.removeChoosableFileFilter(jfc.getFileFilter());
+		jfc.setFileFilter(filter);
+		jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		jfc.setMultiSelectionEnabled(false);
+		jfc.showOpenDialog(jf);
+		File f = jfc.getSelectedFile();
+		if (f != null) {
+			jf.getContentPane().removeAll();
+			jf.getContentPane().revalidate();
 
+			pspi = new PanelSelectProfileImage(f, this);
+			jf.getContentPane().add(pspi, BorderLayout.CENTER);
+			jf.getContentPane().revalidate();
+			jf.getContentPane().repaint();
+		}
 	}
 
 	public void repaintPanelSelectProfileImage() {
 
 	}
 
+	public void removePanelSelectProfileImage() {
+		jf.getContentPane().remove(pspi);
+		jf.getContentPane().revalidate();
+
+		jf.getContentPane().add(userUILeftSide, BorderLayout.LINE_START);
+		jf.getContentPane().add(container, BorderLayout.CENTER);
+		jf.getContentPane().revalidate();
+		jf.getContentPane().repaint();
+	}
+
 	public void addPanelUserProfileInformation(PanelChatMessages pcm, ClientProfile userProfile) {
 
-		// if panelSettings is shown then it is first removed before adding the
-		// panelChat
-		if (panelSettings != null) {
-			jf.getContentPane().remove(panelSettings);
-			// panelSettings.getPF().dispose();
-			panelSettings = null;
-			jf.revalidate();
-		}
-		// if there is a activePanelChat then it is first removed before adding the
-		// panelChat
-		if (activePanelChat != null) {
-			jf.getContentPane().remove(activePanelChat);
-			jf.getContentPane().revalidate();
-		}
-		// if there is a PanelEditUser displayed then it is first removed before adding
-		// the PanelChat
-		if (panelEditUser != null) {
-			jf.getContentPane().remove(panelEditUser);
-			panelEditUser = null;
-			jf.revalidate();
-		}
+		jf.getContentPane().remove(container);
+		jf.getContentPane().revalidate();
 
 		jf.getContentPane().add(panelUserProfileInformation = new PanelUserProfileInformation(this, userProfile, pcm),
 				BorderLayout.CENTER);
 		jf.getContentPane().revalidate();
 		jf.getContentPane().repaint();
-	}
 
-	/**
-	 * Receives a ContactPanel and sets it to the activeContactPanel.
-	 *
-	 * @param cp
-	 *            the last clicked ContactPanel
-	 */
-	public void setAcvtiveContactPanel(ContactPanel cp) {
-
-		// activeContactPanel = cp;
+		container = panelUserProfileInformation;
 	}
 
 	/**
@@ -431,5 +448,110 @@ public class ClientMain {
 	public ServerConnection getServerConnection() {
 
 		return sc;
+	}
+
+	public PanelChat getActivePanelChat() {
+
+		return activePanelChat;
+	}
+
+	public Settings getSetting() {
+
+		return settings;
+	}
+
+	private void deserializeSettings(String username) {
+
+		String userHome = System.getProperty("user.home").replace("\\", "/");
+		String filename = userHome + "/Jaims/" + username + "/settings/settings.set";
+		String path = userHome + "/Jaims/" + username;
+
+		FileInputStream fin = null;
+		ObjectInputStream ois = null;
+
+		try {
+
+			fin = new FileInputStream(filename);
+			ois = new ObjectInputStream(fin);
+			settings = (Settings) ois.readObject();
+
+		} catch (FileNotFoundException fnfe) {
+			settings = new Settings();
+			createDirectory(path);
+			File settingFile = new File(filename);
+			try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(settingFile))) {
+
+				oos.writeObject(settings);
+				System.out.println("Done");
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		} finally {
+
+			if (fin != null) {
+				try {
+					fin.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+			if (ois != null) {
+				try {
+					ois.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+		}
+	}
+
+	private void createDirectory(String path) {
+
+		File f = new File(path);
+		if (!f.exists())
+			f.mkdirs();
+
+		File settings = new File(path + "/settings");
+		if (!settings.exists())
+			settings.mkdirs();
+	}
+
+	public String getUsername() {
+
+		return username;
+	}
+
+	public SelectAudioDevices getSAD() {
+
+		return selectAudioDevices;
+	}
+
+	private static class Utils {
+
+		public final static String	jpeg	= "jpeg";
+		public final static String	jpg		= "jpg";
+		public final static String	gif		= "gif";
+		public final static String	tiff	= "tiff";
+		public final static String	tif		= "tif";
+		public final static String	png		= "png";
+
+		/*
+		 * Get the extension of a file.
+		 */
+		public static String getExtension(File f) {
+			String ext = null;
+			String s = f.getName();
+			int i = s.lastIndexOf('.');
+
+			if (i > 0 && i < s.length() - 1) {
+				ext = s.substring(i + 1).toLowerCase();
+			}
+			return ext;
+		}
 	}
 }
