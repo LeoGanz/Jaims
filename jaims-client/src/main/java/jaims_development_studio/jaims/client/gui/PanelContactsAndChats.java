@@ -17,6 +17,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.border.EmptyBorder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,8 +145,10 @@ public class PanelContactsAndChats extends JTabbedPane implements Runnable {
 		scrollpane = new JScrollPane(q, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollpane.getVerticalScrollBar().addAdjustmentListener(e -> scrollpane.getViewport().repaint());
+		scrollpane.setBorder(new EmptyBorder(0, 0, 0, 0));
 		addTab(html1 + "Chats" + html2, scrollpane);
 		addTab(html1 + "Contacts" + html2, scrollpane2);
+		setBorder(new EmptyBorder(0, 0, 0, 0));
 
 		revalidate();
 		repaint();

@@ -7,7 +7,9 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.ByteArrayOutputStream;
@@ -23,6 +25,7 @@ import javax.sound.sampled.Mixer;
 import javax.sound.sampled.TargetDataLine;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
@@ -176,8 +179,23 @@ public class RecordingFrame extends JWindow {
 			panel.add(Box.createHorizontalGlue());
 			panel.add(Box.createHorizontalGlue());
 
-			PanelSend ps = new PanelSend();
-			ps.addMouseListener(new MouseAdapter() {
+			JLabel send = new JLabel() {
+				@Override
+				public void paintComponent(Graphics g) {
+
+					super.paintComponent(g);
+					g.setColor(new Color(0, 0, 0, 0));
+					g.fillRect(0, 0, getWidth(), getHeight());
+				}
+			};
+			send.setIcon(new ImageIcon(Toolkit.getDefaultToolkit()
+					.getImage(getClass().getClassLoader().getResource("images/Jaims_Send.png"))
+					.getScaledInstance(30, 20, Image.SCALE_SMOOTH)));
+			send.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			send.setPreferredSize(new Dimension(30, 20));
+			send.setMaximumSize(send.getPreferredSize());
+			send.addMouseListener(new MouseAdapter() {
+
 				@Override
 				public void mouseReleased(MouseEvent e) {
 
@@ -194,13 +212,35 @@ public class RecordingFrame extends JWindow {
 							e1.printStackTrace();
 						}
 					}
-					activePanelChat.getPCM().addVoiceMessageFromUser(ra.getPath(),
-							activePanelChat.getPCM().getUserProfile().getUuid(), co);
-					window.dispose();
 				}
 			});
-			ps.setCursor(new Cursor(Cursor.HAND_CURSOR));
-			panel.add(ps);
+			panel.add(send);
+
+			// PanelSend ps = new PanelSend();
+			// ps.addMouseListener(new MouseAdapter() {
+			// @Override
+			// public void mouseReleased(MouseEvent e) {
+			//
+			// if (ra != null) {
+			// ra.sendRecording();
+			// }
+			// recording = false;
+			// paused = false;
+			// if (thread != null) {
+			// try {
+			// thread.join();
+			// } catch (InterruptedException e1) {
+			// // TODO Auto-generated catch block
+			// e1.printStackTrace();
+			// }
+			// }
+			// activePanelChat.getPCM().addVoiceMessageFromUser(ra.getPath(),
+			// activePanelChat.getPCM().getUserProfile().getUuid(), co);
+			// window.dispose();
+			// }
+			// });
+			// ps.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			// panel.add(ps);
 
 		}
 		centerpanel.add(panel, BorderLayout.PAGE_END);

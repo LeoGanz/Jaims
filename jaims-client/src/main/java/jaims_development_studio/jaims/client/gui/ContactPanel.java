@@ -8,6 +8,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.swing.JLayeredPane;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +29,8 @@ public class ContactPanel {
 	ClientMain					cm;
 	Panel						contact, chat = null;
 	ContactPanel				cp	= this;
+
+	private JLayeredPane		jlp;
 
 	public ContactPanel(ChatObject co, JaimsFrame jf, ClientMain cm) {
 

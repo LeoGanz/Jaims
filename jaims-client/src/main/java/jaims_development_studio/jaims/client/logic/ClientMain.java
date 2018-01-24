@@ -106,6 +106,7 @@ public class ClientMain {
 	public ClientMain() {
 
 		UIManager.put("ScrollBarUI", "jaims_development_studio.jaims.client.gui.MyScrollBarUI");
+		UIManager.put("ScrollBar.width", 8);
 		initProgram();
 	}
 
@@ -181,7 +182,7 @@ public class ClientMain {
 			pa.addMouseListener(new MouseAdapter() {
 
 				@Override
-				public void mouseClicked(MouseEvent e) {
+				public void mousePressed(MouseEvent e) {
 
 					addPanelEditUser();
 
@@ -362,6 +363,7 @@ public class ClientMain {
 	}
 
 	public void addPanelSelectProfileImage() {
+
 		JFileChooser jfc = new JFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Bilder (*.bmp, *.jpg, *.jpeg, *.png)", "bmp",
 				"jpg", "jpeg", "png");
@@ -379,6 +381,7 @@ public class ClientMain {
 			jf.getContentPane().add(pspi, BorderLayout.CENTER);
 			jf.getContentPane().revalidate();
 			jf.getContentPane().repaint();
+			pspi.repaint();
 		}
 	}
 
@@ -387,6 +390,7 @@ public class ClientMain {
 	}
 
 	public void removePanelSelectProfileImage() {
+
 		jf.getContentPane().remove(pspi);
 		jf.getContentPane().revalidate();
 
@@ -488,7 +492,17 @@ public class ClientMain {
 				ex.printStackTrace();
 			}
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			settings = new Settings();
+			createDirectory(path);
+			File settingFile = new File(filename);
+			try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(settingFile))) {
+
+				oos.writeObject(settings);
+				System.out.println("Done");
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		} finally {
 
 			if (fin != null) {
@@ -544,6 +558,7 @@ public class ClientMain {
 		 * Get the extension of a file.
 		 */
 		public static String getExtension(File f) {
+
 			String ext = null;
 			String s = f.getName();
 			int i = s.lastIndexOf('.');
