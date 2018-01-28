@@ -15,7 +15,7 @@ public class ClientProfile extends Profile implements Serializable {
 	public ClientProfile(UUID uuid, String nickname, String description, String status, String profilePicture,
 			Date lastUpdated) {
 
-		super(nickname, description, status, null, lastUpdated);
+		super(null, nickname, description, status, null, lastUpdated);
 		this.uuid = uuid;
 	}
 

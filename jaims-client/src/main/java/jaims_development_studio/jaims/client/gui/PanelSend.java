@@ -26,8 +26,9 @@ public class PanelSend extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 
-		g.setColor(getBackground());
-		g.fillRect(0, 0, getWidth(), getHeight());
+		// super.paintComponent(g);
+		// g.setColor(new Color(0, 0, 0, 0));
+		// g.fillRect(0, 0, getWidth(), getHeight());
 
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

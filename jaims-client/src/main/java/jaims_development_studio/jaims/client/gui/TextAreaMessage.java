@@ -10,7 +10,10 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.TimerTask;
 
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -62,7 +65,7 @@ public class TextAreaMessage extends JPanel {
 		jta.setPreferredSize(new Dimension(width, height));
 		jta.setMaximumSize(getPreferredSize());
 		jta.setEditable(false);
-		setCursor(new Cursor(Cursor.TEXT_CURSOR));
+		setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		if (own)
 			setBorder(new RoundBorder(width, height, cm.getSetting().getColorOwnMessageBorder()));
 		else
@@ -108,6 +111,33 @@ public class TextAreaMessage extends JPanel {
 
 		setPreferredSize(new Dimension(width, (int) lineStrings.size() * 19 + 15));
 		setMaximumSize(getPreferredSize());
+		setFocusable(true);
+		addMouseListener(new MouseAdapter() {
+			private java.util.Timer t;
+
+			public void mousePressed(MouseEvent e) {
+
+				System.out.println("hi");
+				if (t == null) {
+					System.err.println("pressed");
+					t = new java.util.Timer();
+				}
+				t.schedule(new TimerTask() {
+					public void run() {
+
+						System.out.println("My important task goes here");
+					}
+				}, 3000, 500);
+			}
+
+			public void mouseReleased(MouseEvent e) {
+
+				if (t != null) {
+					t.cancel();
+					t = null;
+				}
+			}
+		});
 
 		add(jta);
 	}

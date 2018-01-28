@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
@@ -25,7 +26,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
-import javax.swing.border.MatteBorder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,15 +65,22 @@ public class PanelChat extends ContainerPanel implements Runnable {
 		setLayout(new BorderLayout(0, 2));
 		setBorder(new LineBorder(Color.BLACK));
 
-		panelPageEnd = new JPanel();
-		panelPageEnd.setBorder(new MatteBorder(1, 0, 0, 0, Color.BLACK));
+		panelPageEnd = new JPanel() {
+			@Override
+			public void paintComponent(Graphics g) {
+
+				g.setColor(new Color(110, 110, 110, 205));
+				g.fillRect(0, 0, getWidth(), getHeight());
+			}
+		};
 		panelPageEnd.setLayout(new BorderLayout(6, 0));
 		{
 			jta = new JTextArea("");
-			jta.setFont(new Font("Sans Serif", Font.PLAIN, 14));
+			jta.setFont(new Font(cp.getClientMain().getSetting().getOwnFontName(), Font.PLAIN, 12));
 			jta.setBorder(new LineBorder(Color.GRAY));
 			jta.setLineWrap(true);
 			jta.setWrapStyleWord(true);
+			jta.setBackground(Color.WHITE);
 			jta.addKeyListener(new KeyAdapter() {
 				@Override
 				public void keyReleased(KeyEvent e) {
@@ -109,43 +116,8 @@ public class PanelChat extends ContainerPanel implements Runnable {
 				}
 			});
 
-			jta.addComponentListener(new ComponentAdapter() {
-
-				@Override
-				public void componentResized(ComponentEvent e) {
-
-					if ((jta.getSize().getHeight() > (pcm.getFrameHeight() / 5)) && jspActive == false) {
-						int position = jta.getCaretPosition();
-						jsp2 = new JScrollPane(jta, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-								JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-						jsp2.setBorder(new LineBorder(Color.GRAY));
-						jsp2.setPreferredSize(
-								new Dimension((int) jta.getSize().getWidth(), (pcm.getFrameHeight() / 5)));
-						panelPageEnd.remove(jta);
-						panelPageEnd.add(jsp2, BorderLayout.CENTER);
-
-						panelPageEnd.revalidate();
-						repaintPanel();
-						jsp2.getVerticalScrollBar().setValue(jsp2.getVerticalScrollBar().getMaximum());
-						jspActive = true;
-
-						jta.setCaretPosition(position);
-						jta.revalidate();
-						jta.requestFocus();
-					} else if (jta.getSize().getHeight() <= (pcm.getFrameHeight() / 5) && jspActive == true) {
-						int position = jta.getCaretPosition();
-						panelPageEnd.remove(jsp2);
-						panelPageEnd.add(jta, BorderLayout.CENTER);
-						panelPageEnd.repaint();
-						jspActive = false;
-
-						jta.setCaretPosition(position);
-						jta.revalidate();
-						jta.requestFocus();
-					}
-				}
-			});
-			panelPageEnd.add(jta, BorderLayout.CENTER);
+			PanelTextField ptf = new PanelTextField(jta, this);
+			panelPageEnd.add(ptf, BorderLayout.CENTER);
 
 			pcm.getFrame().addComponentListener(new ComponentAdapter() {
 
@@ -163,9 +135,18 @@ public class PanelChat extends ContainerPanel implements Runnable {
 			recordImage = recordImage.getScaledInstance(44, 45, Image.SCALE_SMOOTH);
 
 			JPanel end = new JPanel();
+			end.setOpaque(false);
 			end.setLayout(new BoxLayout(end, BoxLayout.LINE_AXIS));
 			{
-				JLabel record = new JLabel();
+				JLabel record = new JLabel() {
+					@Override
+					public void paintComponent(Graphics g) {
+
+						super.paintComponent(g);
+						g.setColor(new Color(0, 0, 0, 0));
+						g.fillRect(0, 0, getWidth(), getHeight());
+					}
+				};
 				record.setIcon(new ImageIcon(recordImage));
 				record.setCursor(new Cursor(Cursor.HAND_CURSOR));
 				record.setPreferredSize(new Dimension(44, 45));
@@ -182,11 +163,25 @@ public class PanelChat extends ContainerPanel implements Runnable {
 				end.add(record);
 				end.add(Box.createRigidArea(new Dimension(2, 45)));
 
-				PanelSend ps = new PanelSend();
-				ps.setCursor(new Cursor(Cursor.HAND_CURSOR));
-				ps.addMouseListener(new MouseAdapter() {
+				JLabel send = new JLabel() {
 					@Override
-					public void mouseReleased(MouseEvent arg0) {
+					public void paintComponent(Graphics g) {
+
+						super.paintComponent(g);
+						g.setColor(new Color(0, 0, 0, 0));
+						g.fillRect(0, 0, getWidth(), getHeight());
+					}
+				};
+				send.setIcon(new ImageIcon(Toolkit.getDefaultToolkit()
+						.getImage(getClass().getClassLoader().getResource("images/Jaims_Send.png"))
+						.getScaledInstance(30, 20, Image.SCALE_SMOOTH)));
+				send.setCursor(new Cursor(Cursor.HAND_CURSOR));
+				send.setPreferredSize(new Dimension(30, 20));
+				send.setMaximumSize(send.getPreferredSize());
+				send.addMouseListener(new MouseAdapter() {
+
+					@Override
+					public void mouseReleased(MouseEvent e) {
 
 						if (jta.getText().equals("")) {
 						} else {
@@ -200,8 +195,8 @@ public class PanelChat extends ContainerPanel implements Runnable {
 
 					}
 				});
-				end.add(ps);
-				end.add(Box.createRigidArea(new Dimension(2, 0)));
+				end.add(send);
+				end.add(Box.createRigidArea(new Dimension(2, 45)));
 			}
 			panelPageEnd.add(end, BorderLayout.LINE_END);
 		}
@@ -222,6 +217,8 @@ public class PanelChat extends ContainerPanel implements Runnable {
 
 			}
 		});
+		jsp.setSize(new Dimension(490, 400));
+		jsp.setLocation(0, 60);
 		jsp.setBorder(null);
 		add(jsp, BorderLayout.CENTER);
 
@@ -278,6 +275,11 @@ public class PanelChat extends ContainerPanel implements Runnable {
 	public ContactPanel getContactPanel() {
 
 		return cp;
+	}
+
+	public JPanel getPanelPageEnd() {
+
+		return panelPageEnd;
 	}
 
 }
