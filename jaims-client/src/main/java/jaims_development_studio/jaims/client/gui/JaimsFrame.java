@@ -18,7 +18,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class JaimsFrame extends JFrame {
 
 	/**
@@ -32,8 +31,10 @@ public class JaimsFrame extends JFrame {
 	private JFrame				frame;
 
 	public JaimsFrame() {
+
 		super("JAIMS Client");
-		
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
 		try {
 			iconImages = new ArrayList<>(4);
 			iconImages.add(ImageIO.read(getClass().getResourceAsStream("/images/logo_blue_simple - 16x.png")));
@@ -43,7 +44,14 @@ public class JaimsFrame extends JFrame {
 		} catch (@SuppressWarnings("unused") IOException e) {
 			LOG.warn("Couldn't read IconImages");
 		}
-
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e) {
+			LOG.error("Failed to set Look and Feel");
+		}
+		setIconImages(iconImages);
+		getContentPane().setLayout(new BorderLayout(10, 0));
 		initLoadingFrame();
 	}
 
@@ -55,7 +63,7 @@ public class JaimsFrame extends JFrame {
 		frame.setUndecorated(true);
 		frame.setBackground(new Color(0, 0, 0, 0));
 		frame.setIconImages(iconImages);
-		
+
 		try {
 			img = ImageIO.read(getClass().getResourceAsStream("/images/JAIMS_Logo.png"));
 			img = img.getScaledInstance(400, 400, Image.SCALE_SMOOTH);
@@ -67,25 +75,34 @@ public class JaimsFrame extends JFrame {
 
 	}
 
+	public void initLogin() {
+
+		setSize(new Dimension(450, 600));
+		setUndecorated(true);
+		setBackground(new Color(0, 0, 0, 0));
+		setLocationRelativeTo(null);
+		frame.dispose();
+	}
+
 	public void initGUI() {
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(805, 505);
-		setMinimumSize(new Dimension(805, 505));
+		setSize(900, 600);
+		setMinimumSize(new Dimension(800, 500));
 		setLocationRelativeTo(null);
-		getContentPane().setLayout(new BorderLayout(10, 0));
-		setIconImages(iconImages);
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-				| UnsupportedLookAndFeelException e) {
-			LOG.error("Failed to set Look and Feel");
-		}
-
 		setVisible(true);
-
-		frame.dispose();
 
 	}
 
+	public void initChatGUI() {
+
+		dispose();
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
+		setSize(900, 600);
+		setMinimumSize(new Dimension(800, 500));
+		setLocationRelativeTo(null);
+		setBackground(Color.DARK_GRAY);
+		setUndecorated(false);
+		setVisible(true);
+	}
 }
