@@ -1,80 +1,75 @@
 package jaims_development_studio.jaims.client.chatObjects;
 
-import java.awt.Image;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-public class Message implements Serializable{
+public class Message implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	UUID sender, recipient;
-	String message;
-	Image image;
-	Date timestampRecieved, timestampSent;
-	boolean voiceMessage;
+	private static final long	serialVersionUID	= 1L;
 
-	public Message(UUID sender, UUID recipient, String message, Date timestampSent, Date timestampRecieved, boolean voiceMessage) {
-		this(sender, recipient, message, null, timestampSent, timestampRecieved, voiceMessage);
-	}
+	private UUID				messageID, sender, recipient;
+	private String				messageType, message;
+	private Date				delievered, read, recieved;
 
-	public Message(UUID sender, UUID recipient, Image image, Date timestampSend, Date timestampRecieved, boolean voiceMessage) {
-		this(sender, recipient, null, image, timestampSend, timestampRecieved, voiceMessage);
-	}
+	public Message(UUID messageID, UUID sender, UUID recipient, String messageType, Date delievered, Date read,
+			Date recieved, String message) {
 
-	public Message(UUID sender, UUID recipient, String message, Image image, Date timestampSent,
-			Date timestampRecieved, boolean voiceMessage) {
+		this.messageID = messageID;
 		this.sender = sender;
 		this.recipient = recipient;
+		this.messageType = messageType;
+		this.delievered = delievered;
+		this.read = read;
+		this.recieved = recieved;
 		this.message = message;
-		this.image = image;
-		this.timestampSent = timestampSent;
-		this.timestampRecieved = timestampRecieved;
-		this.voiceMessage = voiceMessage;
+	}
+
+	public static long getSerialversionuid() {
+
+		return serialVersionUID;
+	}
+
+	public UUID getMessageID() {
+
+		return messageID;
 	}
 
 	public UUID getSender() {
+
 		return sender;
 	}
 
 	public UUID getRecipient() {
+
 		return recipient;
 	}
 
+	public String getMessageType() {
+
+		return messageType;
+	}
+
 	public String getMessage() {
+
 		return message;
 	}
 
-	public Image getImage() {
-		return image;
+	public Date getDelievered() {
+
+		return delievered;
 	}
-	
-	public Date getTimestampSent() {
-		return timestampSent;
+
+	public Date getRead() {
+
+		return read;
 	}
-	
-	public void setTimestampSent(Date sent) {
-		timestampSent = sent;
-	}
-	
-	public Date getTimestampRecieved() {
-		return timestampRecieved;
-	}
-	
-	public boolean getVoiceMessage() {
-		return voiceMessage;
-	}
-	
-	public Object getMessageObject() {
-		if (message != null) {
-			return message;
-		}else if (image != null) {
-			return image;
-		}else {
-			return null;
-		}
+
+	public Date getRecieved() {
+
+		return recieved;
 	}
 
 }

@@ -116,9 +116,9 @@ public class Settings implements Serializable {
 		return colorOwnMessages;
 	}
 
-	public void setColorOwnMessages(Color colorOwnMessages) {
+	public void setColorOwnMessages(int rgb) {
 
-		this.colorOwnMessages = colorOwnMessages;
+		this.colorOwnMessages = new Color(rgb);
 	}
 
 	public Color getColorOwnMessageBorder() {

@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,27 +11,32 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jaims_development_studio.jaims.client.chatObjects.ChatObject;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 
-public class WriteToDatabase implements Runnable {
+public class WriteToDatabase {
 
-	static String				tablename;
-	static Connection			con;
-	static Statement			s;
-	static PreparedStatement	ps;
-	static ResultSet			rs;
+	private static final Logger	LOG	= LoggerFactory.getLogger(WriteToDatabase.class);
+
+	private String				tablename;
+	private Connection			con;
+	private Statement			s;
+	private PreparedStatement	ps;
+	private ResultSet			rs;
 
 	public WriteToDatabase(String tablename, Connection con) {
 
-		WriteToDatabase.tablename = tablename;
-		WriteToDatabase.con = con;
+		this.tablename = tablename;
+		this.con = con;
 	}
 
 	public void writeMessage(Message m, UUID uuid, ChatObject co, ArrayList<Message> list) {
 
 		try {
-			m.setTimestampSent(new Date(System.currentTimeMillis()));
+			// m.setTimestampSent(new Date(System.currentTimeMillis()));
 			list.add(m);
 
 			ps = con.prepareStatement("UPDATE " + tablename.toUpperCase() + " SET MESSAGE_ARRAY=? WHERE ID=?");
@@ -49,19 +53,7 @@ public class WriteToDatabase implements Runnable {
 			con.commit();
 		} catch (SQLException | IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("Caught SQL exception", e);
 		}
-	}
-
-	@Override
-	public void run() {
-
-	}
-
-	public static Thread writeToDatabase(String tablename, Connection con) {
-
-		Thread thread = new Thread(new WriteToDatabase(tablename, con));
-		thread.start();
-		return thread;
 	}
 }

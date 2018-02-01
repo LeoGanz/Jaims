@@ -48,11 +48,11 @@ public class RecordAudio implements Runnable {
 				System.getProperty("user.home").replace("\\", "/") + "/Jaims/" + cm.getUsername() + "/VoiceMessages");
 		if (f.exists())
 			audioFile = new File(System.getProperty("user.home").replace("\\", "/") + "/Jaims/" + cm.getUsername()
-					+ "/VoiceMessages/vm" + df.format(dt) + "." + cm.getSetting().getInputFileFormat().getExtension());
+					+ "/VoiceMessages/vm" + df.format(dt) + "." + cm.getSettings().getInputFileFormat().getExtension());
 		else {
 			f.mkdirs();
 			audioFile = new File(System.getProperty("user.home").replace("\\", "/") + "/Jaims/" + cm.getUsername()
-					+ "/VoiceMessages/vm" + df.format(dt) + "." + cm.getSetting().getInputFileFormat().getExtension());
+					+ "/VoiceMessages/vm" + df.format(dt) + "." + cm.getSettings().getInputFileFormat().getExtension());
 		}
 
 	}
@@ -66,7 +66,7 @@ public class RecordAudio implements Runnable {
 		ais = new AudioInputStream(line);
 		line.start();
 		try {
-			AudioSystem.write(ais, cm.getSetting().getInputFileFormat(), audioFile);
+			AudioSystem.write(ais, cm.getSettings().getInputFileFormat(), audioFile);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

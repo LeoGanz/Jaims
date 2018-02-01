@@ -2,17 +2,19 @@ package jaims_development_studio.jaims.client.chatObjects;
 
 import java.util.ArrayList;
 
+import jaims_development_studio.jaims.api.profile.Profile;
+
 public class ChatObject {
 
-	ClientProfile		profileContact;
+	Profile				profileContact;
 	ArrayList<Message>	list	= new ArrayList<>();
 
-	public ChatObject(ClientProfile profile) {
+	public ChatObject(Profile profile) {
 
 		profileContact = profile;
 	}
 
-	public void setProfileContact(ClientProfile profile) {
+	public void setProfileContact(Profile profile) {
 
 		this.profileContact = profile;
 	}
@@ -22,7 +24,7 @@ public class ChatObject {
 		this.list = list;
 	}
 
-	public ClientProfile getProfileContact() {
+	public Profile getProfileContact() {
 
 		return profileContact;
 	}

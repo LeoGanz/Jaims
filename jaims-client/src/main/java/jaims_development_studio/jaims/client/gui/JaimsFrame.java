@@ -2,6 +2,7 @@ package jaims_development_studio.jaims.client.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,7 +34,8 @@ public class JaimsFrame extends JFrame {
 	public JaimsFrame() {
 
 		super("JAIMS Client");
-
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
 		try {
 			iconImages = new ArrayList<>(4);
 			iconImages.add(ImageIO.read(getClass().getResourceAsStream("/images/logo_blue_simple - 16x.png")));
@@ -43,7 +45,14 @@ public class JaimsFrame extends JFrame {
 		} catch (@SuppressWarnings("unused") IOException e) {
 			LOG.warn("Couldn't read IconImages");
 		}
-
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e) {
+			LOG.error("Failed to set Look and Feel");
+		}
+		setIconImages(iconImages);
+		getContentPane().setLayout(new BorderLayout(10, 0));
 		initLoadingFrame();
 	}
 
@@ -68,57 +77,34 @@ public class JaimsFrame extends JFrame {
 
 	}
 
+	public void initLogin() {
+
+		setSize(new Dimension(450, 600));
+		setUndecorated(true);
+		setBackground(new Color(0, 0, 0, 0));
+		setLocationRelativeTo(null);
+		frame.dispose();
+	}
+
 	public void initGUI() {
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(810, 510);
-		setMinimumSize(getSize());
+		setSize(900, 600);
+		setMinimumSize(new Dimension(800, 500));
 		setLocationRelativeTo(null);
-		getContentPane().setLayout(new BorderLayout(10, 0));
-		setIconImages(iconImages);
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-				| UnsupportedLookAndFeelException e) {
-			LOG.error("Failed to set Look and Feel");
-		}
-		frame.dispose();
-
 		setVisible(true);
 
 	}
 
-	// @Override
-	// public void setVisible(final boolean visible) {
-	//
-	// JFrame f = this;
-	// super.setVisible(visible);
-	//
-	// Timer uiChanger = new Timer(8, new ActionListener() {
-	//
-	// private int increment = 110;
-	//
-	// @Override
-	// public void actionPerformed(ActionEvent e) {
-	//
-	// if (f.getSize().getWidth() <= 810) {
-	// f.setSize(f.getWidth() + increment, f.getHeight());
-	// f.setLocation(f.getX() - increment / 2, f.getY());
-	// }
-	//
-	// if (f.getHeight() <= 510) {
-	// f.setSize(f.getWidth(), f.getHeight() + increment);
-	// f.setLocation(f.getX(), f.getY() - increment / 2);
-	// }
-	//
-	// if (f.getHeight() >= 810)
-	// ((Timer) e.getSource()).stop();
-	//
-	// f.setMinimumSize(new Dimension(f.getWidth(), f.getHeight()));
-	//
-	// }
-	// });
-	// uiChanger.start();
-	// }
+	public void initChatGUI() {
 
+		dispose();
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
+		setSize(900, 600);
+		setMinimumSize(new Dimension(800, 500));
+		setLocationRelativeTo(null);
+		setBackground(Color.DARK_GRAY);
+		setUndecorated(false);
+		setVisible(true);
+	}
 }

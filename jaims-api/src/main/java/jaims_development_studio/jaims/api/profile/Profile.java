@@ -22,7 +22,7 @@ import jaims_development_studio.jaims.api.account.Account;
 @Entity(name = "Profile")
 @Table(name = "PROFILES")
 public class Profile implements Serializable {
-	
+
 	private static final long	serialVersionUID	= 1L;
 
 	@Column(name = "UUID", columnDefinition = "BINARY(16)")
@@ -46,16 +46,19 @@ public class Profile implements Serializable {
 	@Lob
 	@Basic(fetch = FetchType.LAZY)
 	private byte[]				profilePicture;
-
 	@Column(name = "LAST_UPDATED", columnDefinition = "TIMESTAMP")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date				lastUpdated;
-	
-	public Profile(Account account, String nickname, String description, String status, byte[] profilePicture, Date lastUpdated) {
+
+	public Profile(Account account, String nickname, String description, String status, byte[] profilePicture,
+			Date lastUpdated) {
+
 		this(null, account, nickname, description, status, profilePicture, lastUpdated);
 	}
 
-	private Profile(UUID uuid, Account account, String nickname, String description, String status, byte[] profilePicture, Date lastUpdated) {
+	private Profile(UUID uuid, Account account, String nickname, String description, String status,
+			byte[] profilePicture, Date lastUpdated) {
+
 		this.uuid = uuid;
 		this.account = account;
 		this.nickname = nickname;
@@ -64,65 +67,79 @@ public class Profile implements Serializable {
 		this.profilePicture = profilePicture;
 		this.lastUpdated = lastUpdated;
 	}
-	
+
 	public Profile() {
-		
+
 	}
-	
+
 	public UUID getUuid() {
+
 		return uuid;
 	}
-	
+
 	public Account getAccount() {
+
 		return account;
 	}
-	
+
 	public void setAccount(Account account) {
+
 		this.account = account;
 	}
-	
+
 	public String getNickname() {
+
 		return nickname;
 	}
-	
+
 	public void setNickname(String nickname) {
+
 		this.nickname = nickname;
 	}
-	
+
 	public String getDescription() {
+
 		return description;
 	}
-	
+
 	public void setDescription(String description) {
+
 		this.description = description;
 	}
-	
+
 	public String getStatus() {
+
 		return status;
 	}
-	
+
 	public void setStatus(String status) {
+
 		this.status = status;
 	}
-	
+
 	public byte[] getProfilePicture() {
+
 		return profilePicture;
 	}
-	
+
 	public void setProfilePicture(byte[] profilePicture) {
+
 		this.profilePicture = profilePicture;
 	}
-	
+
 	public Date getLastUpdated() {
+
 		return lastUpdated;
 	}
-	
+
 	public void setLastUpdated(Date lastUpdated) {
+
 		this.lastUpdated = lastUpdated;
 	}
-	
+
 	public Profile copyWithoutAccount() {
+
 		return new Profile(uuid, null, nickname, description, status, profilePicture, lastUpdated);
 	}
-	
+
 }
