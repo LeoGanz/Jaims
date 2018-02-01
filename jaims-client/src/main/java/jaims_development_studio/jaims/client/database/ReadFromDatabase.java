@@ -9,32 +9,27 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jaims_development_studio.jaims.client.chatObjects.ChatObject;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.logic.ClientMain;
 import jaims_development_studio.jaims.client.logic.SimpleContact;
 
 public class ReadFromDatabase implements Runnable {
 
-	private static final Logger		LOG				= LoggerFactory.getLogger(ReadFromDatabase.class);
-	public static List<ChatObject>	chatObjectsList	= Collections.synchronizedList(new ArrayList<ChatObject>());
+	private static final Logger	LOG				= LoggerFactory.getLogger(ReadFromDatabase.class);
 
-	String							tablename;
-	Connection						con;
-	ResultSet						rs;
-	Statement						statement;
-	private PreparedStatement		pStatement;
-	private boolean					messagesExist	= false, contactsExist = false, userExists = false,
-			imageExists = false;
+	String						tablename;
+	Connection					con;
+	ResultSet					rs;
+	Statement					statement;
+	private PreparedStatement	pStatement;
+	private boolean				messagesExist	= false, contactsExist = false, userExists = false, imageExists = false;
 
 	public ReadFromDatabase(Connection con) {
 

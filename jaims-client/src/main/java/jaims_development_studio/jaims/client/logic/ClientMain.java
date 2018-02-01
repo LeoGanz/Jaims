@@ -13,7 +13,6 @@ import java.util.UUID;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,8 +70,6 @@ public class ClientMain {
 	 */
 	public ClientMain() {
 
-		UIManager.put("ScrollBarUI", "jaims_development_studio.jaims.client.gui.MyScrollBarUI");
-		UIManager.put("ScrollBar.width", 8);
 		initProgram();
 	}
 

@@ -14,7 +14,6 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jaims_development_studio.jaims.client.chatObjects.ChatObject;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 
 public class WriteToDatabase {
@@ -33,7 +32,7 @@ public class WriteToDatabase {
 		this.con = con;
 	}
 
-	public void writeMessage(Message m, UUID uuid, ChatObject co, ArrayList<Message> list) {
+	public void writeMessage(Message m, UUID uuid, ArrayList<Message> list) {
 
 		try {
 			// m.setTimestampSent(new Date(System.currentTimeMillis()));

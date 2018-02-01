@@ -53,9 +53,9 @@ public class GUIMain implements Runnable {
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			// UIManager.put("ScrollBarUI",
-			// "jaims_development_studio.jaims.client.gui.MyScrollBarUI");
-			// UIManager.put("ScrollBar.width", 8);
+			UIManager.put("ScrollBarUI",
+					"jaims_development_studio.jaims.client.gui.customGUIComponents.CustomScrollBarUI");
+			UIManager.put("ScrollBar.width", 8);
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 				| UnsupportedLookAndFeelException e1) {
 			// TODO Auto-generated catch block

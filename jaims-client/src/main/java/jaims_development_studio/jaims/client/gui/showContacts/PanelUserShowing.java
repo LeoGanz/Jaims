@@ -65,15 +65,15 @@ public class PanelUserShowing extends JPanel {
 		g2.setFont(new Font("Sans Serif", Font.BOLD, 15));
 		int y = getHeight() / 2 + g2.getFontMetrics(g2.getFont()).getHeight() / 4;
 		g2.setColor(Color.BLACK);
-		g2.drawString(simpleContact.getContactNickname(), 95, y);
+		g2.drawString(simpleContact.getContactNickname(), 75, y);
 
-		g2.setClip(new java.awt.geom.RoundRectangle2D.Double(30, 5, 50, 50, 15, 15));
-		g2.drawImage(img, 30, 5, this);
+		g2.setClip(new java.awt.geom.RoundRectangle2D.Double(18, 5, 50, 50, 15, 15));
+		g2.drawImage(img, 18, 5, this);
 
 		g2.setColor(Color.BLACK);
 		g2.setStroke(new BasicStroke(2F));
 		g2.setClip(0, 0, getWidth(), getHeight());
-		g2.drawRoundRect(29, 4, 51, 51, 15, 15);
+		g2.drawRoundRect(17, 4, 50, 51, 15, 15);
 
 	}
 }
