@@ -271,6 +271,17 @@ public class GUIMain implements Runnable {
 		return cm.getChatBackground();
 	}
 
+	public boolean isServerConnected() {
+
+		return cm.isServerConnected();
+	}
+
+	public void setLoginEnabled(boolean enabled) {
+
+		if (panelProgramStartup != null)
+			panelProgramStartup.setLoginEnabled(enabled);
+	}
+
 	@Override
 	public void run() {
 

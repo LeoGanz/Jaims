@@ -350,6 +350,11 @@ public class PanelProgramStartup extends JPanel {
 		panelLogin.setWrongPassword(wrong);
 	}
 
+	public void setLoginEnabled(boolean enabled) {
+
+		panelLogin.setLoginEnabled(enabled);
+	}
+
 	@Override
 	public void paintComponent(Graphics g) {
 

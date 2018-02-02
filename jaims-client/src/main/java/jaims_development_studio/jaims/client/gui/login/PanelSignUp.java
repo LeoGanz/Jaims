@@ -17,7 +17,6 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -32,7 +31,7 @@ public class PanelSignUp extends JPanel {
 	private JPasswordField	pfPassword;
 	private boolean			wrongUsername	= false, wrongPassword = false, wrongEmail = false;
 	private char			defaultCharEcho;
-	private JButton			btRegister;
+	private LoginButton		btRegister;
 
 	public PanelSignUp(GUIMain guiMain) {
 
@@ -340,37 +339,15 @@ public class PanelSignUp extends JPanel {
 		add(pEmail);
 		add(Box.createVerticalGlue());
 
-		btRegister = new JButton() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
+		JPanel panel = new JPanel();
+		panel.setMinimumSize(new Dimension(190, 60));
+		panel.setPreferredSize(panel.getMinimumSize());
+		panel.setMaximumSize(panel.getMinimumSize());
+		panel.setBackground(new Color(0, 0, 0, 0));
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 
-			@Override
-			public void paintComponent(Graphics g) {
-
-				g.setColor(new Color(0, 0, 0, 0));
-				g.fillRect(0, 0, getWidth(), getHeight());
-
-				Graphics2D g2 = (Graphics2D) g;
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setFont(new Font("Calibri", Font.BOLD, 16));
-				g2.setColor(new Color(225, 12, 83));
-				g2.fillRoundRect(0, 0, getWidth(), getHeight(), 36, 36);
-
-				int x = getWidth() / 2 - g2.getFontMetrics(g2.getFont()).stringWidth("Register") / 2;
-				int y = getHeight() / 2 + g2.getFontMetrics(g2.getFont()).getHeight() / 4;
-
-				g2.setColor(Color.WHITE);
-				g2.setStroke(new BasicStroke(2));
-				g2.drawString("Register", x, y);
-
-				if (this.isEnabled() == false) {
-					g2.setColor(new Color(82, 82, 82, 180));
-					g2.fillRoundRect(0, 0, getWidth(), getHeight(), 36, 36);
-				}
-			}
-		};
+		btRegister = new LoginButton(guiMain, "Register", panel);
 		btRegister.setPreferredSize(new Dimension(125, 36));
 		btRegister.setMaximumSize(btRegister.getPreferredSize());
 		btRegister.setOpaque(true);
@@ -378,7 +355,10 @@ public class PanelSignUp extends JPanel {
 		btRegister.setAlignmentX(Component.CENTER_ALIGNMENT);
 		btRegister.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-		add(btRegister);
+		panel.add(Box.createVerticalGlue());
+		panel.add(btRegister);
+		panel.add(Box.createVerticalGlue());
+		add(panel);
 		add(Box.createRigidArea(new Dimension(0, 60)));
 	}
 

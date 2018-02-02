@@ -188,6 +188,16 @@ public class ClientMain {
 		return databaseConnection.getChatBackground();
 	}
 
+	public boolean isServerConnected() {
+
+		return sc.isServerConnected();
+	}
+
+	public void setLoginEnabled(boolean enabled) {
+
+		guiMain.setLoginEnabled(enabled);
+	}
+
 	public void requestUserProfile(UUID uuid) {
 
 		System.out.println("cm: " + userContact == null);

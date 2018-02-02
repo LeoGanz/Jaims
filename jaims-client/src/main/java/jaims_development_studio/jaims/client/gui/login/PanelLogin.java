@@ -26,7 +26,6 @@ import java.awt.geom.Rectangle2D;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -42,7 +41,7 @@ public class PanelLogin extends JPanel {
 	private JTextField		tfUsername;
 	private JPasswordField	pfPassword;
 	private boolean			wrongUsername	= false, wrongPassword = false, failedLogin = false;
-	private JButton			btLogin;
+	private LoginButton		btLogin;
 
 	private char			defaultCharEcho;
 
@@ -132,7 +131,7 @@ public class PanelLogin extends JPanel {
 					if (tfUsername.getText().length() < 120) {
 						wrongUsername = verifyUsername(tfUsername.getText());
 						pTextField.repaint();
-						if (wrongUsername || wrongPassword) {
+						if (wrongUsername || wrongPassword || guiMain.isServerConnected() == false) {
 							btLogin.setEnabled(false);
 							btLogin.repaint();
 						} else {
@@ -236,7 +235,7 @@ public class PanelLogin extends JPanel {
 					if (password.length() < 120) {
 						wrongPassword = verifyPassword(password);
 						pPasswordField.repaint();
-						if (wrongPassword || wrongUsername) {
+						if (wrongPassword || wrongUsername || guiMain.isServerConnected() == false) {
 							btLogin.setEnabled(false);
 							btLogin.repaint();
 						} else {
@@ -274,43 +273,15 @@ public class PanelLogin extends JPanel {
 		add(jcb);
 		add(Box.createVerticalGlue());
 
-		btLogin = new JButton() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
+		JPanel panel = new JPanel();
+		panel.setMinimumSize(new Dimension(190, 60));
+		panel.setPreferredSize(panel.getMinimumSize());
+		panel.setMaximumSize(panel.getMinimumSize());
+		panel.setBackground(new Color(0, 0, 0, 0));
+		panel.setOpaque(false);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 
-			@Override
-			public void paintComponent(Graphics g) {
-
-				g.setColor(new Color(0, 0, 0, 0));
-				g.fillRect(0, 0, getWidth(), getHeight());
-
-				Graphics2D g2 = (Graphics2D) g;
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setFont(new Font("Calibri", Font.BOLD, 16));
-				g2.setColor(new Color(225, 12, 83));
-				g2.fillRoundRect(0, 0, getWidth(), getHeight(), 36, 36);
-
-				int x = getWidth() / 2 - g2.getFontMetrics(g2.getFont()).stringWidth("Login") / 2;
-				int y = getHeight() / 2 + g2.getFontMetrics(g2.getFont()).getHeight() / 4;
-
-				g2.setColor(Color.WHITE);
-				g2.setStroke(new BasicStroke(2));
-				g2.drawString("Login", x, y);
-
-				if (this.isEnabled() == false) {
-					g2.setColor(new Color(82, 82, 82, 180));
-					g2.fillRoundRect(0, 0, getWidth(), getHeight(), 36, 36);
-				}
-			}
-		};
-		btLogin.setPreferredSize(new Dimension(125, 36));
-		btLogin.setMaximumSize(btLogin.getPreferredSize());
-		btLogin.setOpaque(true);
-		btLogin.setBorderPainted(false);
-		btLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
-		btLogin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		btLogin = new LoginButton(guiMain, "Login", panel);
 		btLogin.addActionListener(new ActionListener() {
 
 			@Override
@@ -325,8 +296,10 @@ public class PanelLogin extends JPanel {
 
 			}
 		});
-
-		add(btLogin);
+		panel.add(Box.createVerticalGlue());
+		panel.add(btLogin);
+		panel.add(Box.createVerticalGlue());
+		add(panel);
 		add(Box.createRigidArea(new Dimension(0, 30)));
 
 		JLabel lblForgotPassword = new JLabel("<html><u>Forgot password ?</u></html>", JLabel.CENTER);
@@ -341,6 +314,17 @@ public class PanelLogin extends JPanel {
 
 		add(lblForgotPassword);
 		add(Box.createRigidArea(new Dimension(0, 5)));
+	}
+
+	public void setLoginEnabled(boolean enabled) {
+
+		btLogin.setEnabled(enabled);
+		if (enabled)
+			btLogin.setToolTipText("");
+		else
+			btLogin.setToolTipText("Could not connect to the server!");
+		btLogin.repaint();
+		repaint();
 	}
 
 	private Boolean verifyUsername(String username) {
