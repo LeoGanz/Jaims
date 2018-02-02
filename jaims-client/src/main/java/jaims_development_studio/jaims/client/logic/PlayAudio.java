@@ -20,8 +20,6 @@ import javax.swing.JSlider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jaims_development_studio.jaims.client.gui.VoiceMessage;
-
 public class PlayAudio implements Runnable {
 
 	private static final Logger	LOG	= LoggerFactory.getLogger(PlayAudio.class);
@@ -32,7 +30,6 @@ public class PlayAudio implements Runnable {
 	Date						d;
 	JSlider						slider;
 	JPanel						p;
-	VoiceMessage				vm;
 
 	/**
 	 * The constructor of this class. Initialises only the fields, playback has to
@@ -49,13 +46,12 @@ public class PlayAudio implements Runnable {
 	 * @param vm
 	 *            JPanel containing the <code>VoiceMessage</code> Panel.
 	 */
-	public PlayAudio(String file, JLabel actualTime, JSlider slider, JPanel p, VoiceMessage vm) {
+	public PlayAudio(String file, JLabel actualTime, JSlider slider, JPanel p) {
 
 		this.file = file;
 		this.actualTime = actualTime;
 		this.slider = slider;
 		this.p = p;
-		this.vm = vm;
 	}
 
 	/**
@@ -89,7 +85,6 @@ public class PlayAudio implements Runnable {
 						actualTime.repaint();
 
 						clip.close();
-						vm.setPaused(true);
 					}
 
 				}

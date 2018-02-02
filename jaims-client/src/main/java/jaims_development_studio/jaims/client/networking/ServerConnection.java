@@ -53,7 +53,7 @@ public class ServerConnection implements Runnable {
 		try {
 			// opens up a connection to the server
 			server = new Socket();
-			server.connect(is = new InetSocketAddress(/* "188.194.21.33" */ "localhost", 6000), 2000);
+			server.connect(is = new InetSocketAddress(/* "188.194.21.33" */ "localhost", 6000), 500);
 			while (server.isConnected() == false) {
 				try {
 					Thread.sleep(500);
@@ -61,11 +61,14 @@ public class ServerConnection implements Runnable {
 					LOG.info("Thread couldn't sleep", e);
 				}
 			}
+			connected = true;
 			oos = new ObjectOutputStream(server.getOutputStream());
 			Thread thread2 = new Thread(new ListenForInput(server, cm));
 			thread2.start();
 		} catch (IOException e) {
 			LOG.error("Couldn't connect to server. Will keep on trying!", e);
+			connected = false;
+			cm.setLoginEnabled(false);
 			Thread thread = new Thread() {
 				@Override
 				public void run() {
@@ -73,21 +76,18 @@ public class ServerConnection implements Runnable {
 					try {
 						while (!checkIfServerIsAvailable()) {
 							Thread.sleep(duration);
-							if (duration <= 120000)
+							if (duration <= 60000)
 								duration += 0.25 * duration;
 							else
-								duration = 120000;
+								duration = 60000;
 						}
+						connected = true;
 						oos = new ObjectOutputStream(server.getOutputStream());
 
 						LOG.info("Connected");
 						Thread thread2 = new Thread(new ListenForInput(server, cm));
 						thread2.start();
-						if (cm.getLoginPanel() != null) {
-							cm.getLoginPanel().removeErrorPanel();
-							cm.getLoginPanel().activateLogin();
-							cm.getLoginPanel().repaint();
-						}
+						cm.setLoginEnabled(true);
 					} catch (UnknownHostException e) {
 						LOG.error("Unkown Host Name", e);
 					} catch (IOException e) {
@@ -158,7 +158,12 @@ public class ServerConnection implements Runnable {
 		}
 	}
 
-	public boolean checkIfServerIsAvailable() {
+	public boolean isServerConnected() {
+
+		return connected;
+	}
+
+	private boolean checkIfServerIsAvailable() {
 
 		server = new Socket();
 		try {

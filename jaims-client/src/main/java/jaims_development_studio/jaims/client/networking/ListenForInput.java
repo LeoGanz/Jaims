@@ -1,6 +1,5 @@
 package jaims_development_studio.jaims.client.networking;
 
-import java.awt.Cursor;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -15,6 +14,7 @@ import jaims_development_studio.jaims.api.sendables.SendableConfirmation;
 import jaims_development_studio.jaims.api.sendables.SendableException;
 import jaims_development_studio.jaims.api.sendables.SendableMessage;
 import jaims_development_studio.jaims.api.sendables.SendableMessageResponse;
+import jaims_development_studio.jaims.api.sendables.SendableProfile;
 import jaims_development_studio.jaims.api.sendables.SendableTextMessage;
 import jaims_development_studio.jaims.api.sendables.SendableUUID;
 import jaims_development_studio.jaims.client.logic.ClientMain;
@@ -25,7 +25,6 @@ public class ListenForInput implements Runnable {
 
 	Socket						so;
 	ObjectInputStream			ois;
-	Sendable					s;
 	ClientMain					cm;
 	boolean						firstSendable	= true;
 
@@ -56,8 +55,7 @@ public class ListenForInput implements Runnable {
 			ois = new ObjectInputStream(so.getInputStream());
 			while (so.isConnected()) {
 				try {
-					s = (Sendable) ois.readObject();
-					handleSendable();
+					handleSendable((Sendable) ois.readObject());
 				} catch (ClassNotFoundException e) {
 					LOG.error("Class was not found", e);
 				} catch (NullPointerException npe) {
@@ -87,10 +85,9 @@ public class ListenForInput implements Runnable {
 	}
 
 	/**
-	 * Gets the Type of the <code>Sendable</code> and casts it to the explicit
-	 * sendable.
+	 * Gets the Type of the {@link Sendable} and casts it to the explicit sendable.
 	 */
-	private void handleSendable() {
+	private void handleSendable(Sendable s) {
 
 		try {
 			switch (s.getType().getValue()) {
@@ -100,7 +97,6 @@ public class ListenForInput implements Runnable {
 				case "TEXT":
 					SendableTextMessage stm = (SendableTextMessage) sm;
 					LOG.info("Received sendable of type " + sm.getType().toString());
-					cm.getPCC().addMessageToChat(stm);
 					break;
 				case "IMAGE":
 
@@ -122,7 +118,6 @@ public class ListenForInput implements Runnable {
 				SendableException se = (SendableException) s;
 				LOG.info("Received Sendable of type " + se.getType().toString());
 				LOG.error(se.getException().getMessage());
-				cm.getJaimsFrame().getContentPane().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				break;
 			case "STORED_UUID":
 				SendableUUID su = (SendableUUID) s;
@@ -132,33 +127,21 @@ public class ListenForInput implements Runnable {
 					firstSendable = false;
 				} else {
 
-					ClientMain.userProfile.setUUID(su.getStoredUuid());
+					cm.setUserContact(su.getStoredUuid());
 				}
 
 				break;
 			case "PROFILE":
+				System.out.println("Got profile");
+				SendableProfile sp = (SendableProfile) s;
+				System.out.println(sp.getProfile().getNickname());
 				break;
 			case "CONFIRMATION":
 				SendableConfirmation sc = (SendableConfirmation) s;
 				LOG.info("Received Sendable of type " + sc.getConfirmationType().toString());
 				if (sc.getConfirmationType().getValue().equals("REGISTRATION_SUCCESSFUL")) {
-					if (cm.getLoginPanel().getRegistrationWindow() != null) {
-						cm.getLoginPanel().getRegistrationWindow().dispose();
-					}
 				} else if (sc.getConfirmationType().getValue().equals("LOGIN_SUCCESSFUL")) {
-					cm.startCreatingChatWindow(cm.getLoginPanel().getUsername());
-					try {
-						Thread.sleep(500);
-					} catch (InterruptedException e2) {
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
-					}
-					SendableTextMessage stm = new SendableTextMessage(ClientMain.userProfile.getUuid(),
-							ClientMain.serverUUID, "hallo server :-)");
-					cm.getServerConnection().sendSendable(stm);
-					SendableTextMessage sm1 = new SendableTextMessage(ClientMain.userProfile.getUuid(),
-							ClientMain.serverUUID, "/date");
-					cm.getServerConnection().sendSendable(sm1);
+					cm.loginSuccesful();
 				}
 				break;
 			case "OTHER":
@@ -168,7 +151,7 @@ public class ListenForInput implements Runnable {
 
 			}
 		} catch (Exception e) {
-			LOG.error(e.getMessage());
+			e.printStackTrace();
 		}
 
 	}
