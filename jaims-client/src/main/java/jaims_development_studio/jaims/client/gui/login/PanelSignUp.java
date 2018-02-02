@@ -370,6 +370,15 @@ public class PanelSignUp extends JPanel {
 		add(Box.createRigidArea(new Dimension(0, 60)));
 	}
 
+	public String getUsername() {
+		return tfUsername.getText();
+	}
+
+	public String getPassword() {
+		char[] c = pfPassword.getPassword();
+		return String.valueOf(c);
+	}
+
 	private Boolean verifyUsername(String username) {
 
 		return !username.matches("[A-Za-z1-9_.]*");

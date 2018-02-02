@@ -286,6 +286,12 @@ public class GUIMain implements Runnable {
 		cm.registerNewUser(username, password, email);
 	}
 
+	public void succesfulRegistration() {
+		String username = panelProgramStartup.getRegisteredUsername();
+		String password = panelProgramStartup.getRegisteredPassword();
+		panelProgramStartup.succesfulRegistration(username, password);
+	}
+
 	@Override
 	public void run() {
 

@@ -221,6 +221,10 @@ public class ClientMain {
 		this.loggedIn = loggedIn;
 	}
 
+	public void succesfullRegistration() {
+		guiMain.succesfulRegistration();
+	}
+
 	private void loadSettings() {
 
 		String userHome = System.getProperty("user.home").replace("\\", "/");

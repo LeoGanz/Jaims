@@ -11,8 +11,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -44,8 +42,6 @@ public class PanelProgramStartup extends JPanel {
 	}
 
 	public void initGUI() {
-
-		JPanel p = this;
 
 		setLayout(null);
 
@@ -141,64 +137,52 @@ public class PanelProgramStartup extends JPanel {
 
 					if (signUpSelected == false) {
 
-						Timer timer = new Timer(10, new ActionListener() {
+						Timer timer = new Timer(10, e1 -> {
 
-							@Override
-							public void actionPerformed(ActionEvent e) {
+							if (signInSelected == true) {
+								if (xOvalSignIn <= panelSignIn.getWidth()) {
+									xOvalSignIn += 4;
+									panelSignIn.repaint();
+								} else {
+									signInSelected = false;
+									panelSignIn.repaint();
+									((Timer) e1.getSource()).stop();
 
-								if (signInSelected == true) {
-									if (xOvalSignIn <= panelSignIn.getWidth()) {
-										xOvalSignIn += 4;
-										panelSignIn.repaint();
-									} else {
-										signInSelected = false;
-										panelSignIn.repaint();
-										((Timer) e.getSource()).stop();
-
-									}
 								}
-
 							}
+
 						});
 						timer.start();
-						Timer timer2 = new Timer(10, new ActionListener() {
+						Timer timer2 = new Timer(10, e1 -> {
 
-							@Override
-							public void actionPerformed(ActionEvent e) {
+							if (signUpSelected == false)
+								signUpSelected = true;
 
-								if (signUpSelected == false)
-									signUpSelected = true;
-
+							if (xOvalSignUp < xSignUp) {
 								if (xOvalSignUp < xSignUp) {
-									if (xOvalSignUp < xSignUp) {
-										xOvalSignUp += 4;
-										panelSignUp.repaint();
-									} else {
-										xOvalSignUp = xSignUp;
-										panelSignUp.repaint();
-										((Timer) e.getSource()).stop();
-									}
+									xOvalSignUp += 4;
+									panelSignUp.repaint();
 								} else {
-									((Timer) e.getSource()).stop();
+									xOvalSignUp = xSignUp;
+									panelSignUp.repaint();
+									((Timer) e1.getSource()).stop();
 								}
-
+							} else {
+								((Timer) e1.getSource()).stop();
 							}
+
 						});
 						timer2.start();
-						Timer timer3 = new Timer(10, new ActionListener() {
+						Timer timer3 = new Timer(10, e1 -> {
 
-							@Override
-							public void actionPerformed(ActionEvent e) {
-
-								double x = panelLogin.getLocation().getX() - 40;
-								panelLogin.setLocation((int) x, (int) panelLogin.getLocation().getY());
-								repaint();
-								if (x < -460) {
-									((Timer) e.getSource()).stop();
-									showPanelSignUp();
-								}
-
+							double x = panelLogin.getLocation().getX() - 40;
+							panelLogin.setLocation((int) x, (int) panelLogin.getLocation().getY());
+							repaint();
+							if (x < -460) {
+								((Timer) e1.getSource()).stop();
+								showPanelSignUp();
 							}
+
 						});
 						timer3.start();
 
@@ -213,65 +197,53 @@ public class PanelProgramStartup extends JPanel {
 
 					if (signInSelected == false) {
 
-						Timer timer3 = new Timer(10, new ActionListener() {
+						Timer timer3 = new Timer(10, e1 -> {
 
-							@Override
-							public void actionPerformed(ActionEvent e) {
+							if (signUpSelected == true) {
+								if (xOvalSignUp >= -55) {
+									xOvalSignUp = xOvalSignUp - 4;
+									panelSignUp.repaint();
+								} else {
+									signUpSelected = false;
+									panelSignUp.repaint();
+									((Timer) e1.getSource()).stop();
 
-								if (signUpSelected == true) {
-									if (xOvalSignUp >= -55) {
-										xOvalSignUp = xOvalSignUp - 4;
-										panelSignUp.repaint();
-									} else {
-										signUpSelected = false;
-										panelSignUp.repaint();
-										((Timer) e.getSource()).stop();
-
-									}
 								}
-
 							}
+
 						});
 						timer3.start();
-						Timer timer4 = new Timer(10, new ActionListener() {
+						Timer timer4 = new Timer(10, e1 -> {
 
-							@Override
-							public void actionPerformed(ActionEvent e) {
+							if (signInSelected == false)
+								signInSelected = true;
 
-								if (signInSelected == false)
-									signInSelected = true;
-
+							if (xOvalSignIn > xSignIn) {
 								if (xOvalSignIn > xSignIn) {
-									if (xOvalSignIn > xSignIn) {
-										xOvalSignIn -= 4;
-										panelSignIn.repaint();
-									} else {
-										xOvalSignIn = xSignIn;
-										panelSignIn.repaint();
-										((Timer) e.getSource()).stop();
-									}
+									xOvalSignIn -= 4;
+									panelSignIn.repaint();
 								} else {
-									((Timer) e.getSource()).stop();
+									xOvalSignIn = xSignIn;
+									panelSignIn.repaint();
+									((Timer) e1.getSource()).stop();
 								}
-
+							} else {
+								((Timer) e1.getSource()).stop();
 							}
+
 						});
 						timer4.start();
 
-						Timer timer5 = new Timer(10, new ActionListener() {
+						Timer timer5 = new Timer(10, e1 -> {
 
-							@Override
-							public void actionPerformed(ActionEvent e) {
-
-								double x = pRegister.getLocation().getX() + 40;
-								pRegister.setLocation((int) x, (int) pRegister.getLocation().getY());
-								repaint();
-								if (x >= 460) {
-									((Timer) e.getSource()).stop();
-									showPanelSignIn();
-								}
-
+							double x = pRegister.getLocation().getX() + 40;
+							pRegister.setLocation((int) x, (int) pRegister.getLocation().getY());
+							repaint();
+							if (x >= 460) {
+								((Timer) e1.getSource()).stop();
+								showPanelSignIn();
 							}
+
 						});
 						timer5.start();
 					}
@@ -298,44 +270,60 @@ public class PanelProgramStartup extends JPanel {
 
 		double y = panelLogin.getLocation().getY();
 
-		Timer timer4 = new Timer(10, new ActionListener() {
+		Timer timer4 = new Timer(10, e -> {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				double x = pRegister.getLocation().getX() - 40;
-				pRegister.setLocation((int) x, (int) y);
+			double x = pRegister.getLocation().getX() - 40;
+			pRegister.setLocation((int) x, (int) y);
+			repaint();
+			if (x <= 0) {
+				pRegister.setLocation(0, (int) y);
 				repaint();
-				if (x <= 0) {
-					pRegister.setLocation(0, (int) y);
-					repaint();
-					((Timer) e.getSource()).stop();
-				}
-
+				((Timer) e.getSource()).stop();
 			}
+
 		});
 		timer4.start();
+	}
+
+	public void succesfulRegistration(String username, String password) {
+		panelLogin.setLogin(username, password);
+		Timer timer5 = new Timer(10, e1 -> {
+
+			double x = pRegister.getLocation().getX() + 40;
+			pRegister.setLocation((int) x, (int) pRegister.getLocation().getY());
+			repaint();
+			if (x >= 460) {
+				((Timer) e1.getSource()).stop();
+				showPanelSignIn();
+			}
+
+		});
+		timer5.start();
+	}
+
+	public String getRegisteredUsername() {
+		return pRegister.getUsername();
+	}
+
+	public String getRegisteredPassword() {
+		return pRegister.getPassword();
 	}
 
 	private void showPanelSignIn() {
 
 		double y = pRegister.getLocation().getY();
 
-		Timer timer = new Timer(10, new ActionListener() {
+		Timer timer = new Timer(10, e -> {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				double x = panelLogin.getLocation().getX() + 40;
-				panelLogin.setLocation((int) x, (int) y);
+			double x = panelLogin.getLocation().getX() + 40;
+			panelLogin.setLocation((int) x, (int) y);
+			repaint();
+			if (x > 0) {
+				panelLogin.setLocation(0, (int) y);
 				repaint();
-				if (x > 0) {
-					panelLogin.setLocation(0, (int) y);
-					repaint();
-					((Timer) e.getSource()).stop();
-				}
-
+				((Timer) e.getSource()).stop();
 			}
+
 		});
 		timer.start();
 	}
