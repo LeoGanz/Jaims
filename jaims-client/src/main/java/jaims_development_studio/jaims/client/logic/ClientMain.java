@@ -17,7 +17,9 @@ import javax.swing.SwingUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.api.sendables.ERequestType;
 import jaims_development_studio.jaims.api.sendables.SendableLogin;
+import jaims_development_studio.jaims.api.sendables.SendableRequest;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
 import jaims_development_studio.jaims.client.database.ReadFromDatabase;
@@ -200,7 +202,9 @@ public class ClientMain {
 
 	public void requestUserProfile(UUID uuid) {
 
-		System.out.println("cm: " + userContact == null);
+		System.out.println("sending request...");
+		SendableRequest sr = new SendableRequest(ERequestType.PROFILE, uuid);
+		sc.sendSendable(sr);
 	}
 
 	private void loadSettings() {

@@ -14,6 +14,7 @@ import jaims_development_studio.jaims.api.sendables.SendableConfirmation;
 import jaims_development_studio.jaims.api.sendables.SendableException;
 import jaims_development_studio.jaims.api.sendables.SendableMessage;
 import jaims_development_studio.jaims.api.sendables.SendableMessageResponse;
+import jaims_development_studio.jaims.api.sendables.SendableProfile;
 import jaims_development_studio.jaims.api.sendables.SendableTextMessage;
 import jaims_development_studio.jaims.api.sendables.SendableUUID;
 import jaims_development_studio.jaims.client.logic.ClientMain;
@@ -131,6 +132,9 @@ public class ListenForInput implements Runnable {
 
 				break;
 			case "PROFILE":
+				System.out.println("Got profile");
+				SendableProfile sp = (SendableProfile) s;
+				System.out.println(sp.getProfile().getNickname());
 				break;
 			case "CONFIRMATION":
 				SendableConfirmation sc = (SendableConfirmation) s;

@@ -3,7 +3,6 @@ package jaims_development_studio.jaims.client.gui.showContacts;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -33,13 +32,12 @@ public class PanelUserShowing extends JPanel {
 		setPreferredSize(new Dimension(250, 60));
 		setMaximumSize(new Dimension(350, 60));
 		setAlignmentX(Component.CENTER_ALIGNMENT);
-		setCursor(new Cursor(Cursor.HAND_CURSOR));
 		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 		add(Box.createHorizontalGlue());
-		add(new AddSign(guiMain));
+		add(new AddSign(guiMain, this));
 		add(Box.createRigidArea(new Dimension(2, 0)));
 		add(new SettingDots(guiMain));
-		add(Box.createRigidArea(new Dimension(5, 0)));
+		add(Box.createRigidArea(new Dimension(8, 0)));
 		addMouseListener(new MouseAdapter() {
 
 			@Override
