@@ -101,7 +101,7 @@ public class JaimsFrame extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setSize(900, 600);
-		setMinimumSize(new Dimension(800, 500));
+		setMinimumSize(new Dimension(700, 400));
 		setLocationRelativeTo(null);
 		setBackground(Color.DARK_GRAY);
 		setUndecorated(false);

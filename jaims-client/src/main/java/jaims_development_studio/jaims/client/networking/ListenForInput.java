@@ -15,7 +15,6 @@ import jaims_development_studio.jaims.api.sendables.SendableException;
 import jaims_development_studio.jaims.api.sendables.SendableMessage;
 import jaims_development_studio.jaims.api.sendables.SendableMessageResponse;
 import jaims_development_studio.jaims.api.sendables.SendableProfile;
-import jaims_development_studio.jaims.api.sendables.SendableTextMessage;
 import jaims_development_studio.jaims.api.sendables.SendableUUID;
 import jaims_development_studio.jaims.client.logic.ClientMain;
 
@@ -95,7 +94,6 @@ public class ListenForInput implements Runnable {
 				SendableMessage sm = (SendableMessage) s;
 				switch (sm.getMessageType().getValue()) {
 				case "TEXT":
-					SendableTextMessage stm = (SendableTextMessage) sm;
 					LOG.info("Received sendable of type " + sm.getType().toString());
 					break;
 				case "IMAGE":
@@ -125,10 +123,8 @@ public class ListenForInput implements Runnable {
 				if (firstSendable) {
 					ClientMain.serverUUID = su.getStoredUuid();
 					firstSendable = false;
-				} else {
-
+				} else
 					cm.setUserContact(su.getStoredUuid());
-				}
 
 				break;
 			case "PROFILE":

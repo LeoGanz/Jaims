@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import jaims_development_studio.jaims.api.sendables.ERequestType;
 import jaims_development_studio.jaims.api.sendables.SendableLogin;
+import jaims_development_studio.jaims.api.sendables.SendableRegistration;
 import jaims_development_studio.jaims.api.sendables.SendableRequest;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
@@ -43,6 +44,7 @@ public class ClientMain {
 	private String				loggedInUsername;
 	private ReadFromDatabase	readFromDatabase;
 	private Settings			settings;
+	private boolean				loggedIn				= false;
 
 	/**
 	 * Static profile which represents the logged-in user.
@@ -150,6 +152,7 @@ public class ClientMain {
 
 		while (userContact == null) {
 		}
+		loggedIn = true;
 		loadSettings();
 		guiMain.loginSuccessful();
 	}
@@ -202,9 +205,20 @@ public class ClientMain {
 
 	public void requestUserProfile(UUID uuid) {
 
-		System.out.println("sending request...");
+		while (loggedIn == false) {
+		}
+
 		SendableRequest sr = new SendableRequest(ERequestType.PROFILE, uuid);
 		sc.sendSendable(sr);
+	}
+
+	public void registerNewUser(String username, String password, String email) {
+		SendableRegistration sr = new SendableRegistration(username, password, email);
+		sc.sendSendable(sr);
+	}
+
+	public void setLoggedIn(boolean loggedIn) {
+		this.loggedIn = loggedIn;
 	}
 
 	private void loadSettings() {

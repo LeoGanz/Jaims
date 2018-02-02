@@ -9,10 +9,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Comparator;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -55,7 +52,6 @@ public class PanelTabbedPane extends JPanel {
 			btChats = new JButton() {
 				@Override
 				public void paintComponent(Graphics g) {
-
 					g.setColor(Color.GRAY);
 					g.fillRect(0, 0, getWidth(), getHeight());
 
@@ -81,15 +77,7 @@ public class PanelTabbedPane extends JPanel {
 			btChats.setMaximumSize(new Dimension(175, 35));
 			btChats.setCursor(new Cursor(Cursor.HAND_CURSOR));
 			btChats.setBorderPainted(false);
-			btChats.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-
-					handleAnimationToChats();
-
-				}
-			});
+			btChats.addActionListener(e -> handleAnimationToChats());
 			panelTabs.add(btChats);
 
 			btContacts = new JButton() {
@@ -122,15 +110,7 @@ public class PanelTabbedPane extends JPanel {
 			btContacts.setMaximumSize(new Dimension(175, 35));
 			btContacts.setCursor(new Cursor(Cursor.HAND_CURSOR));
 			btContacts.setBorderPainted(false);
-			btContacts.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-
-					handleAnimationToContacts();
-
-				}
-			});
+			btContacts.addActionListener(e -> handleAnimationToContacts());
 			panelTabs.add(btContacts);
 		}
 		add(panelTabs, BorderLayout.PAGE_START);
@@ -139,20 +119,15 @@ public class PanelTabbedPane extends JPanel {
 	public void buildPanelContacts(ArrayList<SimpleContact> list) {
 
 		if (list.size() > 0) {
-			list.sort(new Comparator<SimpleContact>() {
+			list.sort((o1, o2) -> {
 
-				@Override
-				public int compare(SimpleContact o1, SimpleContact o2) {
-
-					if (o1.getContactNickname().compareTo(o2.getContactNickname()) > 0) {
-						return 1;
-					} else if (o1.getContactNickname().compareTo(o2.getContactNickname()) < 0) {
-						return -1;
-					} else {
-						return 0;
-					}
+				if (o1.getContactNickname().compareTo(o2.getContactNickname()) > 0) {
+					return 1;
+				} else if (o1.getContactNickname().compareTo(o2.getContactNickname()) < 0) {
+					return -1;
+				} else {
+					return 0;
 				}
-
 			});
 
 			panelContacts = new JPanel() {
@@ -259,41 +234,37 @@ public class PanelTabbedPane extends JPanel {
 
 			animationRunning = true;
 
-			Timer timer = new Timer(10, new ActionListener() {
+			Timer timer = new Timer(10, e -> {
 
-				@Override
-				public void actionPerformed(ActionEvent e) {
-
-					if (xChats < 130) {
-						xChats += 10;
-						yChats = btChats.getHeight() - 5;
-						btChats.repaint();
-					}
-
-					if (xContacts < 10) {
-						xContacts += 10;
-						yContacts = btContacts.getHeight() - 5;
-						btContacts.repaint();
-					}
-
-					// if (xJspChats > -260) {
-					// xJspChats -= 10;
-					// jspChats.setLocation(xJspChats, 0);
-					// panelCenter.revalidate();
-					// }
-					//
-					// if (xJspContacts > 0) {
-					// xJspContacts -= 10;
-					// jspContacts.setLocation(xJspContacts, 0);
-					// panelCenter.revalidate();
-					// panelCenter.revalidate();
-					// }
-					if (xContacts >= 10) {
-						((Timer) e.getSource()).stop();
-						animationRunning = false;
-					}
-
+				if (xChats < 130) {
+					xChats += 10;
+					yChats = btChats.getHeight() - 5;
+					btChats.repaint();
 				}
+
+				if (xContacts < 10) {
+					xContacts += 10;
+					yContacts = btContacts.getHeight() - 5;
+					btContacts.repaint();
+				}
+
+				// if (xJspChats > -260) {
+				// xJspChats -= 10;
+				// jspChats.setLocation(xJspChats, 0);
+				// panelCenter.revalidate();
+				// }
+				//
+				// if (xJspContacts > 0) {
+				// xJspContacts -= 10;
+				// jspContacts.setLocation(xJspContacts, 0);
+				// panelCenter.revalidate();
+				// panelCenter.revalidate();
+				// }
+				if (xContacts >= 10) {
+					((Timer) e.getSource()).stop();
+					animationRunning = false;
+				}
+
 			});
 			timer.start();
 			chatsSelected = false;
@@ -308,42 +279,38 @@ public class PanelTabbedPane extends JPanel {
 			repaint();
 			animationRunning = true;
 
-			Timer timer = new Timer(10, new ActionListener() {
+			Timer timer = new Timer(10, e -> {
 
-				@Override
-				public void actionPerformed(ActionEvent e) {
-
-					if (xChats > 10) {
-						xChats -= 10;
-						yChats = btChats.getHeight() - 5;
-						btChats.repaint();
-					}
-
-					if (xContacts > -130) {
-						xContacts -= 10;
-						yContacts = btContacts.getHeight() - 5;
-						btContacts.repaint();
-					}
-
-					// if (xJspChats < 0) {
-					// xJspChats += 10;
-					// jspChats.setLocation(xJspChats, 0);
-					// panelCenter.revalidate();
-					// }
-					//
-					// if (xJspContacts < 260) {
-					// xJspContacts += 10;
-					// jspContacts.setLocation(xJspContacts, 0);
-					// panelCenter.revalidate();
-					// panelCenter.revalidate();
-					// }
-
-					if (xChats <= 10) {
-						((Timer) e.getSource()).stop();
-						animationRunning = false;
-					}
-
+				if (xChats > 10) {
+					xChats -= 10;
+					yChats = btChats.getHeight() - 5;
+					btChats.repaint();
 				}
+
+				if (xContacts > -130) {
+					xContacts -= 10;
+					yContacts = btContacts.getHeight() - 5;
+					btContacts.repaint();
+				}
+
+				// if (xJspChats < 0) {
+				// xJspChats += 10;
+				// jspChats.setLocation(xJspChats, 0);
+				// panelCenter.revalidate();
+				// }
+				//
+				// if (xJspContacts < 260) {
+				// xJspContacts += 10;
+				// jspContacts.setLocation(xJspContacts, 0);
+				// panelCenter.revalidate();
+				// panelCenter.revalidate();
+				// }
+
+				if (xChats <= 10) {
+					((Timer) e.getSource()).stop();
+					animationRunning = false;
+				}
+
 			});
 			timer.start();
 			chatsSelected = true;
