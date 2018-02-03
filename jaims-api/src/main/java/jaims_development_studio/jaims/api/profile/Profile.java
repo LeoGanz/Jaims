@@ -50,14 +50,12 @@ public class Profile implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date				lastUpdated;
 
-	public Profile(Account account, String nickname, String description, String status, byte[] profilePicture,
-			Date lastUpdated) {
+	public Profile(Account account, String nickname, String description, String status, byte[] profilePicture, Date lastUpdated) {
 
 		this(null, account, nickname, description, status, profilePicture, lastUpdated);
 	}
 
-	private Profile(UUID uuid, Account account, String nickname, String description, String status,
-			byte[] profilePicture, Date lastUpdated) {
+	public Profile(UUID uuid, Account account, String nickname, String description, String status, byte[] profilePicture, Date lastUpdated) {
 
 		this.uuid = uuid;
 		this.account = account;
@@ -68,10 +66,15 @@ public class Profile implements Serializable {
 		this.lastUpdated = lastUpdated;
 	}
 
-	public Profile() {
+	@SuppressWarnings("unused")
+	private Profile() {
 
 	}
 
+	public void setUuid(UUID uuid) {
+		this.uuid = uuid;
+	}
+	
 	public UUID getUuid() {
 
 		return uuid;
