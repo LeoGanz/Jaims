@@ -123,12 +123,10 @@ public class ListenForInput implements Runnable {
 				if (firstSendable) {
 					ClientMain.serverUUID = su.getStoredUuid();
 					firstSendable = false;
-				} else
-					cm.setUserContact(su.getStoredUuid());
+				}
 
 				break;
 			case "PROFILE":
-				System.out.println("Got profile");
 				SendableProfile sp = (SendableProfile) s;
 				System.out.println(sp.getProfile().getNickname());
 				break;
@@ -136,10 +134,9 @@ public class ListenForInput implements Runnable {
 				SendableConfirmation sc = (SendableConfirmation) s;
 				LOG.info("Received Sendable of type " + sc.getConfirmationType().toString());
 				if (sc.getConfirmationType().getValue().equals("REGISTRATION_SUCCESSFUL")) {
-					cm.succesfullRegistration();
-					cm.sendRegistrationProfile();
+					cm.succesfullRegistration(sc.getStoredUuid());
 				} else if (sc.getConfirmationType().getValue().equals("LOGIN_SUCCESSFUL")) {
-					cm.loginSuccesful();
+					cm.loginSuccesful(sc.getStoredUuid());
 				}
 				break;
 			case "OTHER":

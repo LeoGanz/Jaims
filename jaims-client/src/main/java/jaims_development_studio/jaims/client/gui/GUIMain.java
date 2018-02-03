@@ -107,7 +107,6 @@ public class GUIMain implements Runnable {
 		showGuiBuildingProcess.revalidate();
 		jaimsFrame.repaint();
 
-		cm.connectToDatabase();
 		showGuiBuildingProcess.setProgress(10);
 
 		panelTabbedPane = new PanelTabbedPane(this);
@@ -292,6 +291,11 @@ public class GUIMain implements Runnable {
 		String username = panelProgramStartup.getRegisteredUsername();
 		String password = panelProgramStartup.getRegisteredPassword();
 		panelProgramStartup.succesfulRegistration(username, password);
+	}
+
+	public String getRegisteredUsername() {
+
+		return panelProgramStartup.getRegisteredUsername();
 	}
 
 	@Override

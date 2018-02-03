@@ -151,11 +151,9 @@ public class ClientMain {
 		return userContact.getContactID();
 	}
 
-	public void loginSuccesful() {
+	public void loginSuccesful(UUID uuid) {
 
-		while (userContact == null) {
-		}
-		loggedIn = true;
+		setUserContact(uuid);
 		loadSettings();
 		guiMain.loginSuccessful();
 	}
@@ -208,9 +206,6 @@ public class ClientMain {
 
 	public void requestUserProfile(UUID uuid) {
 
-		while (loggedIn == false) {
-		}
-
 		SendableRequest sr = new SendableRequest(ERequestType.PROFILE, uuid);
 		sc.sendSendable(sr);
 	}
@@ -226,15 +221,18 @@ public class ClientMain {
 		this.loggedIn = loggedIn;
 	}
 
-	public void succesfullRegistration() {
+	public void succesfullRegistration(UUID uuid) {
 
+		sendRegistrationProfile(uuid);
 		guiMain.succesfulRegistration();
 	}
 
-	public void sendRegistrationProfile() {
+	public void sendRegistrationProfile(UUID uuid) {
 
-		Profile pf = new Profile(null, userContact.getContactNickname(), "", "", null, new Date());
-		pf.setUUID(userContact.getContactID());
+		Profile pf = new Profile(null, guiMain.getRegisteredUsername(), "", "", null, new Date());
+		pf.setUUID(uuid);
+		System.out.println(pf.getNickname());
+		System.out.println(pf.getUuid());
 		SendableProfile sp = new SendableProfile(pf);
 		sc.sendSendable(sp);
 	}

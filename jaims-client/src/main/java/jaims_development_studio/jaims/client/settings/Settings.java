@@ -28,9 +28,9 @@ public class Settings implements Serializable {
 	private int					ownFontSize					= 14;
 
 	// Color Attributes for User-Message
-	private Color				colorOwnMessages			= new Color(191, 225, 14);
-	private Color				colorOwnMessageBorder		= Color.GRAY;
-	private Color				colorOwnMessageFont			= Color.BLACK;
+	private int					colorOwnMessages			= new Color(191, 225, 14).getRGB();
+	private int					colorOwnMessageBorder		= Color.GRAY.getRGB();
+	private int					colorOwnMessageFont			= Color.BLACK.getRGB();
 
 	// Font attributes for Contact-Message
 	private String				contactFontName				= "Serif";
@@ -38,9 +38,9 @@ public class Settings implements Serializable {
 	private int					contactFontSize				= 14;
 
 	// Color attributes for Contact-Message
-	private Color				colorContactMessages		= new Color(191, 225, 14);
-	private Color				colorContactMessageBorder	= Color.GRAY;
-	private Color				colorContactMessageFont		= Color.BLACK;
+	private int					colorContactMessages		= new Color(191, 225, 14).getRGB();
+	private int					colorContactMessageBorder	= Color.GRAY.getRGB();
+	private int					colorContactMessageFont		= Color.BLACK.getRGB();
 
 	// Input for Voice-Messages
 
@@ -115,32 +115,32 @@ public class Settings implements Serializable {
 		this.ownFontSize = ownFontSize;
 	}
 
-	public Color getColorOwnMessages() {
+	public int getColorOwnMessages() {
 
 		return colorOwnMessages;
 	}
 
 	public void setColorOwnMessages(int rgb) {
 
-		this.colorOwnMessages = new Color(rgb);
+		this.colorOwnMessages = rgb;
 	}
 
-	public Color getColorOwnMessageBorder() {
+	public int getColorOwnMessageBorder() {
 
 		return colorOwnMessageBorder;
 	}
 
-	public void setColorOwnMessageBorder(Color colorOwnMessageBorder) {
+	public void setColorOwnMessageBorder(int colorOwnMessageBorder) {
 
 		this.colorOwnMessageBorder = colorOwnMessageBorder;
 	}
 
-	public Color getColorOwnMessageFont() {
+	public int getColorOwnMessageFont() {
 
 		return colorOwnMessageFont;
 	}
 
-	public void setColorOwnMessageFont(Color colorOwnMessageFont) {
+	public void setColorOwnMessageFont(int colorOwnMessageFont) {
 
 		this.colorOwnMessageFont = colorOwnMessageFont;
 	}
@@ -175,32 +175,32 @@ public class Settings implements Serializable {
 		this.contactFontSize = contactFontSize;
 	}
 
-	public Color getColorContactMessages() {
+	public int getColorContactMessages() {
 
 		return colorContactMessages;
 	}
 
-	public void setColorContactMessages(Color colorContactMessages) {
+	public void setColorContactMessages(int colorContactMessages) {
 
 		this.colorContactMessages = colorContactMessages;
 	}
 
-	public Color getColorContactMessageBorder() {
+	public int getColorContactMessageBorder() {
 
 		return colorContactMessageBorder;
 	}
 
-	public void setColorContactMessageBorder(Color colorContactMessageBorder) {
+	public void setColorContactMessageBorder(int colorContactMessageBorder) {
 
 		this.colorContactMessageBorder = colorContactMessageBorder;
 	}
 
-	public Color getColorContactMessageFont() {
+	public int getColorContactMessageFont() {
 
 		return colorContactMessageFont;
 	}
 
-	public void setColorContactMessageFont(Color colorContactMessageFont) {
+	public void setColorContactMessageFont(int colorContactMessageFont) {
 
 		this.colorContactMessageFont = colorContactMessageFont;
 	}
