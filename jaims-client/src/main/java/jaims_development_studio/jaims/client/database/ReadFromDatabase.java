@@ -33,8 +33,6 @@ public class ReadFromDatabase {
 	public ReadFromDatabase(Connection con) {
 
 		this.con = con;
-
-		new WriteToDatabase(tablename, con);
 	}
 
 	public boolean hasTables() {
@@ -328,6 +326,30 @@ public class ReadFromDatabase {
 			return rs.getString(1);
 		} catch (SQLException e) {
 			return "About me.";
+		}
+	}
+
+	public boolean hasEntry(UUID uuid) {
+		try {
+			pStatement = con.prepareStatement("SELECT * from CONTACTS WHERE CONTACT_ID=?");
+			pStatement.setObject(1, uuid);
+			rs = pStatement.executeQuery();
+
+			if (rs.getFetchSize() > 0)
+				return true;
+			else {
+				pStatement = con.prepareStatement("SELECT * from USER WHERE USER_ID=?");
+				pStatement.setObject(1, uuid);
+				rs = pStatement.executeQuery();
+				if (rs.getFetchSize() > 0)
+					return true;
+				else
+					return false;
+			}
+
+		} catch (SQLException e) {
+			LOG.error("Failed to create statement or resultSet!", e);
+			return false;
 		}
 	}
 

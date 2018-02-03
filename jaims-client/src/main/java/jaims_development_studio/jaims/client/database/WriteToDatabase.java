@@ -1,20 +1,16 @@
 package jaims_development_studio.jaims.client.database;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.UUID;
+import java.sql.Timestamp;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jaims_development_studio.jaims.client.chatObjects.Message;
+import jaims_development_studio.jaims.api.profile.Profile;
 
 public class WriteToDatabase {
 
@@ -23,36 +19,59 @@ public class WriteToDatabase {
 	private String				tablename;
 	private Connection			con;
 	private Statement			s;
-	private PreparedStatement	ps;
+	private PreparedStatement	pStatement;
 	private ResultSet			rs;
 
-	public WriteToDatabase(String tablename, Connection con) {
+	public WriteToDatabase(Connection con) {
 
-		this.tablename = tablename;
 		this.con = con;
 	}
 
-	public void writeMessage(Message m, UUID uuid, ArrayList<Message> list) {
+	public void saveProfile(Profile pf, boolean contact) {
+		String sql;
+		if (contact)
+			sql = "INSERT INTO CONTACTS VALUES (?,?,?,?,?,?)";
+		else
+			sql = "INSERT INTO USER VALUES (?,?,?,?,?,?)";
 
 		try {
-			// m.setTimestampSent(new Date(System.currentTimeMillis()));
-			list.add(m);
-
-			ps = con.prepareStatement("UPDATE " + tablename.toUpperCase() + " SET MESSAGE_ARRAY=? WHERE ID=?");
-
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(bos);
-			oos.writeObject(list);
-			ps.setBytes(1, bos.toByteArray());
-			ps.setObject(2, uuid);
-			bos.close();
-			oos.close();
-
-			ps.executeUpdate();
+			pStatement = con.prepareStatement(sql);
+			pStatement.setObject(1, pf.getUuid());
+			pStatement.setString(2, pf.getNickname());
+			pStatement.setString(3, pf.getDescription());
+			pStatement.setString(4, pf.getStatus());
+			pStatement.setBytes(5, pf.getProfilePicture());
+			pStatement.setTimestamp(6, new Timestamp(pf.getLastUpdated().getTime()));
+			pStatement.executeUpdate();
 			con.commit();
-		} catch (SQLException | IOException e) {
+
+		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			LOG.error("Caught SQL exception", e);
+			e.printStackTrace();
+		}
+
+	}
+
+	public void updateProfile(Profile pf, boolean contact) {
+		String sql;
+		if (contact)
+			sql = "UPDATE CONTACTS SET NICKNAME=?, DESCRIPTION=?,STATUS=?,PROFILE_PICTURE=?,LAST_UPDATED=? WHERE CONTACT_ID=?";
+		else
+			sql = "UPDATE USER SET NICKNAME=?, DESCRIPTION=?,STATUS=?,PROFILE_PICTURE=?,LAST_UPDATED=? WHERE CONTACT_ID=?";
+
+		try {
+			pStatement = con.prepareStatement(sql);
+			pStatement.setString(1, pf.getNickname());
+			pStatement.setString(2, pf.getDescription());
+			pStatement.setString(3, pf.getStatus());
+			pStatement.setBytes(4, pf.getProfilePicture());
+			pStatement.setTimestamp(5, new Timestamp(pf.getLastUpdated().getTime()));
+			pStatement.executeUpdate();
+			con.commit();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

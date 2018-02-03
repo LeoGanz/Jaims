@@ -198,6 +198,10 @@ public class ClientMain {
 		return databaseConnection.getContactStatus(uuid);
 	}
 
+	public boolean hasEntry(UUID uuid) {
+		return databaseConnection.hasEntry(uuid);
+	}
+
 	public boolean isServerConnected() {
 
 		return sc.isServerConnected();
@@ -206,6 +210,21 @@ public class ClientMain {
 	public void setLoginEnabled(boolean enabled) {
 
 		guiMain.setLoginEnabled(enabled);
+	}
+
+	public void saveProfile(Profile p) {
+		if (p.getUuid().equals(userContact.getContactID()))
+			databaseConnection.saveProfile(p, false);
+		else {
+			databaseConnection.saveProfile(p, true);
+		}
+	}
+
+	public void updateProfile(Profile p) {
+		if (p.getUuid().equals(userContact.getContactID()))
+			databaseConnection.updateProfile(p, false);
+		else
+			databaseConnection.updateProfile(p, true);
 	}
 
 	public void requestUserProfile(UUID uuid) {

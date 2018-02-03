@@ -128,7 +128,10 @@ public class ListenForInput implements Runnable {
 				break;
 			case "PROFILE":
 				SendableProfile sp = (SendableProfile) s;
-				System.out.println(sp.getProfile().getNickname());
+				if (cm.hasEntry(sp.getProfile().getUuid()) == false)
+					cm.saveProfile(sp.getProfile());
+				else
+					cm.updateProfile(sp.getProfile());
 				break;
 			case "CONFIRMATION":
 				SendableConfirmation sc = (SendableConfirmation) s;
