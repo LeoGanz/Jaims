@@ -62,7 +62,7 @@ public class ListenForInput implements Runnable {
 				} catch (SocketException se) {
 					LOG.error("Socket isn't connected", se);
 				} catch (EOFException e) {
-					LOG.error("Server connection closed. Trying to reconnect", e);
+					LOG.error("Server connection closed. Trying to reconnect");
 					firstSendable = true;
 					cm.getServerConnection().initConnection();
 					break;
@@ -74,7 +74,7 @@ public class ListenForInput implements Runnable {
 		} catch (NullPointerException npe) {
 			LOG.error("Socket isn't initialised!", npe);
 		} catch (EOFException e) {
-			LOG.error("Server connection closed. Trying to reconnect", e);
+			LOG.error("Server connection closed. Trying to reconnect");
 			cm.getServerConnection().initConnection();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

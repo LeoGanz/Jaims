@@ -13,6 +13,7 @@ import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -26,7 +27,7 @@ public class PanelProgramStartup extends JPanel {
 
 	private GUIMain		guiMain;
 	private Image		img, scaledImage;
-	private boolean		signUpSelected	= false, signInSelected = true;
+	private boolean		signUpSelected	= false, signInSelected = true, closeSelected = false;
 	private int			xSignIn			= 0, ySignIn = 0, xOvalSignIn = 0, xSignUp = 0, ySignUp = 0, xOvalSignUp = -55;
 	private PanelLogin	panelLogin;
 	private PanelSignUp	pRegister;
@@ -264,6 +265,38 @@ public class PanelProgramStartup extends JPanel {
 		pRegister.setBounds(460, 80, 450, 520);
 		add(pRegister);
 
+		addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+				if ((e.getX() >= 405 || e.getX() <= 435) && (e.getY() >= 10 || e.getY() <= 40))
+					System.exit(0);
+
+			}
+		});
+		addMouseMotionListener(new MouseMotionAdapter() {
+
+			@Override
+			public void mouseMoved(MouseEvent e) {
+
+				if ((e.getX() >= 410 && e.getX() <= 430) && (e.getY() >= 15 && e.getY() <= 35)) {
+					closeSelected = true;
+					setCursor(new Cursor(Cursor.HAND_CURSOR));
+					repaint();
+				}
+
+				if (closeSelected) {
+					if ((e.getX() <= 405 || e.getX() >= 435) && (e.getY() <= 10 || e.getY() >= 40)) {
+						closeSelected = false;
+						setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+						repaint();
+					}
+				}
+
+			}
+		});
+
 	}
 
 	private void showPanelSignUp() {
@@ -286,6 +319,7 @@ public class PanelProgramStartup extends JPanel {
 	}
 
 	public void succesfulRegistration(String username, String password) {
+
 		panelLogin.setLogin(username, password);
 		Timer timer5 = new Timer(10, e1 -> {
 
@@ -302,10 +336,12 @@ public class PanelProgramStartup extends JPanel {
 	}
 
 	public String getRegisteredUsername() {
+
 		return pRegister.getUsername();
 	}
 
 	public String getRegisteredPassword() {
+
 		return pRegister.getPassword();
 	}
 
@@ -355,5 +391,18 @@ public class PanelProgramStartup extends JPanel {
 		g2.fillRect(0, 0, getWidth(), getHeight());
 
 		g2.drawImage(img, getWidth() / 2 - img.getWidth(this) / 2, getHeight() / 2 - img.getHeight(this) / 2, this);
+
+		if (closeSelected) {
+			g2.setColor(Color.RED);
+			g2.setStroke(new BasicStroke(2.5F));
+			g2.drawLine(405, 10, 435, 40);
+			g2.drawLine(405, 40, 435, 10);
+			g2.setStroke(new BasicStroke(1));
+		} else {
+			g2.setColor(Color.WHITE);
+			g2.setStroke(new BasicStroke(1));
+			g2.drawLine(410, 15, 430, 35);
+			g2.drawLine(410, 35, 430, 15);
+		}
 	}
 }
