@@ -1,5 +1,7 @@
 package jaims_development_studio.jaims.api.sendables;
 
+import java.util.UUID;
+
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -17,14 +19,18 @@ public class SendableConfirmation extends Sendable {
 	@Enumerated(EnumType.STRING)
 	private EConfirmationType	confirmationType;
 	
+	@Column(name = "STORED_UUID", columnDefinition = "BINARY(16)")
+	private UUID				storedUuid;
+	
 	@SuppressWarnings("unused")
 	private SendableConfirmation() {
-		this(null);
+		this(null, null);
 	}
 	
-	public SendableConfirmation(EConfirmationType confirmationType) {
+	public SendableConfirmation(EConfirmationType confirmationType, UUID uuid) {
 		super(ESendableType.CONFIRMATION, 10);
 		this.confirmationType = confirmationType;
+		storedUuid = uuid;
 	}
 	
 	public EConfirmationType getConfirmationType() {
@@ -35,5 +41,12 @@ public class SendableConfirmation extends Sendable {
 		this.confirmationType = confirmationType;
 	}
 	
+	public UUID getStoredUuid() {
+		return storedUuid;
+	}
+	
+	public void setStoredUuid(UUID uuid) {
+		storedUuid = uuid;
+	}
 	
 }

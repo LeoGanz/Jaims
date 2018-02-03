@@ -19,7 +19,6 @@ import jaims_development_studio.jaims.api.sendables.SendableMessage;
 import jaims_development_studio.jaims.api.sendables.SendableProfile;
 import jaims_development_studio.jaims.api.sendables.SendableRegistration;
 import jaims_development_studio.jaims.api.sendables.SendableRequest;
-import jaims_development_studio.jaims.api.sendables.SendableUUID;
 import jaims_development_studio.jaims.api.user.User;
 import jaims_development_studio.jaims.api.user.UserNotFoundException;
 import jaims_development_studio.jaims.api.util.ObservableList;
@@ -102,11 +101,8 @@ public class ClientManager implements ITickable {
 	public User registerNewUser(SendableRegistration registration) throws UserNameNotAvailableException {
 		User user = userManager.registerNewUser(registration);
 
-		SendableConfirmation sendableConfirmation = new SendableConfirmation(EConfirmationType.REGISTRATION_SUCCESSFUL);
+		SendableConfirmation sendableConfirmation = new SendableConfirmation(EConfirmationType.REGISTRATION_SUCCESSFUL, user.getAccount().getUuid());
 		user.enqueueSendable(sendableConfirmation);
-
-		SendableUUID sendableUUID = new SendableUUID(user.getAccount().getUuid());
-		user.enqueueSendable(sendableUUID);
 
 		return user;
 	}
@@ -114,11 +110,9 @@ public class ClientManager implements ITickable {
 	public User loginUser(SendableLogin login) throws UserNotFoundException, IncorrectPasswordException {
 		User user = userManager.loginUser(login);
 
-		SendableConfirmation sendableConfirmation = new SendableConfirmation(EConfirmationType.LOGIN_SUCCESSFUL);
+		SendableConfirmation sendableConfirmation = new SendableConfirmation(EConfirmationType.LOGIN_SUCCESSFUL, user.getAccount().getUuid());
 		user.enqueueSendable(sendableConfirmation);
 
-		SendableUUID sendableUUID = new SendableUUID(user.getAccount().getUuid());
-		user.enqueueSendable(sendableUUID);
 		return user;
 	}
 

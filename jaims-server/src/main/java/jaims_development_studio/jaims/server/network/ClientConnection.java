@@ -311,7 +311,7 @@ public class ClientConnection implements Runnable {
 			autoSendSendables = false;
 
 			if (user != null)
-				user.enqueueAsFirstElement(sendable);
+				user.enqueueSendable(sendable);
 			terminate();
 		}
 	}
