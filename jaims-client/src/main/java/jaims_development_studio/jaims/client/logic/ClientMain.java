@@ -216,20 +216,25 @@ public class ClientMain {
 	}
 
 	public void registerNewUser(String username, String password, String email) {
+
 		SendableRegistration sr = new SendableRegistration(username, password, email);
 		sc.sendSendable(sr);
 	}
 
 	public void setLoggedIn(boolean loggedIn) {
+
 		this.loggedIn = loggedIn;
 	}
 
 	public void succesfullRegistration() {
+
 		guiMain.succesfulRegistration();
 	}
 
-	public void sendRegistrationProfile(String username) {
-		Profile pf = new Profile(null, username, "", "", null, new Date());
+	public void sendRegistrationProfile() {
+
+		Profile pf = new Profile(null, userContact.getContactNickname(), "", "", null, new Date());
+		pf.setUUID(userContact.getContactID());
 		SendableProfile sp = new SendableProfile(pf);
 		sc.sendSendable(sp);
 	}
@@ -256,7 +261,6 @@ public class ClientMain {
 			try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(settingFile))) {
 
 				oos.writeObject(settings);
-				System.out.println("Done");
 
 			} catch (Exception ex) {
 				ex.printStackTrace();

@@ -77,6 +77,11 @@ public class Profile implements Serializable {
 		return uuid;
 	}
 
+	public void setUUID(UUID uuid) {
+
+		this.uuid = uuid;
+	}
+
 	public Account getAccount() {
 
 		return account;

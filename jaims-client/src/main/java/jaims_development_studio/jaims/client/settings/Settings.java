@@ -57,6 +57,10 @@ public class Settings implements Serializable {
 	private int					frameSize					= 4;
 	private String				inputFileFormat				= "WAVE";
 
+	// --------------------------------------------------------------
+	// --------------GETTER AND SETTER-------------------------------
+	// --------------------------------------------------------------
+
 	public AudioFormat getAudioFormat() {
 
 		switch (inputEncoding) {

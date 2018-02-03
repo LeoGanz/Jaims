@@ -137,6 +137,7 @@ public class ListenForInput implements Runnable {
 				LOG.info("Received Sendable of type " + sc.getConfirmationType().toString());
 				if (sc.getConfirmationType().getValue().equals("REGISTRATION_SUCCESSFUL")) {
 					cm.succesfullRegistration();
+					cm.sendRegistrationProfile();
 				} else if (sc.getConfirmationType().getValue().equals("LOGIN_SUCCESSFUL")) {
 					cm.loginSuccesful();
 				}
