@@ -12,8 +12,6 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
@@ -282,19 +280,15 @@ public class PanelLogin extends JPanel {
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 
 		btLogin = new LoginButton(guiMain, "Login", panel);
-		btLogin.addActionListener(new ActionListener() {
+		btLogin.addActionListener(e -> {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				char[] c = pfPassword.getPassword();
-				String password = String.valueOf(c);
-				if (wrongPassword == false && wrongUsername == false && tfUsername.getText().equals("Username") == false
-						&& password.equals("Password") == false) {
-					guiMain.sendLogin(tfUsername.getText(), password);
-				}
-
+			char[] c = pfPassword.getPassword();
+			String password = String.valueOf(c);
+			if (wrongPassword == false && wrongUsername == false && tfUsername.getText().equals("Username") == false
+					&& password.equals("Password") == false) {
+				guiMain.sendLogin(tfUsername.getText(), password);
 			}
+
 		});
 		panel.add(Box.createVerticalGlue());
 		panel.add(btLogin);
@@ -325,6 +319,17 @@ public class PanelLogin extends JPanel {
 			btLogin.setToolTipText("Could not connect to the server!");
 		btLogin.repaint();
 		repaint();
+	}
+
+	public void setLogin(String username, String password) {
+		tfUsername.setText(username);
+		tfUsername.setForeground(Color.BLACK);
+		tfUsername.repaint();
+		pfPassword.setText(password);
+		pfPassword.setEchoChar(defaultCharEcho);
+		pfPassword.setForeground(Color.BLACK);
+		pfPassword.repaint();
+		revalidate();
 	}
 
 	private Boolean verifyUsername(String username) {
@@ -365,51 +370,61 @@ public class PanelLogin extends JPanel {
 			transform(p, arcWidth, path);
 		}
 
+		@Override
 		public Rectangle getBounds() {
 
 			return path.getBounds();
 		}
 
+		@Override
 		public Rectangle2D getBounds2D() {
 
 			return path.getBounds2D();
 		}
 
+		@Override
 		public boolean contains(double x, double y) {
 
 			return path.contains(x, y);
 		}
 
+		@Override
 		public boolean contains(Point2D p) {
 
 			return path.contains(p);
 		}
 
+		@Override
 		public boolean intersects(double x, double y, double w, double h) {
 
 			return path.intersects(x, y, w, h);
 		}
 
+		@Override
 		public boolean intersects(Rectangle2D r) {
 
 			return path.intersects(r);
 		}
 
+		@Override
 		public boolean contains(double x, double y, double w, double h) {
 
 			return path.contains(x, y, w, h);
 		}
 
+		@Override
 		public boolean contains(Rectangle2D r) {
 
 			return path.contains(r);
 		}
 
+		@Override
 		public PathIterator getPathIterator(AffineTransform at) {
 
 			return path.getPathIterator(at);
 		}
 
+		@Override
 		public PathIterator getPathIterator(AffineTransform at, double flatness) {
 
 			return path.getPathIterator(at, flatness);

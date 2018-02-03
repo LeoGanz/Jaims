@@ -354,12 +354,29 @@ public class PanelSignUp extends JPanel {
 		btRegister.setBorderPainted(false);
 		btRegister.setAlignmentX(Component.CENTER_ALIGNMENT);
 		btRegister.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		btRegister.addActionListener(e -> {
+			if (wrongEmail == false && wrongPassword == false && wrongUsername == false && btRegister.isEnabled()) {
+				char[] c = pfPassword.getPassword();
+				String password = String.valueOf(c);
+				guiMain.registerNewUser(tfUsername.getText(), password, tfEmail.getText());
+			}
+
+		});
 
 		panel.add(Box.createVerticalGlue());
 		panel.add(btRegister);
 		panel.add(Box.createVerticalGlue());
 		add(panel);
 		add(Box.createRigidArea(new Dimension(0, 60)));
+	}
+
+	public String getUsername() {
+		return tfUsername.getText();
+	}
+
+	public String getPassword() {
+		char[] c = pfPassword.getPassword();
+		return String.valueOf(c);
 	}
 
 	private Boolean verifyUsername(String username) {
