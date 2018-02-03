@@ -194,6 +194,10 @@ public class ClientMain {
 		return databaseConnection.getChatBackground();
 	}
 
+	public String getContactStatus(UUID uuid) {
+		return databaseConnection.getContactStatus(uuid);
+	}
+
 	public boolean isServerConnected() {
 
 		return sc.isServerConnected();

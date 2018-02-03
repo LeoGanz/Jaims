@@ -2,9 +2,58 @@ package jaims_development_studio.jaims.client.chatObjects;
 
 public class ChatInformation {
 
-	private int totalNumberMessages, numberOwnMessages, numberContactMessages, numberTotalTextMessages,
-			numberOwnTextMessages, numberContactTextMessages, numberWordsUsed, numberOwnWordsUsed,
-			numberContactWordsUsed, numberTotalVoiceMessages, numberOwnVoiceMessages, numberContactVoiceMessages;
+	private int totalNumberMessages = 0, numberOwnMessages = 0, numberContactMessages = 0, numberTotalTextMessages = 0,
+			numberOwnTextMessages = 0, numberContactTextMessages = 0, numberWordsUsed, numberOwnWordsUsed = 0,
+			numberContactWordsUsed = 0, numberTotalVoiceMessages = 0, numberOwnVoiceMessages = 0,
+			numberContactVoiceMessages = 0;
+
+	public void addTotalNumberMessages() {
+		totalNumberMessages++;
+	}
+
+	public void addNumberOwnMessages() {
+		numberOwnMessages++;
+	}
+
+	public void addNumberContactMessages() {
+		numberContactMessages++;
+	}
+
+	public void addNumberTotalTextMessages() {
+		numberTotalTextMessages++;
+	}
+
+	public void addNumberOwnTextMessages() {
+		numberOwnTextMessages++;
+	}
+
+	public void addNumberContactTextMessages() {
+		numberContactMessages++;
+	}
+
+	public void addNumberWordsUsed() {
+		numberWordsUsed++;
+	}
+
+	public void addNumberOwnWordsUsed() {
+		numberOwnWordsUsed++;
+	}
+
+	public void addNumberContactsWordsUsed() {
+		numberContactWordsUsed++;
+	}
+
+	public void addNumerTotalVoiceMessages() {
+		numberTotalVoiceMessages++;
+	}
+
+	public void addNumberOwnVoiceMessages() {
+		numberOwnVoiceMessages++;
+	}
+
+	public void addNumberContactVoiceMessages() {
+		numberContactVoiceMessages++;
+	}
 
 	public int getTotalNumberMessages() {
 
@@ -73,7 +122,7 @@ public class ChatInformation {
 
 	public void setNumberWordsUsed(int numberWordsUsed) {
 
-		this.numberWordsUsed = numberWordsUsed;
+		this.numberWordsUsed += numberWordsUsed;
 	}
 
 	public int getNumberOwnWordsUsed() {
@@ -83,7 +132,7 @@ public class ChatInformation {
 
 	public void setNumberOwnWordsUsed(int numberOwnWordsUsed) {
 
-		this.numberOwnWordsUsed = numberOwnWordsUsed;
+		this.numberOwnWordsUsed += numberOwnWordsUsed;
 	}
 
 	public int getNumberContactWordsUsed() {
@@ -93,7 +142,7 @@ public class ChatInformation {
 
 	public void setNumberContactWordsUsed(int numberContactWordsUsed) {
 
-		this.numberContactWordsUsed = numberContactWordsUsed;
+		this.numberContactWordsUsed += numberContactWordsUsed;
 	}
 
 	public int getNumberTotalVoiceMessages() {

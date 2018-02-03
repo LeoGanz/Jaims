@@ -89,6 +89,10 @@ public class DatabaseConnection {
 		return readFromDatabase.getChatBackground();
 	}
 
+	public String getContactStatus(UUID uuid) {
+		return readFromDatabase.getContactStatus(uuid);
+	}
+
 	public static Connection getConnection() {
 
 		return con;

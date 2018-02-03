@@ -42,6 +42,7 @@ public class GUIMain implements Runnable {
 	private PanelUserShowing				panelUserShowing;
 	private JPanel							infoPanel;
 	private HashMap<UUID, SimpleContact>	allContacts;
+
 	private PanelAddUser					panelAddUser;
 
 	public GUIMain(ClientMain cm) {
@@ -268,6 +269,11 @@ public class GUIMain implements Runnable {
 	public Image getChatBackground() {
 
 		return cm.getChatBackground();
+	}
+
+	public String getContactStatus(UUID uuid) {
+
+		return cm.getContactStatus(uuid);
 	}
 
 	public boolean isServerConnected() {
