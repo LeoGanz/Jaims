@@ -54,6 +54,7 @@ public class PanelShowMessages extends JPanel {
 					add(vm);
 					add(Box.createRigidArea(new Dimension(0, 5)));
 
+					mmp.getContactChatInformation(contactID).addNumberTotalVoiceMessages();
 					mmp.getContactChatInformation(contactID).addNumberOwnVoiceMessages();
 				} else if (m.getMessageType().equals("FILE")) {
 
@@ -84,6 +85,7 @@ public class PanelShowMessages extends JPanel {
 					add(vm);
 					add(Box.createRigidArea(new Dimension(0, 5)));
 
+					mmp.getContactChatInformation(contactID).addNumberTotalVoiceMessages();
 					mmp.getContactChatInformation(contactID).addNumberContactVoiceMessages();
 				} else if (m.getMessageType().equals("FILE")) {
 

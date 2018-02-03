@@ -11,6 +11,10 @@ public class ChatInformation {
 		totalNumberMessages++;
 	}
 
+	public void addNumberTotalVoiceMessages() {
+		numberTotalVoiceMessages++;
+	}
+
 	public void addNumberOwnMessages() {
 		numberOwnMessages++;
 	}

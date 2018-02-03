@@ -38,7 +38,8 @@ public class PanelContactShowing extends JPanel {
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-				// TODO Auto-generated method stub
+				guiMain.showParentPanel(
+						guiMain.getMessagePanelManager().getChatPanelForUser(simpleContact.getContactID()));
 
 			}
 		});

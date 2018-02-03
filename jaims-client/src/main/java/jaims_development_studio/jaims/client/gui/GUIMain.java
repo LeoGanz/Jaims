@@ -19,8 +19,10 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
+import jaims_development_studio.jaims.client.chatObjects.ChatInformation;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.CenterPanel;
+import jaims_development_studio.jaims.client.gui.customGUIComponents.ParentPanel;
 import jaims_development_studio.jaims.client.gui.login.PanelProgramStartup;
 import jaims_development_studio.jaims.client.gui.login.ShowGuiBuildingProcess;
 import jaims_development_studio.jaims.client.gui.messagePanels.ManageMessagePanels;
@@ -42,7 +44,7 @@ public class GUIMain implements Runnable {
 	private PanelUserShowing				panelUserShowing;
 	private JPanel							infoPanel;
 	private HashMap<UUID, SimpleContact>	allContacts;
-
+	private ParentPanel						parentPanel;
 	private PanelAddUser					panelAddUser;
 
 	public GUIMain(ClientMain cm) {
@@ -88,8 +90,12 @@ public class GUIMain implements Runnable {
 
 	}
 
-	public void showChatConversation() {
+	public void showParentPanel(ParentPanel pp) {
+		if (parentPanel != null)
+			jaimsFrame.getContentPane().remove(parentPanel);
 
+		jaimsFrame.getContentPane().add(parentPanel = pp, BorderLayout.CENTER);
+		jaimsFrame.getContentPane().repaint();
 	}
 
 	public void showSettings() {
@@ -212,9 +218,19 @@ public class GUIMain implements Runnable {
 		cm.sendLogin(username, password);
 	}
 
+	public SimpleContact getLoggedInUser() {
+
+		return cm.getUserContact();
+	}
+
 	public SimpleContact getSimpleContact(UUID uuid) {
 
 		return allContacts.get(uuid);
+	}
+
+	public ChatInformation getChatInformation(UUID uuid) {
+
+		return manageMessagePanels.getContactChatInformation(uuid);
 	}
 
 	public ArrayList<SimpleContact> getSimpleChatContacts() {
