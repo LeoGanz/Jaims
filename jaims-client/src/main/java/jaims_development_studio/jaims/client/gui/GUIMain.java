@@ -290,6 +290,7 @@ public class GUIMain implements Runnable {
 		String username = panelProgramStartup.getRegisteredUsername();
 		String password = panelProgramStartup.getRegisteredPassword();
 		panelProgramStartup.succesfulRegistration(username, password);
+		cm.sendRegistrationProfile(username);
 	}
 
 	@Override

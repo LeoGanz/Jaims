@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.swing.JPanel;
@@ -17,8 +18,10 @@ import javax.swing.SwingUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.api.profile.Profile;
 import jaims_development_studio.jaims.api.sendables.ERequestType;
 import jaims_development_studio.jaims.api.sendables.SendableLogin;
+import jaims_development_studio.jaims.api.sendables.SendableProfile;
 import jaims_development_studio.jaims.api.sendables.SendableRegistration;
 import jaims_development_studio.jaims.api.sendables.SendableRequest;
 import jaims_development_studio.jaims.client.chatObjects.Message;
@@ -223,6 +226,12 @@ public class ClientMain {
 
 	public void succesfullRegistration() {
 		guiMain.succesfulRegistration();
+	}
+
+	public void sendRegistrationProfile(String username) {
+		Profile pf = new Profile(null, username, "", "", null, new Date());
+		SendableProfile sp = new SendableProfile(pf);
+		sc.sendSendable(sp);
 	}
 
 	private void loadSettings() {
