@@ -29,7 +29,7 @@ public class PanelSignUp extends JPanel {
 	private GUIMain			guiMain;
 	private JTextField		tfUsername, tfEmail;
 	private JPasswordField	pfPassword;
-	private boolean			wrongUsername	= false, wrongPassword = false, wrongEmail = false;
+	private boolean			wrongUsername	= true, wrongPassword = true, wrongEmail = true;
 	private char			defaultCharEcho;
 	private LoginButton		btRegister;
 
@@ -129,6 +129,9 @@ public class PanelSignUp extends JPanel {
 						btRegister.setEnabled(false);
 						btRegister.repaint();
 					}
+
+					if (e.getKeyCode() == KeyEvent.VK_ENTER)
+						btRegister.doClick();
 
 				}
 			});
@@ -233,6 +236,8 @@ public class PanelSignUp extends JPanel {
 						btRegister.repaint();
 					}
 
+					if (e.getKeyCode() == KeyEvent.VK_ENTER)
+						btRegister.doClick();
 				}
 			});
 
@@ -330,6 +335,9 @@ public class PanelSignUp extends JPanel {
 						btRegister.repaint();
 					}
 
+					if (e.getKeyCode() == KeyEvent.VK_ENTER)
+						btRegister.doClick();
+
 				}
 			});
 			pEmail.add(Box.createRigidArea(new Dimension(40, 36)));
@@ -371,10 +379,12 @@ public class PanelSignUp extends JPanel {
 	}
 
 	public String getUsername() {
+
 		return tfUsername.getText();
 	}
 
 	public String getPassword() {
+
 		char[] c = pfPassword.getPassword();
 		return String.valueOf(c);
 	}

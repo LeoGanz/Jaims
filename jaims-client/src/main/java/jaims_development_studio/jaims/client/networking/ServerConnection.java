@@ -66,7 +66,7 @@ public class ServerConnection implements Runnable {
 			Thread thread2 = new Thread(new ListenForInput(server, cm));
 			thread2.start();
 		} catch (IOException e) {
-			LOG.error("Couldn't connect to server. Will keep on trying!", e);
+			LOG.error("Couldn't connect to server. Will keep on trying!");
 			connected = false;
 			cm.setLoginEnabled(false);
 			Thread thread = new Thread() {
