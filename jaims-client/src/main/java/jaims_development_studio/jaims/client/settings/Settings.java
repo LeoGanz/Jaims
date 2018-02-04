@@ -49,13 +49,13 @@ public class Settings implements Serializable {
 	private String				outputMixerInfoName			= null;
 	private float				inputGain					= 1.0F;
 	private float				outputVolume				= 1.0F;
-	private String				inputEncoding				= "PCM_SIGNED";
+	private EInputEncodingType	inputEncoding				= EInputEncodingType.ENCODING_PCM_SIGNED;
 	private float				inputSampleRate				= 16000;
 	private int					inputSampleSize				= 16;
 	private int					inputChannels				= 2;
 	private boolean				inputBigEndian				= false;
 	private int					frameSize					= 4;
-	private String				inputFileFormat				= "WAVE";
+	private EFileFormatType		inputFormatType				= EFileFormatType.FORMAT_WAVE;
 
 	// --------------------------------------------------------------
 	// --------------GETTER AND SETTER-------------------------------
@@ -64,19 +64,19 @@ public class Settings implements Serializable {
 	public AudioFormat getAudioFormat() {
 
 		switch (inputEncoding) {
-		case "ALAW":
+		case ENCODING_ALAW:
 			return new AudioFormat(AudioFormat.Encoding.ALAW, inputSampleRate, inputSampleSize, inputChannels,
 					frameSize, inputSampleRate, inputBigEndian);
-		case "PCM_FLOAT":
+		case ENCODING_PCM_FLOAT:
 			return new AudioFormat(AudioFormat.Encoding.PCM_FLOAT, inputSampleRate, inputSampleSize, inputChannels,
 					frameSize, inputSampleRate, inputBigEndian);
-		case "PCM_SIGNED":
+		case ENCODING_PCM_SIGNED:
 			return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, inputSampleRate, inputSampleSize, inputChannels,
 					frameSize, inputSampleRate, inputBigEndian);
-		case "PCM_UNSIGNED":
+		case ENCODING_PCM_UNSIGNED:
 			return new AudioFormat(AudioFormat.Encoding.PCM_UNSIGNED, inputSampleRate, inputSampleSize, inputChannels,
 					frameSize, inputSampleRate, inputBigEndian);
-		case "ULAW":
+		case ENCODING_ULAW:
 			return new AudioFormat(AudioFormat.Encoding.ULAW, inputSampleRate, inputSampleSize, inputChannels,
 					frameSize, inputSampleRate, inputBigEndian);
 		default:
@@ -245,12 +245,12 @@ public class Settings implements Serializable {
 		this.outputVolume = outputVolume;
 	}
 
-	public String getInputEncoding() {
+	public EInputEncodingType getInputEncoding() {
 
 		return inputEncoding;
 	}
 
-	public void setInputEncoding(String inputEncoding) {
+	public void setInputEncoding(EInputEncodingType inputEncoding) {
 
 		this.inputEncoding = inputEncoding;
 	}
@@ -307,30 +307,30 @@ public class Settings implements Serializable {
 
 	public AudioFileFormat.Type getInputFileFormat() {
 
-		switch (inputFileFormat) {
-		case "AIFC":
+		switch (inputFormatType) {
+		case FORMAT_AIFC:
 			return AudioFileFormat.Type.AIFC;
-		case "AIFF":
+		case FORMAT_AIFF:
 			return AudioFileFormat.Type.AIFF;
-		case "AU":
+		case FORMAT_AU:
 			return AudioFileFormat.Type.AU;
-		case "SND":
+		case FORMAT_SND:
 			return AudioFileFormat.Type.SND;
-		case "WAVE":
+		case FORMAT_WAVE:
 			return AudioFileFormat.Type.WAVE;
 		default:
 			return AudioFileFormat.Type.WAVE;
 		}
 	}
 
-	public String getInputFileFormatString() {
+	public EFileFormatType getInputFileFormatString() {
 
-		return inputFileFormat;
+		return inputFormatType;
 	}
 
-	public void setInputFileFormat(String inputFileFormat) {
+	public void setInputFileFormat(EFileFormatType inputFileFormat) {
 
-		this.inputFileFormat = inputFileFormat;
+		this.inputFormatType = inputFileFormat;
 	}
 
 	public int getArcMessages() {

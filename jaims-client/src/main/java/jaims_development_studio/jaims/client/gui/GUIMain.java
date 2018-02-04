@@ -15,6 +15,7 @@ import java.util.UUID;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
@@ -66,6 +67,7 @@ public class GUIMain implements Runnable {
 			UIManager.put("ScrollBarUI",
 					"jaims_development_studio.jaims.client.gui.customGUIComponents.CustomScrollBarUI");
 			UIManager.put("ScrollBar.width", 8);
+			ToolTipManager.sharedInstance().setInitialDelay(250);
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 				| UnsupportedLookAndFeelException e1) {
 			// TODO Auto-generated catch block

@@ -216,6 +216,16 @@ public class ClientMain {
 		guiMain.setLoginEnabled(enabled);
 	}
 
+	public void setWrongUsername(boolean wrong) {
+
+		guiMain.setWrongUsername(wrong);
+	}
+
+	public void setWrongPassword(boolean wrong) {
+
+		guiMain.setWrongPassword(wrong);
+	}
+
 	public void saveProfile(Profile p) {
 
 		if (p.getUuid().equals(userContact.getContactID()))

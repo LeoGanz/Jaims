@@ -9,6 +9,8 @@ import java.net.SocketException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.api.account.IncorrectPasswordException;
+import jaims_development_studio.jaims.api.account.UserNameNotAvailableException;
 import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.api.sendables.SendableConfirmation;
 import jaims_development_studio.jaims.api.sendables.SendableException;
@@ -122,7 +124,13 @@ public class ListenForInput implements Runnable {
 			case "EXCEPTION":
 				SendableException se = (SendableException) s;
 				LOG.info("Received Sendable of type " + se.getType().toString());
-				LOG.error(se.getException().getMessage());
+				if (se.getException() instanceof IncorrectPasswordException) {
+					cm.setWrongPassword(true);
+					cm.setWrongUsername(false);
+				}
+				if (se.getException() instanceof UserNameNotAvailableException) {
+					cm.setWrongUsername(true);
+				}
 				break;
 			case "STORED_UUID":
 				SendableUUID su = (SendableUUID) s;

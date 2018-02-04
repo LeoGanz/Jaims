@@ -66,6 +66,7 @@ public class PopUpMenu extends JWindow {
 		panelCalendar.setPreferredSize(panelCalendar.getMinimumSize());
 		panelCalendar.setMaximumSize(panelCalendar.getMinimumSize());
 		panelCalendar.setOpaque(false);
+		panelCalendar.setToolTipText("Settings");
 		pBackground.add(panelCalendar);
 
 		JPanel panelLogout = new JPanel() {
