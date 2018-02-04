@@ -21,6 +21,7 @@ public class ServerConnection implements Runnable {
 	private InetSocketAddress			is;
 	private int							duration	= 500;
 	private boolean						connected	= false;
+	private ListenForInput				lfi;
 
 	/**
 	 * Constructor of this class. Initialises only fields, Connection has to be
@@ -63,7 +64,7 @@ public class ServerConnection implements Runnable {
 			}
 			connected = true;
 			oos = new ObjectOutputStream(server.getOutputStream());
-			Thread thread2 = new Thread(new ListenForInput(server, cm));
+			Thread thread2 = new Thread(lfi = new ListenForInput(server, cm));
 			thread2.start();
 		} catch (IOException e) {
 			LOG.error("Couldn't connect to server. Will keep on trying!");
@@ -85,7 +86,7 @@ public class ServerConnection implements Runnable {
 						oos = new ObjectOutputStream(server.getOutputStream());
 
 						LOG.info("Connected");
-						Thread thread2 = new Thread(new ListenForInput(server, cm));
+						Thread thread2 = new Thread(lfi = new ListenForInput(server, cm));
 						thread2.start();
 						cm.setLoginEnabled(true);
 					} catch (UnknownHostException e) {
@@ -110,8 +111,10 @@ public class ServerConnection implements Runnable {
 		try {
 			server.close();
 			LOG.info("Closed socket");
+			lfi.closeSocket();
 		} catch (IOException e) {
-			LOG.error("Failed to close server!", e);
+			LOG.error("Failed to close socket!", e);
+			disconnect();
 		}
 	}
 

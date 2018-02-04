@@ -15,6 +15,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.api.profile.Profile;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.logic.ClientMain;
 import jaims_development_studio.jaims.client.logic.SimpleContact;
@@ -123,6 +124,26 @@ public class ReadFromDatabase {
 			thread.start();
 			return new SimpleContact(uuid, username);
 		}
+	}
+
+	public Profile getAndUpdateUser(UUID uuid) {
+
+		try {
+			pStatement = con.prepareStatement("UPDATE USER SET LAST_UPDATED=? WHERE CONTACT_ID=?");
+			pStatement.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+			pStatement.setObject(2, uuid);
+
+			pStatement = con.prepareStatement("SELECT * from USER WHERE USER_ID=?");
+			pStatement.setObject(1, uuid);
+			rs = pStatement.executeQuery();
+			Profile user = new Profile((UUID) rs.getObject(1), null, rs.getString(2), rs.getString(3), rs.getString(4),
+					rs.getBytes(5), convertToDate(rs.getTimestamp(6)));
+			return user;
+		} catch (SQLException e) {
+			getAndUpdateUser(uuid);
+		}
+
+		return null;
 	}
 
 	public Date getUserLastUpdatedDate(UUID uuid) {
@@ -300,6 +321,7 @@ public class ReadFromDatabase {
 	}
 
 	public String getContactStatus(UUID uuid) {
+
 		try {
 			pStatement = con.prepareStatement("SELECT STATUS FROM CONTACTS WHERE CONTACT_ID=?");
 			pStatement.setObject(1, uuid);
@@ -315,6 +337,7 @@ public class ReadFromDatabase {
 	}
 
 	public String getContactDescription(UUID uuid) {
+
 		try {
 			pStatement = con.prepareStatement("SELECT DESCRIPTION FROM CONTACTS WHERE CONTACT_ID=?");
 			pStatement.setObject(1, uuid);
@@ -330,6 +353,7 @@ public class ReadFromDatabase {
 	}
 
 	public boolean hasEntry(UUID uuid) {
+
 		try {
 			pStatement = con.prepareStatement("SELECT * from CONTACTS WHERE CONTACT_ID=?");
 			pStatement.setObject(1, uuid);

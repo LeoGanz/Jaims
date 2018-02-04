@@ -40,6 +40,8 @@ public class SettingDots extends JPanel {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 
+				new PopUpMenu(guimain, SettingDots.this);
+
 				x = 1;
 				y = 1;
 				width = width + 6;
@@ -51,7 +53,6 @@ public class SettingDots extends JPanel {
 				repaint();
 				drawAnimation = false;
 
-				new PopUpMenu(guimain, SettingDots.this);
 			}
 
 			@Override

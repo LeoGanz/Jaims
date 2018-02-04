@@ -19,6 +19,9 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jaims_development_studio.jaims.client.chatObjects.ChatInformation;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.CenterPanel;
@@ -34,6 +37,8 @@ import jaims_development_studio.jaims.client.settings.Settings;
 
 public class GUIMain implements Runnable {
 
+	private static final Logger				LOG	= LoggerFactory.getLogger(GUIMain.class);
+
 	private JaimsFrame						jaimsFrame;
 	private ClientMain						cm;
 	private PanelProgramStartup				panelProgramStartup;
@@ -46,10 +51,12 @@ public class GUIMain implements Runnable {
 	private HashMap<UUID, SimpleContact>	allContacts;
 	private ParentPanel						parentPanel;
 	private PanelAddUser					panelAddUser;
+	private boolean							showSplashScreen;
 
-	public GUIMain(ClientMain cm) {
+	public GUIMain(ClientMain cm, boolean showSplashScreen) {
 
 		this.cm = cm;
+		this.showSplashScreen = showSplashScreen;
 	}
 
 	private void initFrame() {
@@ -65,12 +72,13 @@ public class GUIMain implements Runnable {
 			e1.printStackTrace();
 		}
 
-		jaimsFrame = new JaimsFrame();
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		jaimsFrame = new JaimsFrame(showSplashScreen);
+		if (showSplashScreen) {
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				LOG.error("Interrupted Sleep");
+			}
 		}
 		jaimsFrame.initLogin();
 
@@ -91,6 +99,7 @@ public class GUIMain implements Runnable {
 	}
 
 	public void showParentPanel(ParentPanel pp) {
+
 		if (parentPanel != null)
 			jaimsFrame.getContentPane().remove(parentPanel);
 
@@ -318,6 +327,20 @@ public class GUIMain implements Runnable {
 	public String getRegisteredUsername() {
 
 		return panelProgramStartup.getRegisteredUsername();
+	}
+
+	public void doLogout() {
+
+		cm.doLogout();
+	}
+
+	public boolean closeGUI() {
+
+		jaimsFrame.dispose();
+
+		LOG.info("Disposed gui");
+
+		return true;
 	}
 
 	@Override

@@ -51,6 +51,20 @@ public class DatabaseConnection {
 		writeToDatabase = new WriteToDatabase(con);
 	}
 
+	public boolean closeConnection() {
+
+		try {
+			con.close();
+		} catch (SQLException e) {
+			closeConnection();
+		}
+
+		LOG.info("Closed database-connection");
+
+		return true;
+
+	}
+
 	public ArrayList<SimpleContact> getSimpleContacts() {
 
 		if (readFromDatabase.hasTables() == false)
@@ -93,19 +107,28 @@ public class DatabaseConnection {
 	}
 
 	public String getContactStatus(UUID uuid) {
+
 		return readFromDatabase.getContactStatus(uuid);
 	}
 
 	public boolean hasEntry(UUID uuid) {
+
 		return readFromDatabase.hasEntry(uuid);
 	}
 
 	public void saveProfile(Profile pf, boolean contact) {
+
 		writeToDatabase.saveProfile(pf, contact);
 	}
 
 	public void updateProfile(Profile pf, boolean contact) {
+
 		writeToDatabase.updateProfile(pf, contact);
+	}
+
+	public Profile getAndUpdateProfile(UUID uuid) {
+
+		return readFromDatabase.getAndUpdateUser(uuid);
 	}
 
 	public static Connection getConnection() {

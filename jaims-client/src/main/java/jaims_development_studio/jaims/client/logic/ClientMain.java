@@ -47,7 +47,7 @@ public class ClientMain {
 	private String				loggedInUsername;
 	private ReadFromDatabase	readFromDatabase;
 	private Settings			settings;
-	private boolean				loggedIn				= false;
+	private boolean				loggedIn				= false, profileChanged = false;
 
 	/**
 	 * Static profile which represents the logged-in user.
@@ -77,7 +77,7 @@ public class ClientMain {
 	 */
 	public ClientMain() {
 
-		initProgram();
+		initProgram(true);
 	}
 
 	/**
@@ -90,12 +90,14 @@ public class ClientMain {
 	 * <li>adding a new <code>LoginPanel</code> to the JFrame</li>
 	 * </ul>
 	 */
-	private void initProgram() {
+	private void initProgram(boolean showSplashScreen) {
+
+		LOG.info("Starting...");
 
 		Thread thread = new Thread(sc = new ServerConnection(this));
 		thread.start();
 
-		SwingUtilities.invokeLater(guiMain = new GUIMain(this));
+		SwingUtilities.invokeLater(guiMain = new GUIMain(this, showSplashScreen));
 
 	}
 
@@ -195,10 +197,12 @@ public class ClientMain {
 	}
 
 	public String getContactStatus(UUID uuid) {
+
 		return databaseConnection.getContactStatus(uuid);
 	}
 
 	public boolean hasEntry(UUID uuid) {
+
 		return databaseConnection.hasEntry(uuid);
 	}
 
@@ -213,6 +217,7 @@ public class ClientMain {
 	}
 
 	public void saveProfile(Profile p) {
+
 		if (p.getUuid().equals(userContact.getContactID()))
 			databaseConnection.saveProfile(p, false);
 		else {
@@ -221,6 +226,7 @@ public class ClientMain {
 	}
 
 	public void updateProfile(Profile p) {
+
 		if (p.getUuid().equals(userContact.getContactID()))
 			databaseConnection.updateProfile(p, false);
 		else
@@ -327,5 +333,30 @@ public class ClientMain {
 		File settings = new File(path + "/settings");
 		if (!settings.exists())
 			settings.mkdirs();
+	}
+
+	public void doLogout() {
+
+		LOG.info("Initiating logout");
+
+		if (profileChanged) {
+			SendableProfile sp = new SendableProfile(
+					databaseConnection.getAndUpdateProfile(userContact.getContactID()));
+			sc.sendSendable(sp);
+		}
+
+		databaseConnection.closeConnection();
+		sc.disconnect();
+		guiMain.closeGUI();
+		guiMain = null;
+
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			LOG.error("Interrupted sleep");
+		}
+
+		initProgram(false);
+
 	}
 }

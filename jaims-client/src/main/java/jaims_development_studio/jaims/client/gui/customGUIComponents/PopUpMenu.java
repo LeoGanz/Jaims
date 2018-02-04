@@ -1,14 +1,18 @@
 package jaims_development_studio.jaims.client.gui.customGUIComponents;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
@@ -38,7 +42,7 @@ public class PopUpMenu extends JWindow {
 				.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
 
 		setFocusable(true);
-		setSize(42, 42);
+		setSize(42, 87);
 		setBackground(new Color(0, 0, 0, 0));
 		setLocation((int) sd.getLocationOnScreen().getX() - 2, (int) sd.getLocationOnScreen().getY() + 40);
 		setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -64,12 +68,52 @@ public class PopUpMenu extends JWindow {
 		panelCalendar.setOpaque(false);
 		pBackground.add(panelCalendar);
 
+		JPanel panelLogout = new JPanel() {
+			@Override
+			public void paintComponent(Graphics g) {
+
+				g.setColor(new Color(0, 0, 0, 0));
+				g.fillRect(0, 0, getWidth(), getHeight());
+
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g2.setColor(Color.BLACK);
+				g2.setStroke(new BasicStroke(1.8F));
+				g2.drawRoundRect(1, 1, 22, 38, 15, 15);
+
+				g2.setColor(new Color(0, 0, 0, 0));
+				g2.drawRect(19, 10, 6, 20);
+
+				g2.setColor(Color.CYAN);
+				g2.fillRect(15, 12, 12, 16);
+			}
+		};
+		panelLogout.setMinimumSize(new Dimension(42, 42));
+		panelLogout.setPreferredSize(panelLogout.getMinimumSize());
+		panelLogout.setMaximumSize(panelLogout.getMinimumSize());
+		panelLogout.setOpaque(false);
+		panelLogout.setFocusable(true);
+		panelLogout.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+				dispose();
+				guiMain.doLogout();
+
+			}
+		});
+		pBackground.add(Box.createRigidArea(new Dimension(0, 5)));
+		pBackground.add(panelLogout);
+
 		add(pBackground);
 
 		guiMain.getJaimsFrame().addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
+
+				System.out.println(PopUpMenu.this.contains(e.getPoint()));
 
 				if (PopUpMenu.this.contains(e.getPoint()) == false)
 					dispose();
