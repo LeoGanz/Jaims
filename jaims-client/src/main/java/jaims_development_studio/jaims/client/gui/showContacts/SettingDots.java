@@ -7,7 +7,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -20,7 +19,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.Timer;
 
 import jaims_development_studio.jaims.client.gui.GUIMain;
-import jaims_development_studio.jaims.client.gui.customGUIComponents.NullSelectionModel;
+import jaims_development_studio.jaims.client.gui.customGUIComponents.PopUpMenu;
 
 public class SettingDots extends JPanel {
 
@@ -35,21 +34,7 @@ public class SettingDots extends JPanel {
 		setPreferredSize(new Dimension(38, 38));
 		setMaximumSize(getPreferredSize());
 		setCursor(new Cursor(Cursor.HAND_CURSOR));
-		jpm = new JPopupMenu();
-		jpm.setBackground(new Color(0, 0, 0, 0));
-		jpm.add(item = new JMenuItem(""), new Icon(
-				Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/calendar.png"))));
-		jpm.setLightWeightPopupEnabled(false);
-		jpm.setSelectionModel(new NullSelectionModel());
-		item.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				System.out.println("Pressed");
-
-			}
-		});
 		addMouseListener(new MouseAdapter() {
 
 			@Override
@@ -65,7 +50,8 @@ public class SettingDots extends JPanel {
 				ovalHeight += 6;
 				repaint();
 				drawAnimation = false;
-				jpm.show(SettingDots.this, 0, 38);
+
+				new PopUpMenu(guimain, SettingDots.this);
 			}
 
 			@Override
@@ -147,16 +133,6 @@ public class SettingDots extends JPanel {
 				timer.start();
 
 			}
-		});
-		addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-				System.out.println(SettingDots.this.getX());
-
-			}
-
 		});
 	}
 
