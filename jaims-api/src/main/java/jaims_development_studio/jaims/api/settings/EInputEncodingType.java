@@ -1,4 +1,4 @@
-package jaims_development_studio.jaims.client.settings;
+package jaims_development_studio.jaims.api.settings;
 
 public enum EInputEncodingType {
 	ENCODING_ALAW(Values.ENCODING_ALAW), ENCODING_PCM_FLOAT(Values.ENCODING_PCM_FLOAT), ENCODING_PCM_SIGNED(

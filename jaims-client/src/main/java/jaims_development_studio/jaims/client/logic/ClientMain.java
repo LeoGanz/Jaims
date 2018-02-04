@@ -24,6 +24,7 @@ import jaims_development_studio.jaims.api.sendables.SendableLogin;
 import jaims_development_studio.jaims.api.sendables.SendableProfile;
 import jaims_development_studio.jaims.api.sendables.SendableRegistration;
 import jaims_development_studio.jaims.api.sendables.SendableRequest;
+import jaims_development_studio.jaims.api.settings.Settings;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
 import jaims_development_studio.jaims.client.database.ReadFromDatabase;
@@ -31,7 +32,6 @@ import jaims_development_studio.jaims.client.database.WriteToDatabase;
 import jaims_development_studio.jaims.client.gui.GUIMain;
 import jaims_development_studio.jaims.client.gui.JaimsFrame;
 import jaims_development_studio.jaims.client.networking.ServerConnection;
-import jaims_development_studio.jaims.client.settings.Settings;
 
 public class ClientMain {
 
@@ -334,6 +334,21 @@ public class ClientMain {
 		}
 	}
 
+	public void saveSettings() {
+
+		String userHome = System.getProperty("user.home").replace("\\", "/");
+		String filename = userHome + "/Jaims/" + loggedInUsername + "/settings/settings.set";
+
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(filename)));
+			oos.writeObject(settings);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 	private void createDirectory(String path) {
 
 		File f = new File(path);
@@ -356,6 +371,7 @@ public class ClientMain {
 		}
 
 		databaseConnection.closeConnection();
+		databaseConnection = null;
 		sc.disconnect();
 		guiMain.closeGUI();
 		guiMain = null;

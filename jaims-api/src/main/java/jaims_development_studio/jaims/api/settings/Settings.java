@@ -1,4 +1,4 @@
-package jaims_development_studio.jaims.client.settings;
+package jaims_development_studio.jaims.api.settings;
 
 import java.awt.Color;
 import java.io.Serializable;
@@ -53,7 +53,7 @@ public class Settings implements Serializable {
 	private float				inputSampleRate				= 16000;
 	private int					inputSampleSize				= 16;
 	private int					inputChannels				= 2;
-	private boolean				inputBigEndian				= false;
+	private EEndianness			endianness					= EEndianness.LITTLE_ENDIAN;
 	private int					frameSize					= 4;
 	private EFileFormatType		inputFormatType				= EFileFormatType.FORMAT_WAVE;
 
@@ -66,22 +66,22 @@ public class Settings implements Serializable {
 		switch (inputEncoding) {
 		case ENCODING_ALAW:
 			return new AudioFormat(AudioFormat.Encoding.ALAW, inputSampleRate, inputSampleSize, inputChannels,
-					frameSize, inputSampleRate, inputBigEndian);
+					frameSize, inputSampleRate, endianness.getValue());
 		case ENCODING_PCM_FLOAT:
 			return new AudioFormat(AudioFormat.Encoding.PCM_FLOAT, inputSampleRate, inputSampleSize, inputChannels,
-					frameSize, inputSampleRate, inputBigEndian);
+					frameSize, inputSampleRate, endianness.getValue());
 		case ENCODING_PCM_SIGNED:
 			return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, inputSampleRate, inputSampleSize, inputChannels,
-					frameSize, inputSampleRate, inputBigEndian);
+					frameSize, inputSampleRate, endianness.getValue());
 		case ENCODING_PCM_UNSIGNED:
 			return new AudioFormat(AudioFormat.Encoding.PCM_UNSIGNED, inputSampleRate, inputSampleSize, inputChannels,
-					frameSize, inputSampleRate, inputBigEndian);
+					frameSize, inputSampleRate, endianness.getValue());
 		case ENCODING_ULAW:
 			return new AudioFormat(AudioFormat.Encoding.ULAW, inputSampleRate, inputSampleSize, inputChannels,
-					frameSize, inputSampleRate, inputBigEndian);
+					frameSize, inputSampleRate, endianness.getValue());
 		default:
 			return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, inputSampleRate, inputSampleSize, inputChannels,
-					frameSize, inputSampleRate, inputBigEndian);
+					frameSize, inputSampleRate, endianness.getValue());
 		}
 	}
 
@@ -287,12 +287,12 @@ public class Settings implements Serializable {
 
 	public boolean isInputBigEndian() {
 
-		return inputBigEndian;
+		return endianness.getValue();
 	}
 
-	public void setInputBigEndian(boolean inputBigEndian) {
+	public void setInputBigEndian(EEndianness inputBigEndian) {
 
-		this.inputBigEndian = inputBigEndian;
+		this.endianness = inputBigEndian;
 	}
 
 	public int getFrameSize() {

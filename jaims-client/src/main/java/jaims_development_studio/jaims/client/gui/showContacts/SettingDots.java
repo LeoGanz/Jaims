@@ -28,6 +28,7 @@ public class SettingDots extends JPanel {
 	private boolean		drawAnimation	= false;
 	private int			x				= 19, y = 19, width = 0, height = 0, xOval = 1, yOval = 1, ovalWidth = 34,
 			ovalHeight = 34;
+	private PopUpMenu	pum;
 
 	public SettingDots(GUIMain guimain) {
 
@@ -39,8 +40,6 @@ public class SettingDots extends JPanel {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
-
-				new PopUpMenu(guimain, SettingDots.this);
 
 				x = 1;
 				y = 1;
@@ -99,7 +98,8 @@ public class SettingDots extends JPanel {
 
 					}
 				});
-				timer.start();
+				if (pum.isVisible() == false)
+					timer.start();
 
 			}
 
@@ -126,8 +126,10 @@ public class SettingDots extends JPanel {
 
 						repaint();
 
-						if (x == 1)
+						if (x == 1) {
 							((Timer) e.getSource()).stop();
+							pum = new PopUpMenu(guimain, SettingDots.this);
+						}
 
 					}
 				});
@@ -157,6 +159,11 @@ public class SettingDots extends JPanel {
 		g2d.fillOval(25, 15, 8, 8);
 
 		g2d.dispose();
+	}
+
+	public void setDrawAnimation(boolean animation) {
+
+		drawAnimation = animation;
 	}
 
 	private class Icon extends JPanel {

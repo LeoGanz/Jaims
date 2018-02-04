@@ -67,6 +67,16 @@ public class PopUpMenu extends JWindow {
 		panelCalendar.setMaximumSize(panelCalendar.getMinimumSize());
 		panelCalendar.setOpaque(false);
 		panelCalendar.setToolTipText("Settings");
+		panelCalendar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+				dispose();
+				sd.setDrawAnimation(false);
+				guiMain.showSettings();
+
+			}
+		});
 		pBackground.add(panelCalendar);
 
 		JPanel panelLogout = new JPanel() {
@@ -114,11 +124,10 @@ public class PopUpMenu extends JWindow {
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-				System.out.println(PopUpMenu.this.contains(e.getPoint()));
-
-				if (PopUpMenu.this.contains(e.getPoint()) == false)
+				if (PopUpMenu.this.contains(e.getPoint()) == false) {
 					dispose();
-
+					sd.setDrawAnimation(false);
+				}
 			}
 		});
 

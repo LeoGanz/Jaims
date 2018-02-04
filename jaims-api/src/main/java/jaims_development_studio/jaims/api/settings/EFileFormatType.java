@@ -1,4 +1,4 @@
-package jaims_development_studio.jaims.client.settings;
+package jaims_development_studio.jaims.api.settings;
 
 public enum EFileFormatType {
 	FORMAT_WAVE(Values.FORMAT_WAVE), FORMAT_AIFC(Values.FORMAT_AIFC), FORMAT_AIFF(Values.FORMAT_AIFF), FORMAT_AU(

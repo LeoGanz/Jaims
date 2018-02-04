@@ -23,6 +23,7 @@ import javax.swing.border.EmptyBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.api.settings.Settings;
 import jaims_development_studio.jaims.client.chatObjects.ChatInformation;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.CenterPanel;
@@ -30,11 +31,11 @@ import jaims_development_studio.jaims.client.gui.customGUIComponents.ParentPanel
 import jaims_development_studio.jaims.client.gui.login.PanelProgramStartup;
 import jaims_development_studio.jaims.client.gui.login.ShowGuiBuildingProcess;
 import jaims_development_studio.jaims.client.gui.messagePanels.ManageMessagePanels;
+import jaims_development_studio.jaims.client.gui.settings.PanelSelectSettings;
 import jaims_development_studio.jaims.client.gui.showContacts.PanelTabbedPane;
 import jaims_development_studio.jaims.client.gui.showContacts.PanelUserShowing;
 import jaims_development_studio.jaims.client.logic.ClientMain;
 import jaims_development_studio.jaims.client.logic.SimpleContact;
-import jaims_development_studio.jaims.client.settings.Settings;
 
 public class GUIMain implements Runnable {
 
@@ -52,6 +53,7 @@ public class GUIMain implements Runnable {
 	private HashMap<UUID, SimpleContact>	allContacts;
 	private ParentPanel						parentPanel;
 	private PanelAddUser					panelAddUser;
+	private PanelSelectSettings				panelSelectSettings;
 	private boolean							showSplashScreen;
 
 	public GUIMain(ClientMain cm, boolean showSplashScreen) {
@@ -111,6 +113,21 @@ public class GUIMain implements Runnable {
 
 	public void showSettings() {
 
+		jaimsFrame.getContentPane().removeAll();
+		if (panelSelectSettings == null)
+			panelSelectSettings = new PanelSelectSettings(this);
+
+		jaimsFrame.getContentPane().add(panelSelectSettings, BorderLayout.CENTER);
+		jaimsFrame.getContentPane().revalidate();
+		jaimsFrame.repaint();
+	}
+
+	public void removeSettings() {
+
+		jaimsFrame.getContentPane().remove(panelSelectSettings);
+		jaimsFrame.getContentPane().add(centerPanel, BorderLayout.CENTER);
+		jaimsFrame.getContentPane().revalidate();
+		jaimsFrame.getContentPane().repaint();
 	}
 
 	public void loginSuccessful() {
@@ -212,6 +229,11 @@ public class GUIMain implements Runnable {
 		jaimsFrame.add(centerPanel, BorderLayout.CENTER);
 		jaimsFrame.revalidate();
 		jaimsFrame.repaint();
+	}
+
+	public void updateSettings() {
+
+		cm.saveSettings();
 	}
 
 	public void setWrongUsername(boolean wrong) {
