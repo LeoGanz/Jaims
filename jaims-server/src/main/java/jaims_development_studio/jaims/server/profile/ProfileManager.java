@@ -55,7 +55,7 @@ public class ProfileManager {
 	}
 
 	public void saveOrUpdateProfile(SendableProfile sendableProfile) {
-		//Note: do not update profile field 'lastUpdated' as that would interfere with the clients update requests
+		//Note: do not update profile field 'lastUpdated' as that would interfere with the client's update requests
 		Profile newProfile = sendableProfile.getProfile();
 		Profile oldProfile = get(newProfile.getUuid());
 
@@ -106,7 +106,8 @@ public class ProfileManager {
 		Profile result = loadedProfiles.get(uuid);
 		if (result == null) {
 			result = profileDAO.get(uuid);
-			loadedProfiles.put(uuid, result);
+			if (result != null)
+				loadedProfiles.put(uuid, result);
 		}
 		return result;
 	}
@@ -115,9 +116,14 @@ public class ProfileManager {
 		if (request.getRequestType() != ERequestType.PROFILE)
 			throw new InvalidSendableTypeException("Cannot process profile for a SendableRequest without RequestType PROFILE", request);
 
+		//Convert username to uuid
+		if ((request.getUniversalUuid() == null) && (request.getUniversalString() != null))
+			request.setUniversalUuid(userManager.getUuidForUsername(request.getUniversalString()));
+		
 		Profile profile = get(request.getUniversalUuid());
+
 		if (profile == null)
-			throw new NoProfileAvailableException("There is no profile available for UUID " + request.getUniversalUuid());
+			throw new NoProfileAvailableException("There is no profile available for UUID " + request.getUniversalUuid() + " or username " + request.getUniversalString());
 
 		User user = userManager.get(request.getUniversalUuid());
 

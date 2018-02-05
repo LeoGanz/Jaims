@@ -126,9 +126,9 @@ public class ClientConnection implements Runnable {
 					terminate();
 				} catch (@SuppressWarnings("unused") SocketException e) {
 					terminate();
-				} catch (IOException e) {
+				} catch (@SuppressWarnings("unused") IOException e) {
 					//Client probably lost/terminated connection
-					LOG.warn("IOEXception in ClientConnection-" + connectionID + ": ", e);
+					LOG.info("ClientConnection-" + connectionID + " disconnected!");
 					terminate();
 				}
 			
@@ -219,7 +219,7 @@ public class ClientConnection implements Runnable {
 						user = null;
 						break;
 					case PROFILE:
-						if (request.getUniversalUuid() == null)
+						if ((request.getUniversalUuid() == null) && (request.getUniversalString() == null))
 							request.setUniversalUuid(user.getAccount().getUuid());
 						break;
 					default:

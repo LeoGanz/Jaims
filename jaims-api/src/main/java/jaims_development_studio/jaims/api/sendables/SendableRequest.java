@@ -27,11 +27,16 @@ import javax.persistence.TemporalType;
  * @see #setUniversalDate(Date)
  * @see #getUniversalUuid()
  * @see #setUniversalUuid(UUID)
- * <br></br>
+ * @see #getUniversalString()
+ * @see #setUniversalString(String) setUniversalString(String) <br>
+ *      </br>
  * @see #SendableRequest(ERequestType)
  * @see #SendableRequest(ERequestType, Date)
  * @see #SendableRequest(ERequestType, UUID)
+ * @see #SendableRequest(ERequestType, String)
  * @see #SendableRequest(ERequestType, Date, UUID)
+ * @see #SendableRequest(ERequestType, Date, String)
+ * @see #SendableRequest(ERequestType, Date, UUID, String)
  */
 @Entity(name = "SendableRequest")
 @DiscriminatorValue(value = ESendableType.Values.REQUEST)
@@ -67,6 +72,15 @@ public class SendableRequest extends Sendable {
 	 */
 	@Column(name = "UNIVERSAL_UUID", columnDefinition = "BINARY(16)")
 	private UUID				universalUuid;
+	
+	/**
+	 * This field can have different purposes depending on the request's type. For usage information see linked methods.
+	 *
+	 * @see #setUniversalString(String)
+	 * @see #getUniversalString()
+	 */
+	@Column(name = "UNIVERSAL_STRING", columnDefinition = "VARCHAR(256)")
+	private String				universalString;
 
 	/**
 	 * This constructs a bare bones SendableRequest. This is only used for Hibernate.
@@ -77,20 +91,20 @@ public class SendableRequest extends Sendable {
 	}
 
 	/**
-	 * This constructs a SendableRequest without any uuid or date parameters. It can be used for delete account requests
-	 * and profile requests for the logged-in user's profile. Since no date is provided for the profile request the
-	 * server will sent a profile regardless of last update times if there is one available.
+	 * This constructs a SendableRequest without any uuid, string or date parameters. It can be used for delete account
+	 * requests and profile requests for the logged-in user's profile. Since no date is provided for the profile request
+	 * the server will sent a profile regardless of last update times if there is one available.
 	 *
 	 * @param requestType the type of request
 	 * @see ERequestType
 	 */
 	public SendableRequest(ERequestType requestType) {
-		this(requestType, null, null);
+		this(requestType, null, null, null);
 	}
 
 	/**
-	 * This constructs a SendableRequest with a date but without a uuid parameter. It can be used for profile account
-	 * requests that return the profile for the logged-in user. <br>
+	 * This constructs a SendableRequest with a date but without uuid and string parameters. It can be used for profile
+	 * account requests that return the profile for the logged-in user. <br>
 	 * </br>
 	 * (This constructor will also work for delete account requests but unnecessary network traffic will be caused as
 	 * the date field is not used this kind of request. Use {@link #SendableRequest(ERequestType)} instead.)
@@ -100,13 +114,13 @@ public class SendableRequest extends Sendable {
 	 * @see ERequestType
 	 */
 	public SendableRequest(ERequestType requestType, Date universalDate) {
-		this(requestType, universalDate, null);
+		this(requestType, universalDate, null, null);
 	}
 
 	/**
-	 * This constructs a SendableRequest with a uuid but without a date parameter. It can be used for profile requests
-	 * that return the profile for the user specified by the uuid parameter. If a profile is available it will be sent
-	 * regardless of last update times.<br>
+	 * This constructs a SendableRequest with a uuid but without string and date parameters. It can be used for profile
+	 * requests that return the profile for the user specified by the uuid parameter. If a profile is available it will
+	 * be sent regardless of last update times.<br>
 	 * </br>
 	 * (This constructor will also work for delete account requests but unnecessary network traffic will be caused as
 	 * the uuid field will be overwritten by the server for security reasons. Use {@link #SendableRequest(ERequestType)}
@@ -117,12 +131,30 @@ public class SendableRequest extends Sendable {
 	 * @see ERequestType
 	 */
 	public SendableRequest(ERequestType requestType, UUID universalUuid) {
-		this(requestType, null, universalUuid);
+		this(requestType, null, universalUuid, null);
+	}
+	
+	/**
+	 * This constructs a SendableRequest with a string but without uuid and date parameters. It can be used for profile
+	 * requests that return the profile for the user specified by the string parameter which resembles a username or any
+	 * substring of a username. If a profile is available it will be sent regardless of last update times.<br>
+	 * </br>
+	 * (This constructor will also work for delete account requests but unnecessary network traffic will be caused as
+	 * the uuid field will be overwritten by the server for security reasons. Use {@link #SendableRequest(ERequestType)}
+	 * instead.)
+	 *
+	 * @param requestType the type of request
+	 * @param universalString the string to be stored. For details see also {@link #setUniversalString(String)}
+	 * @see ERequestType
+	 */
+	public SendableRequest(ERequestType requestType, String universalString) {
+		this(requestType, null, null, universalString);
 	}
 
 	/**
-	 * This constructs a SendableRequest with uuid and date parameters. It can be used for profile requests that return
-	 * the profile for the user specified by the uuid parameter. <br>
+	 * This constructs a SendableRequest with uuid and date parameters but without a string parameter. It can be used
+	 * for profile requests that return the profile for the user specified by the uuid parameter. A profile will only be
+	 * returned if the server has a newer version of the user's profile as determined by the date parameter.<br>
 	 * </br>
 	 * (This constructor will also work for delete account requests but unnecessary network traffic will be caused as
 	 * the date field is not used this kind of request and the uuid field will be overwritten by the server for security
@@ -134,10 +166,57 @@ public class SendableRequest extends Sendable {
 	 * @see ERequestType
 	 */
 	public SendableRequest(ERequestType requestType, Date universalDate, UUID universalUuid) {
+		this(requestType, universalDate, universalUuid, null);
+	}
+	
+	/**
+	 * This constructs a SendableRequest with string and date parameters but without a uuid parameter. It can be used
+	 * for profile requests that return the profile for the user specified by the string parameter which resembles a
+	 * username or any substring of a username. A profile will only be returned if the server has a newer version of the
+	 * user's profile as determined by the date parameter.<br>
+	 * </br>
+	 * (This constructor will also work for delete account requests but unnecessary network traffic will be caused as
+	 * the date field is not used this kind of request and the uuid field will be overwritten by the server for security
+	 * reasons. Use {@link #SendableRequest(ERequestType)} instead.)
+	 *
+	 * @param requestType the type of request
+	 * @param universalDate the date to be stored. For details see also {@link #setUniversalDate(Date)}
+	 * @param universalString the string to be stored. For details see also {@link #setUniversalString(String)}
+	 * @see ERequestType
+	 */
+	public SendableRequest(ERequestType requestType, Date universalDate, String universalString) {
+		this(requestType, universalDate, null, universalString);
+	}
+
+	/**
+	 * <b>Please use either of the other constructors. This one is intended for internal use!</b><br>
+	 * </br>
+	 * Refer to the type's documentation ({@link SendableRequest}) to see links to all available constructors.<br>
+	 * </br>
+	 *
+	 * This constructs a SendableRequest with uuid, string and date parameters. It can be used for profile requests that
+	 * return the profile for the user specified by the uuid or string parameter which resembles a username or any
+	 * substring of a username. If both are provided the uuid will be preferred. A profile will only be returned if the
+	 * server has a newer version of the user's profile as determined by the date parameter (unless the date paramter is
+	 * null).<br>
+	 * </br>
+	 * (This constructor will also work for delete account requests but unnecessary network traffic will be caused as
+	 * the date field is not used this kind of request and the uuid field will be overwritten by the server for security
+	 * reasons. Use {@link #SendableRequest(ERequestType)} instead.)
+	 *
+	 * @param requestType the type of request
+	 * @param universalDate the date to be stored. For details see also {@link #setUniversalDate(Date)}
+	 * @param universalUuid the uuid to be stored. For details see also {@link #setUniversalUuid(UUID)}
+	 * @param universalString the string to be stored. For details see also {@link #setUniversalString(String)}
+	 * @see SendableRequest
+	 * @see ERequestType
+	 */
+	public SendableRequest(ERequestType requestType, Date universalDate, UUID universalUuid, String universalString) {
 		super(ESendableType.REQUEST, 10);
 		this.requestType = requestType;
 		this.universalDate = universalDate;
 		this.universalUuid = universalUuid;
+		this.universalString = universalString;
 	}
 
 	/**
@@ -200,9 +279,10 @@ public class SendableRequest extends Sendable {
 	 * Depending on the type of request the purpose of the universal uuid field differs:
 	 * <ul>
 	 * <li>For profile requests the uuid field specifies the profile that is requested. If universalUuid is set to or
-	 * left as null the logged-in user's uuid will be inserted automatically.</li>
+	 * left as null AND the universalString field is null as well the logged-in user's uuid will be inserted
+	 * automatically.</li>
 	 * <li>For delete account requests the uuid field represents the account that is to be deleted. There is no need to
-	 * set universalDate as the server overwrites the uuid field with the logged-in user's uuid for security reasons
+	 * set universalUuid as the server overwrites the uuid field with the logged-in user's uuid for security reasons
 	 * anyways.</li>
 	 * </ul>
 	 *
@@ -211,6 +291,36 @@ public class SendableRequest extends Sendable {
 	 */
 	public void setUniversalUuid(UUID universalUuid) {
 		this.universalUuid = universalUuid;
+	}
+
+	/**
+	 * Depending on the type of request the purpose of the universal string field differs:
+	 * <ul>
+	 * <li>For profile requests the string field specifies the profile that is requested. It resembles a whole username
+	 * or any substring of a username. It is only taken into account if the uuid field is null!</li>
+	 * <li>For delete account requests the string field is not used.</li>
+	 * </ul>
+	 *
+	 * @return the request's universalString field. For usage details see description above.
+	 * @see ERequestType
+	 */
+	public String getUniversalString() {
+		return universalString;
+	}
+
+	/**
+	 * Depending on the type of request the purpose of the universal string field differs:
+	 * <ul>
+	 * <li>For profile requests the string field specifies the profile that is requested. It resembles a whole username
+	 * or any substring of a username. It is only taken into account if the uuid field is null!</li>
+	 * <li>For delete account requests the string field is not used.</li>
+	 * </ul>
+	 *
+	 * @param universalString the string to be stored. For usage details see description above.
+	 * @see ERequestType
+	 */
+	public void setUniversalString(String universalString) {
+		this.universalString = universalString;
 	}
 
 }
