@@ -31,7 +31,7 @@ public class PanelProgramStartup extends JPanel {
 	private int			xSignIn			= 0, ySignIn = 0, xOvalSignIn = 0, xSignUp = 0, ySignUp = 0, xOvalSignUp = -55;
 	private PanelLogin	panelLogin;
 	private PanelSignUp	pRegister;
-	JPanel				pa;
+	JPanel				pa, panelSignUp, panelSignIn;
 
 	public PanelProgramStartup(GUIMain guiMain) {
 
@@ -67,7 +67,7 @@ public class PanelProgramStartup extends JPanel {
 		pPageStart.setBorder(new EmptyBorder(30, 0, 0, 0));
 		{
 			pPageStart.add(Box.createHorizontalGlue());
-			JPanel panelSignIn = new JPanel() {
+			panelSignIn = new JPanel() {
 				@Override
 				public void paintComponent(Graphics g) {
 
@@ -101,7 +101,7 @@ public class PanelProgramStartup extends JPanel {
 			pPageStart.add(panelSignIn);
 			pPageStart.add(Box.createRigidArea(new Dimension(15, 0)));
 
-			JPanel panelSignUp = new JPanel() {
+			panelSignUp = new JPanel() {
 				@Override
 				public void paintComponent(Graphics g) {
 
@@ -270,7 +270,7 @@ public class PanelProgramStartup extends JPanel {
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-				if ((e.getX() >= 405 || e.getX() <= 435) && (e.getY() >= 10 || e.getY() <= 40))
+				if ((e.getX() >= 405 && e.getX() <= 435) && (e.getY() >= 10 && e.getY() <= 40))
 					System.exit(0);
 
 			}
@@ -320,6 +320,43 @@ public class PanelProgramStartup extends JPanel {
 
 	public void succesfulRegistration(String username, String password) {
 
+		Timer timer3 = new Timer(10, e1 -> {
+
+			if (signUpSelected == true) {
+				if (xOvalSignUp >= -55) {
+					xOvalSignUp = xOvalSignUp - 4;
+					panelSignUp.repaint();
+				} else {
+					signUpSelected = false;
+					panelSignUp.repaint();
+					((Timer) e1.getSource()).stop();
+
+				}
+			}
+
+		});
+		timer3.start();
+		Timer timer4 = new Timer(10, e1 -> {
+
+			if (signInSelected == false)
+				signInSelected = true;
+
+			if (xOvalSignIn > xSignIn) {
+				if (xOvalSignIn > xSignIn) {
+					xOvalSignIn -= 4;
+					panelSignIn.repaint();
+				} else {
+					xOvalSignIn = xSignIn;
+					panelSignIn.repaint();
+					((Timer) e1.getSource()).stop();
+				}
+			} else {
+				((Timer) e1.getSource()).stop();
+			}
+
+		});
+		timer4.start();
+
 		panelLogin.setLogin(username, password);
 		Timer timer5 = new Timer(10, e1 -> {
 
@@ -333,6 +370,8 @@ public class PanelProgramStartup extends JPanel {
 
 		});
 		timer5.start();
+		signInSelected = true;
+		signUpSelected = false;
 	}
 
 	public String getRegisteredUsername() {

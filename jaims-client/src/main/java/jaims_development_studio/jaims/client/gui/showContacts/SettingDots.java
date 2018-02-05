@@ -7,7 +7,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -20,7 +19,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.Timer;
 
 import jaims_development_studio.jaims.client.gui.GUIMain;
-import jaims_development_studio.jaims.client.gui.customGUIComponents.NullSelectionModel;
+import jaims_development_studio.jaims.client.gui.customGUIComponents.PopUpMenu;
 
 public class SettingDots extends JPanel {
 
@@ -29,27 +28,14 @@ public class SettingDots extends JPanel {
 	private boolean		drawAnimation	= false;
 	private int			x				= 19, y = 19, width = 0, height = 0, xOval = 1, yOval = 1, ovalWidth = 34,
 			ovalHeight = 34;
+	private PopUpMenu	pum;
 
 	public SettingDots(GUIMain guimain) {
 
 		setPreferredSize(new Dimension(38, 38));
 		setMaximumSize(getPreferredSize());
 		setCursor(new Cursor(Cursor.HAND_CURSOR));
-		jpm = new JPopupMenu();
-		jpm.setBackground(new Color(0, 0, 0, 0));
-		jpm.add(item = new JMenuItem(""), new Icon(
-				Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/calendar.png"))));
-		jpm.setLightWeightPopupEnabled(false);
-		jpm.setSelectionModel(new NullSelectionModel());
-		item.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				System.out.println("Pressed");
-
-			}
-		});
 		addMouseListener(new MouseAdapter() {
 
 			@Override
@@ -65,7 +51,7 @@ public class SettingDots extends JPanel {
 				ovalHeight += 6;
 				repaint();
 				drawAnimation = false;
-				jpm.show(SettingDots.this, 0, 38);
+
 			}
 
 			@Override
@@ -112,7 +98,8 @@ public class SettingDots extends JPanel {
 
 					}
 				});
-				timer.start();
+				if (pum.isVisible() == false)
+					timer.start();
 
 			}
 
@@ -139,24 +126,16 @@ public class SettingDots extends JPanel {
 
 						repaint();
 
-						if (x == 1)
+						if (x == 1) {
 							((Timer) e.getSource()).stop();
+							pum = new PopUpMenu(guimain, SettingDots.this);
+						}
 
 					}
 				});
 				timer.start();
 
 			}
-		});
-		addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-				System.out.println(SettingDots.this.getX());
-
-			}
-
 		});
 	}
 
@@ -180,6 +159,11 @@ public class SettingDots extends JPanel {
 		g2d.fillOval(25, 15, 8, 8);
 
 		g2d.dispose();
+	}
+
+	public void setDrawAnimation(boolean animation) {
+
+		drawAnimation = animation;
 	}
 
 	private class Icon extends JPanel {

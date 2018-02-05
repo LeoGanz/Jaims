@@ -21,25 +21,31 @@ public class PanelShowMessages extends JPanel {
 	private GUIMain	guiMain;
 	private UUID	contactUUID;
 
-	public PanelShowMessages(GUIMain guiMain, ArrayList<Message> mList) {
+	public PanelShowMessages(GUIMain guiMain, ArrayList<Message> mList, UUID contactID, ManageMessagePanels mmp) {
 
 		this.guiMain = guiMain;
-		initGUI(mList);
+		contactUUID = contactID;
+		initGUI(mList, contactID, mmp);
 	}
 
-	private void initGUI(ArrayList<Message> mList) {
+	private void initGUI(ArrayList<Message> mList, UUID contactID, ManageMessagePanels mmp) {
 
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		add(Box.createRigidArea(new Dimension(0, 5)));
 
 		for (Message m : mList) {
+			mmp.getContactChatInformation(contactID).addTotalNumberMessages();
 			if (m.getSender().equals(guiMain.getUserUUID())) {
+				mmp.getContactChatInformation(contactID).addNumberOwnMessages();
 				if (m.getMessageType().equals("TEXT")) {
 					TextMessage tm = new TextMessage(m.getMessage(), guiMain, true);
 					tm.setAlignmentX(Component.RIGHT_ALIGNMENT);
 					add(tm);
 					add(Box.createRigidArea(new Dimension(0, 5)));
 
+					mmp.getContactChatInformation(contactID).addNumberOwnTextMessages();
+					mmp.getContactChatInformation(contactID).setNumberWordsUsed(m.getMessage().split(" ").length);
+					mmp.getContactChatInformation(contactID).setNumberOwnWordsUsed(m.getMessage().split(" ").length);
 				} else if (m.getMessageType().equals("IMAGE")) {
 
 				} else if (m.getMessageType().equals("VOICE")) {
@@ -47,6 +53,9 @@ public class PanelShowMessages extends JPanel {
 					vm.setAlignmentX(Component.RIGHT_ALIGNMENT);
 					add(vm);
 					add(Box.createRigidArea(new Dimension(0, 5)));
+
+					mmp.getContactChatInformation(contactID).addNumberTotalVoiceMessages();
+					mmp.getContactChatInformation(contactID).addNumberOwnVoiceMessages();
 				} else if (m.getMessageType().equals("FILE")) {
 
 				} else if (m.getMessageType().equals("LOCATION")) {
@@ -57,13 +66,17 @@ public class PanelShowMessages extends JPanel {
 
 				}
 			} else {
-				contactUUID = m.getSender();
+				mmp.getContactChatInformation(contactID).addNumberContactMessages();
 				if (m.getMessageType().equals("TEXT")) {
 					TextMessage tm = new TextMessage(m.getMessage(), guiMain, true);
 					tm.setAlignmentX(Component.LEFT_ALIGNMENT);
 					add(tm);
 					add(Box.createRigidArea(new Dimension(0, 5)));
 
+					mmp.getContactChatInformation(contactID).addNumberContactTextMessages();
+					mmp.getContactChatInformation(contactID).setNumberWordsUsed(m.getMessage().split(" ").length);
+					mmp.getContactChatInformation(contactID)
+							.setNumberContactWordsUsed(m.getMessage().split(" ").length);
 				} else if (m.getMessageType().equals("IMAGE")) {
 
 				} else if (m.getMessageType().equals("VOICE")) {
@@ -72,6 +85,8 @@ public class PanelShowMessages extends JPanel {
 					add(vm);
 					add(Box.createRigidArea(new Dimension(0, 5)));
 
+					mmp.getContactChatInformation(contactID).addNumberTotalVoiceMessages();
+					mmp.getContactChatInformation(contactID).addNumberContactVoiceMessages();
 				} else if (m.getMessageType().equals("FILE")) {
 
 				} else if (m.getMessageType().equals("LOCATION")) {

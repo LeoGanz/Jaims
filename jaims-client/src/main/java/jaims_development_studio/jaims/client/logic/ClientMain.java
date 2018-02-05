@@ -24,6 +24,7 @@ import jaims_development_studio.jaims.api.sendables.SendableLogin;
 import jaims_development_studio.jaims.api.sendables.SendableProfile;
 import jaims_development_studio.jaims.api.sendables.SendableRegistration;
 import jaims_development_studio.jaims.api.sendables.SendableRequest;
+import jaims_development_studio.jaims.api.settings.Settings;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
 import jaims_development_studio.jaims.client.database.ReadFromDatabase;
@@ -31,7 +32,6 @@ import jaims_development_studio.jaims.client.database.WriteToDatabase;
 import jaims_development_studio.jaims.client.gui.GUIMain;
 import jaims_development_studio.jaims.client.gui.JaimsFrame;
 import jaims_development_studio.jaims.client.networking.ServerConnection;
-import jaims_development_studio.jaims.client.settings.Settings;
 
 public class ClientMain {
 
@@ -47,7 +47,7 @@ public class ClientMain {
 	private String				loggedInUsername;
 	private ReadFromDatabase	readFromDatabase;
 	private Settings			settings;
-	private boolean				loggedIn				= false;
+	private boolean				loggedIn				= false, profileChanged = false;
 
 	/**
 	 * Static profile which represents the logged-in user.
@@ -77,7 +77,7 @@ public class ClientMain {
 	 */
 	public ClientMain() {
 
-		initProgram();
+		initProgram(true);
 	}
 
 	/**
@@ -90,12 +90,14 @@ public class ClientMain {
 	 * <li>adding a new <code>LoginPanel</code> to the JFrame</li>
 	 * </ul>
 	 */
-	private void initProgram() {
+	private void initProgram(boolean showSplashScreen) {
+
+		LOG.info("Starting...");
 
 		Thread thread = new Thread(sc = new ServerConnection(this));
 		thread.start();
 
-		SwingUtilities.invokeLater(guiMain = new GUIMain(this));
+		SwingUtilities.invokeLater(guiMain = new GUIMain(this, showSplashScreen));
 
 	}
 
@@ -151,11 +153,9 @@ public class ClientMain {
 		return userContact.getContactID();
 	}
 
-	public void loginSuccesful() {
+	public void loginSuccesful(UUID uuid) {
 
-		while (userContact == null) {
-		}
-		loggedIn = true;
+		setUserContact(uuid);
 		loadSettings();
 		guiMain.loginSuccessful();
 	}
@@ -196,6 +196,16 @@ public class ClientMain {
 		return databaseConnection.getChatBackground();
 	}
 
+	public String getContactStatus(UUID uuid) {
+
+		return databaseConnection.getContactStatus(uuid);
+	}
+
+	public boolean hasEntry(UUID uuid) {
+
+		return databaseConnection.hasEntry(uuid);
+	}
+
 	public boolean isServerConnected() {
 
 		return sc.isServerConnected();
@@ -206,10 +216,34 @@ public class ClientMain {
 		guiMain.setLoginEnabled(enabled);
 	}
 
-	public void requestUserProfile(UUID uuid) {
+	public void setWrongUsername(boolean wrong) {
 
-		while (loggedIn == false) {
+		guiMain.setWrongUsername(wrong);
+	}
+
+	public void setWrongPassword(boolean wrong) {
+
+		guiMain.setWrongPassword(wrong);
+	}
+
+	public void saveProfile(Profile p) {
+
+		if (p.getUuid().equals(userContact.getContactID()))
+			databaseConnection.saveProfile(p, false);
+		else {
+			databaseConnection.saveProfile(p, true);
 		}
+	}
+
+	public void updateProfile(Profile p) {
+
+		if (p.getUuid().equals(userContact.getContactID()))
+			databaseConnection.updateProfile(p, false);
+		else
+			databaseConnection.updateProfile(p, true);
+	}
+
+	public void requestUserProfile(UUID uuid) {
 
 		SendableRequest sr = new SendableRequest(ERequestType.PROFILE, uuid);
 		sc.sendSendable(sr);
@@ -226,15 +260,18 @@ public class ClientMain {
 		this.loggedIn = loggedIn;
 	}
 
-	public void succesfullRegistration() {
+	public void succesfullRegistration(UUID uuid) {
 
+		sendRegistrationProfile(uuid);
 		guiMain.succesfulRegistration();
 	}
 
-	public void sendRegistrationProfile() {
+	public void sendRegistrationProfile(UUID uuid) {
 
-		Profile pf = new Profile(null, userContact.getContactNickname(), "", "", null, new Date());
-		pf.setUUID(userContact.getContactID());
+		Profile pf = new Profile(null, guiMain.getRegisteredUsername(), "", "", null, new Date());
+		pf.setUUID(uuid);
+		System.out.println(pf.getNickname());
+		System.out.println(pf.getUuid());
 		SendableProfile sp = new SendableProfile(pf);
 		sc.sendSendable(sp);
 	}
@@ -297,6 +334,21 @@ public class ClientMain {
 		}
 	}
 
+	public void saveSettings() {
+
+		String userHome = System.getProperty("user.home").replace("\\", "/");
+		String filename = userHome + "/Jaims/" + loggedInUsername + "/settings/settings.set";
+
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(filename)));
+			oos.writeObject(settings);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 	private void createDirectory(String path) {
 
 		File f = new File(path);
@@ -306,5 +358,31 @@ public class ClientMain {
 		File settings = new File(path + "/settings");
 		if (!settings.exists())
 			settings.mkdirs();
+	}
+
+	public void doLogout() {
+
+		LOG.info("Initiating logout");
+
+		if (profileChanged) {
+			SendableProfile sp = new SendableProfile(
+					databaseConnection.getAndUpdateProfile(userContact.getContactID()));
+			sc.sendSendable(sp);
+		}
+
+		databaseConnection.closeConnection();
+		databaseConnection = null;
+		sc.disconnect();
+		guiMain.closeGUI();
+		guiMain = null;
+
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			LOG.error("Interrupted sleep");
+		}
+
+		initProgram(false);
+
 	}
 }

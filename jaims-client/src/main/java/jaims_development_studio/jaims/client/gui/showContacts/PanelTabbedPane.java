@@ -52,6 +52,7 @@ public class PanelTabbedPane extends JPanel {
 			btChats = new JButton() {
 				@Override
 				public void paintComponent(Graphics g) {
+
 					g.setColor(Color.GRAY);
 					g.fillRect(0, 0, getWidth(), getHeight());
 
@@ -141,7 +142,7 @@ public class PanelTabbedPane extends JPanel {
 			panelContacts.setLayout(new BoxLayout(panelContacts, BoxLayout.PAGE_AXIS));
 			panelContacts.setOpaque(false);
 			JLabel lbl = new JLabel(list.get(0).getContactNickname().substring(0, 1).toUpperCase(), JLabel.LEFT);
-			lbl.setForeground(Color.WHITE);
+			lbl.setForeground(Color.CYAN);
 			lbl.setBackground(new Color(0, 0, 0, 0));
 			lbl.setOpaque(false);
 			lbl.setFont(new Font("Sans Serif", Font.BOLD, 18));
@@ -161,7 +162,7 @@ public class PanelTabbedPane extends JPanel {
 						panelContacts.add(Box.createRigidArea(new Dimension(0, 15)));
 						JLabel label = new JLabel(list.get(i + 1).getContactNickname().substring(0, 1).toUpperCase(),
 								JLabel.LEFT);
-						label.setForeground(Color.WHITE);
+						label.setForeground(Color.CYAN);
 						label.setBackground(new Color(0, 0, 0, 0));
 						label.setOpaque(false);
 						label.setFont(new Font("Sans Serif", Font.BOLD, 18));

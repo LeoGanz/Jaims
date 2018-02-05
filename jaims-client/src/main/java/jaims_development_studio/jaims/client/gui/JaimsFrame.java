@@ -31,7 +31,7 @@ public class JaimsFrame extends JFrame {
 
 	private JFrame				frame;
 
-	public JaimsFrame() {
+	public JaimsFrame(boolean showSplashScreen) {
 
 		super("JAIMS Client");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -53,7 +53,8 @@ public class JaimsFrame extends JFrame {
 		}
 		setIconImages(iconImages);
 		getContentPane().setLayout(new BorderLayout(10, 0));
-		initLoadingFrame();
+		if (showSplashScreen)
+			initLoadingFrame();
 	}
 
 	private void initLoadingFrame() {
@@ -83,7 +84,8 @@ public class JaimsFrame extends JFrame {
 		setUndecorated(true);
 		setBackground(new Color(0, 0, 0, 0));
 		setLocationRelativeTo(null);
-		frame.dispose();
+		if (frame != null)
+			frame.dispose();
 	}
 
 	public void initGUI() {

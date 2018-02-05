@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.api.profile.Profile;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.logic.ClientMain;
 import jaims_development_studio.jaims.client.logic.SimpleContact;
@@ -23,6 +24,7 @@ public class DatabaseConnection {
 
 	private static Connection	con;
 	private ReadFromDatabase	readFromDatabase;
+	private WriteToDatabase		writeToDatabase;
 
 	public DatabaseConnection(String username) {
 
@@ -46,6 +48,21 @@ public class DatabaseConnection {
 		}
 
 		readFromDatabase = new ReadFromDatabase(con);
+		writeToDatabase = new WriteToDatabase(con);
+	}
+
+	public boolean closeConnection() {
+
+		try {
+			con.close();
+		} catch (SQLException e) {
+			closeConnection();
+		}
+
+		LOG.info("Closed database-connection");
+
+		return true;
+
 	}
 
 	public ArrayList<SimpleContact> getSimpleContacts() {
@@ -87,6 +104,31 @@ public class DatabaseConnection {
 	public Image getChatBackground() {
 
 		return readFromDatabase.getChatBackground();
+	}
+
+	public String getContactStatus(UUID uuid) {
+
+		return readFromDatabase.getContactStatus(uuid);
+	}
+
+	public boolean hasEntry(UUID uuid) {
+
+		return readFromDatabase.hasEntry(uuid);
+	}
+
+	public void saveProfile(Profile pf, boolean contact) {
+
+		writeToDatabase.saveProfile(pf, contact);
+	}
+
+	public void updateProfile(Profile pf, boolean contact) {
+
+		writeToDatabase.updateProfile(pf, contact);
+	}
+
+	public Profile getAndUpdateProfile(UUID uuid) {
+
+		return readFromDatabase.getAndUpdateUser(uuid);
 	}
 
 	public static Connection getConnection() {

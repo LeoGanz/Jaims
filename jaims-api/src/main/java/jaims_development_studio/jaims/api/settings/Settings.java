@@ -1,4 +1,4 @@
-package jaims_development_studio.jaims.client.settings;
+package jaims_development_studio.jaims.api.settings;
 
 import java.awt.Color;
 import java.io.Serializable;
@@ -28,9 +28,9 @@ public class Settings implements Serializable {
 	private int					ownFontSize					= 14;
 
 	// Color Attributes for User-Message
-	private Color				colorOwnMessages			= new Color(191, 225, 14);
-	private Color				colorOwnMessageBorder		= Color.GRAY;
-	private Color				colorOwnMessageFont			= Color.BLACK;
+	private int					colorOwnMessages			= new Color(191, 225, 14).getRGB();
+	private int					colorOwnMessageBorder		= Color.GRAY.getRGB();
+	private int					colorOwnMessageFont			= Color.BLACK.getRGB();
 
 	// Font attributes for Contact-Message
 	private String				contactFontName				= "Serif";
@@ -38,9 +38,9 @@ public class Settings implements Serializable {
 	private int					contactFontSize				= 14;
 
 	// Color attributes for Contact-Message
-	private Color				colorContactMessages		= new Color(191, 225, 14);
-	private Color				colorContactMessageBorder	= Color.GRAY;
-	private Color				colorContactMessageFont		= Color.BLACK;
+	private int					colorContactMessages		= new Color(191, 225, 14).getRGB();
+	private int					colorContactMessageBorder	= Color.GRAY.getRGB();
+	private int					colorContactMessageFont		= Color.BLACK.getRGB();
 
 	// Input for Voice-Messages
 
@@ -49,13 +49,13 @@ public class Settings implements Serializable {
 	private String				outputMixerInfoName			= null;
 	private float				inputGain					= 1.0F;
 	private float				outputVolume				= 1.0F;
-	private String				inputEncoding				= "PCM_SIGNED";
+	private EInputEncodingType	inputEncoding				= EInputEncodingType.ENCODING_PCM_SIGNED;
 	private float				inputSampleRate				= 16000;
 	private int					inputSampleSize				= 16;
 	private int					inputChannels				= 2;
-	private boolean				inputBigEndian				= false;
+	private EEndianness			endianness					= EEndianness.LITTLE_ENDIAN;
 	private int					frameSize					= 4;
-	private String				inputFileFormat				= "WAVE";
+	private EFileFormatType		inputFormatType				= EFileFormatType.FORMAT_WAVE;
 
 	// --------------------------------------------------------------
 	// --------------GETTER AND SETTER-------------------------------
@@ -64,24 +64,24 @@ public class Settings implements Serializable {
 	public AudioFormat getAudioFormat() {
 
 		switch (inputEncoding) {
-		case "ALAW":
+		case ENCODING_ALAW:
 			return new AudioFormat(AudioFormat.Encoding.ALAW, inputSampleRate, inputSampleSize, inputChannels,
-					frameSize, inputSampleRate, inputBigEndian);
-		case "PCM_FLOAT":
+					frameSize, inputSampleRate, endianness.getValue());
+		case ENCODING_PCM_FLOAT:
 			return new AudioFormat(AudioFormat.Encoding.PCM_FLOAT, inputSampleRate, inputSampleSize, inputChannels,
-					frameSize, inputSampleRate, inputBigEndian);
-		case "PCM_SIGNED":
+					frameSize, inputSampleRate, endianness.getValue());
+		case ENCODING_PCM_SIGNED:
 			return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, inputSampleRate, inputSampleSize, inputChannels,
-					frameSize, inputSampleRate, inputBigEndian);
-		case "PCM_UNSIGNED":
+					frameSize, inputSampleRate, endianness.getValue());
+		case ENCODING_PCM_UNSIGNED:
 			return new AudioFormat(AudioFormat.Encoding.PCM_UNSIGNED, inputSampleRate, inputSampleSize, inputChannels,
-					frameSize, inputSampleRate, inputBigEndian);
-		case "ULAW":
+					frameSize, inputSampleRate, endianness.getValue());
+		case ENCODING_ULAW:
 			return new AudioFormat(AudioFormat.Encoding.ULAW, inputSampleRate, inputSampleSize, inputChannels,
-					frameSize, inputSampleRate, inputBigEndian);
+					frameSize, inputSampleRate, endianness.getValue());
 		default:
 			return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, inputSampleRate, inputSampleSize, inputChannels,
-					frameSize, inputSampleRate, inputBigEndian);
+					frameSize, inputSampleRate, endianness.getValue());
 		}
 	}
 
@@ -115,32 +115,32 @@ public class Settings implements Serializable {
 		this.ownFontSize = ownFontSize;
 	}
 
-	public Color getColorOwnMessages() {
+	public int getColorOwnMessages() {
 
 		return colorOwnMessages;
 	}
 
 	public void setColorOwnMessages(int rgb) {
 
-		this.colorOwnMessages = new Color(rgb);
+		this.colorOwnMessages = rgb;
 	}
 
-	public Color getColorOwnMessageBorder() {
+	public int getColorOwnMessageBorder() {
 
 		return colorOwnMessageBorder;
 	}
 
-	public void setColorOwnMessageBorder(Color colorOwnMessageBorder) {
+	public void setColorOwnMessageBorder(int colorOwnMessageBorder) {
 
 		this.colorOwnMessageBorder = colorOwnMessageBorder;
 	}
 
-	public Color getColorOwnMessageFont() {
+	public int getColorOwnMessageFont() {
 
 		return colorOwnMessageFont;
 	}
 
-	public void setColorOwnMessageFont(Color colorOwnMessageFont) {
+	public void setColorOwnMessageFont(int colorOwnMessageFont) {
 
 		this.colorOwnMessageFont = colorOwnMessageFont;
 	}
@@ -175,32 +175,32 @@ public class Settings implements Serializable {
 		this.contactFontSize = contactFontSize;
 	}
 
-	public Color getColorContactMessages() {
+	public int getColorContactMessages() {
 
 		return colorContactMessages;
 	}
 
-	public void setColorContactMessages(Color colorContactMessages) {
+	public void setColorContactMessages(int colorContactMessages) {
 
 		this.colorContactMessages = colorContactMessages;
 	}
 
-	public Color getColorContactMessageBorder() {
+	public int getColorContactMessageBorder() {
 
 		return colorContactMessageBorder;
 	}
 
-	public void setColorContactMessageBorder(Color colorContactMessageBorder) {
+	public void setColorContactMessageBorder(int colorContactMessageBorder) {
 
 		this.colorContactMessageBorder = colorContactMessageBorder;
 	}
 
-	public Color getColorContactMessageFont() {
+	public int getColorContactMessageFont() {
 
 		return colorContactMessageFont;
 	}
 
-	public void setColorContactMessageFont(Color colorContactMessageFont) {
+	public void setColorContactMessageFont(int colorContactMessageFont) {
 
 		this.colorContactMessageFont = colorContactMessageFont;
 	}
@@ -245,12 +245,12 @@ public class Settings implements Serializable {
 		this.outputVolume = outputVolume;
 	}
 
-	public String getInputEncoding() {
+	public EInputEncodingType getInputEncoding() {
 
 		return inputEncoding;
 	}
 
-	public void setInputEncoding(String inputEncoding) {
+	public void setInputEncoding(EInputEncodingType inputEncoding) {
 
 		this.inputEncoding = inputEncoding;
 	}
@@ -287,12 +287,12 @@ public class Settings implements Serializable {
 
 	public boolean isInputBigEndian() {
 
-		return inputBigEndian;
+		return endianness.getValue();
 	}
 
-	public void setInputBigEndian(boolean inputBigEndian) {
+	public void setInputBigEndian(EEndianness inputBigEndian) {
 
-		this.inputBigEndian = inputBigEndian;
+		this.endianness = inputBigEndian;
 	}
 
 	public int getFrameSize() {
@@ -307,30 +307,30 @@ public class Settings implements Serializable {
 
 	public AudioFileFormat.Type getInputFileFormat() {
 
-		switch (inputFileFormat) {
-		case "AIFC":
+		switch (inputFormatType) {
+		case FORMAT_AIFC:
 			return AudioFileFormat.Type.AIFC;
-		case "AIFF":
+		case FORMAT_AIFF:
 			return AudioFileFormat.Type.AIFF;
-		case "AU":
+		case FORMAT_AU:
 			return AudioFileFormat.Type.AU;
-		case "SND":
+		case FORMAT_SND:
 			return AudioFileFormat.Type.SND;
-		case "WAVE":
+		case FORMAT_WAVE:
 			return AudioFileFormat.Type.WAVE;
 		default:
 			return AudioFileFormat.Type.WAVE;
 		}
 	}
 
-	public String getInputFileFormatString() {
+	public EFileFormatType getInputFileFormatString() {
 
-		return inputFileFormat;
+		return inputFormatType;
 	}
 
-	public void setInputFileFormat(String inputFileFormat) {
+	public void setInputFileFormat(EFileFormatType inputFileFormat) {
 
-		this.inputFileFormat = inputFileFormat;
+		this.inputFormatType = inputFileFormat;
 	}
 
 	public int getArcMessages() {

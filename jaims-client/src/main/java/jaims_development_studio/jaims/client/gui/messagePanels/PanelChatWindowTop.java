@@ -9,6 +9,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 
 import javax.swing.Box;
@@ -22,8 +24,9 @@ import jaims_development_studio.jaims.client.logic.SimpleContact;
 
 public class PanelChatWindowTop extends JPanel {
 
-	private Image	profileImage;
-	private GUIMain	guiMain;
+	private Image							profileImage;
+	private GUIMain							guiMain;
+	private PanelContactAndChatInformation	pcaci;
 
 	public PanelChatWindowTop(SimpleContact contactProfile, GUIMain guiMain) {
 
@@ -73,6 +76,19 @@ public class PanelChatWindowTop extends JPanel {
 		lblUsername.setMaximumSize(lblUsername.getPreferredSize());
 		add(lblUsername);
 		add(Box.createHorizontalGlue());
+
+		pcaci = new PanelContactAndChatInformation(guiMain, contactProfile,
+				guiMain.getChatInformation(contactProfile.getContactID()));
+
+		addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+				guiMain.showParentPanel(pcaci);
+
+			}
+		});
 	}
 
 	private Image scaleMaintainAspectRatio(Image image) {

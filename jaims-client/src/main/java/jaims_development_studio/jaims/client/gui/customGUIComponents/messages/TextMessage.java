@@ -1,6 +1,7 @@
 package jaims_development_studio.jaims.client.gui.customGUIComponents.messages;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -44,13 +45,13 @@ public class TextMessage extends JPanel {
 		if (own) {
 			jta.setFont(new Font(guiMain.getSettings().getOwnFontName(), guiMain.getSettings().getOwnFontStyle(),
 					guiMain.getSettings().getOwnFontSize()));
-			jta.setForeground(guiMain.getSettings().getColorOwnMessageFont());
-			setBorder(new RoundBorder(width, height, guiMain.getSettings().getColorOwnMessageBorder()));
+			jta.setForeground(new Color(guiMain.getSettings().getColorOwnMessageFont()));
+			setBorder(new RoundBorder(width, height, new Color(guiMain.getSettings().getColorOwnMessageBorder())));
 		} else {
 			jta.setFont(new Font(guiMain.getSettings().getContactFontName(),
 					guiMain.getSettings().getContactFontStyle(), guiMain.getSettings().getContactFontSize()));
-			jta.setForeground(guiMain.getSettings().getColorContactMessageFont());
-			setBorder(new RoundBorder(width, height, guiMain.getSettings().getColorContactMessageBorder()));
+			jta.setForeground(new Color(guiMain.getSettings().getColorContactMessageFont()));
+			setBorder(new RoundBorder(width, height, new Color(guiMain.getSettings().getColorContactMessageBorder())));
 		}
 
 		height = getStringHeight(message, jta) + 10;
@@ -94,14 +95,16 @@ public class TextMessage extends JPanel {
 					if (own) {
 						jta.setFont(new Font(guiMain.getSettings().getOwnFontName(),
 								guiMain.getSettings().getOwnFontStyle(), guiMain.getSettings().getOwnFontSize()));
-						jta.setForeground(guiMain.getSettings().getColorOwnMessageFont());
-						setBorder(new RoundBorder(width, height, guiMain.getSettings().getColorOwnMessageBorder()));
+						jta.setForeground(new Color(guiMain.getSettings().getColorOwnMessageFont()));
+						setBorder(new RoundBorder(width, height,
+								new Color(guiMain.getSettings().getColorOwnMessageBorder())));
 					} else {
 						jta.setFont(new Font(guiMain.getSettings().getContactFontName(),
 								guiMain.getSettings().getContactFontStyle(),
 								guiMain.getSettings().getContactFontSize()));
-						jta.setForeground(guiMain.getSettings().getColorContactMessageFont());
-						setBorder(new RoundBorder(width, height, guiMain.getSettings().getColorContactMessageBorder()));
+						jta.setForeground(new Color(guiMain.getSettings().getColorContactMessageFont()));
+						setBorder(new RoundBorder(width, height,
+								new Color(guiMain.getSettings().getColorContactMessageBorder())));
 					}
 
 					setPreferredSize(new Dimension(width, height));
@@ -203,12 +206,12 @@ public class TextMessage extends JPanel {
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		if (own) {
-			g2d.setColor(guiMain.getSettings().getColorOwnMessages());
+			g2d.setColor(new Color(guiMain.getSettings().getColorOwnMessages()));
 			g2d.fillRoundRect(0, 0, (int) getPreferredSize().getWidth() - 1, (int) getPreferredSize().getHeight() - 1,
 					20, 20);
 			g2d.dispose();
 		} else {
-			g2d.setColor(guiMain.getSettings().getColorContactMessages());
+			g2d.setColor(new Color(guiMain.getSettings().getColorContactMessages()));
 			g2d.fillRoundRect(0, 0, (int) getPreferredSize().getWidth() - 1, (int) getPreferredSize().getHeight() - 1,
 					20, 20);
 

@@ -9,6 +9,8 @@ import java.net.SocketException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.api.account.IncorrectPasswordException;
+import jaims_development_studio.jaims.api.account.UserNameNotAvailableException;
 import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.api.sendables.SendableConfirmation;
 import jaims_development_studio.jaims.api.sendables.SendableException;
@@ -60,7 +62,12 @@ public class ListenForInput implements Runnable {
 				} catch (NullPointerException npe) {
 					LOG.error("Socket isn't initialised", npe);
 				} catch (SocketException se) {
-					LOG.error("Socket isn't connected", se);
+					if (so.isClosed())
+						break;
+					else {
+						cm.getServerConnection().initConnection();
+						break;
+					}
 				} catch (EOFException e) {
 					LOG.error("Server connection closed. Trying to reconnect");
 					firstSendable = true;
@@ -75,7 +82,9 @@ public class ListenForInput implements Runnable {
 			LOG.error("Socket isn't initialised!", npe);
 		} catch (EOFException e) {
 			LOG.error("Server connection closed. Trying to reconnect");
-			cm.getServerConnection().initConnection();
+			if (so.isClosed() == false)
+				cm.getServerConnection().initConnection();
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			LOG.error("Socket isn't connected", e);
@@ -115,7 +124,13 @@ public class ListenForInput implements Runnable {
 			case "EXCEPTION":
 				SendableException se = (SendableException) s;
 				LOG.info("Received Sendable of type " + se.getType().toString());
-				LOG.error(se.getException().getMessage());
+				if (se.getException() instanceof IncorrectPasswordException) {
+					cm.setWrongPassword(true);
+					cm.setWrongUsername(false);
+				}
+				if (se.getException() instanceof UserNameNotAvailableException) {
+					cm.setWrongUsername(true);
+				}
 				break;
 			case "STORED_UUID":
 				SendableUUID su = (SendableUUID) s;
@@ -123,23 +138,23 @@ public class ListenForInput implements Runnable {
 				if (firstSendable) {
 					ClientMain.serverUUID = su.getStoredUuid();
 					firstSendable = false;
-				} else
-					cm.setUserContact(su.getStoredUuid());
+				}
 
 				break;
 			case "PROFILE":
-				System.out.println("Got profile");
 				SendableProfile sp = (SendableProfile) s;
-				System.out.println(sp.getProfile().getNickname());
+				if (cm.hasEntry(sp.getProfile().getUuid()) == false)
+					cm.saveProfile(sp.getProfile());
+				else
+					cm.updateProfile(sp.getProfile());
 				break;
 			case "CONFIRMATION":
 				SendableConfirmation sc = (SendableConfirmation) s;
 				LOG.info("Received Sendable of type " + sc.getConfirmationType().toString());
 				if (sc.getConfirmationType().getValue().equals("REGISTRATION_SUCCESSFUL")) {
-					cm.succesfullRegistration();
-					cm.sendRegistrationProfile();
+					cm.succesfullRegistration(sc.getStoredUuid());
 				} else if (sc.getConfirmationType().getValue().equals("LOGIN_SUCCESSFUL")) {
-					cm.loginSuccesful();
+					cm.loginSuccesful(sc.getStoredUuid());
 				}
 				break;
 			case "OTHER":
@@ -152,6 +167,16 @@ public class ListenForInput implements Runnable {
 			e.printStackTrace();
 		}
 
+	}
+
+	public void closeSocket() {
+
+		try {
+			so.close();
+			LOG.info("Socket closed, no longer listening for input");
+		} catch (IOException e) {
+			closeSocket();
+		}
 	}
 
 	@Override

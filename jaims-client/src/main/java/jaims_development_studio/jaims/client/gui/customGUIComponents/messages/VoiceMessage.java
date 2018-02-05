@@ -72,9 +72,9 @@ public class VoiceMessage extends JPanel {
 		setPreferredSize(new Dimension(330, 50));
 		setMaximumSize(getPreferredSize());
 		if (own)
-			setBorder(new RoundBorder(330, 50, guiMain.getSettings().getColorContactMessageBorder()));
+			setBorder(new RoundBorder(330, 50, new Color(guiMain.getSettings().getColorContactMessageBorder())));
 		else
-			setBorder(new RoundBorder(330, 50, guiMain.getSettings().getColorContactMessageBorder()));
+			setBorder(new RoundBorder(330, 50, new Color(guiMain.getSettings().getColorContactMessageBorder())));
 
 		add(Box.createRigidArea(new Dimension(65, 0)));
 		long length = getAudioFileLength();
@@ -90,10 +90,10 @@ public class VoiceMessage extends JPanel {
 				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 				if (own) {
-					g2d.setColor(guiMain.getSettings().getColorOwnMessages());
+					g2d.setColor(new Color(guiMain.getSettings().getColorOwnMessages()));
 					g2d.fillRect(0, 0, getWidth(), getHeight());
 				} else {
-					g2d.setColor(guiMain.getSettings().getColorContactMessages());
+					g2d.setColor(new Color(guiMain.getSettings().getColorContactMessages()));
 					g2d.fillRect(0, 0, getWidth(), getHeight());
 				}
 
@@ -238,11 +238,11 @@ public class VoiceMessage extends JPanel {
 	public void paintComponent(Graphics g) {
 
 		if (own) {
-			maxTime.setForeground(guiMain.getSettings().getColorOwnMessageFont());
-			currentTime.setForeground(guiMain.getSettings().getColorOwnMessageFont());
+			maxTime.setForeground(new Color(guiMain.getSettings().getColorOwnMessageFont()));
+			currentTime.setForeground(new Color(guiMain.getSettings().getColorOwnMessageFont()));
 		} else {
-			maxTime.setForeground(guiMain.getSettings().getColorContactMessageFont());
-			currentTime.setForeground(guiMain.getSettings().getColorContactMessageFont());
+			maxTime.setForeground(new Color(guiMain.getSettings().getColorContactMessageFont()));
+			currentTime.setForeground(new Color(guiMain.getSettings().getColorContactMessageFont()));
 		}
 
 		g.setColor(getBackground());
@@ -251,10 +251,10 @@ public class VoiceMessage extends JPanel {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		if (own) {
-			g2d.setColor(guiMain.getSettings().getColorOwnMessages());
+			g2d.setColor(new Color(guiMain.getSettings().getColorOwnMessages()));
 			g2d.fillRoundRect(0, 1, getWidth() - 1, getHeight() - 1, 20, 20);
 		} else {
-			g2d.setColor(guiMain.getSettings().getColorContactMessages());
+			g2d.setColor(new Color(guiMain.getSettings().getColorContactMessages()));
 			g2d.fillRoundRect(0, 1, getWidth() - 1, getHeight() - 1, 20, 20);
 		}
 

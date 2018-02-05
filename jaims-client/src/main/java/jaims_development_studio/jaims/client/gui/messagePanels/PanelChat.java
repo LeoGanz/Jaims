@@ -10,11 +10,10 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.UUID;
 
-import javax.swing.JPanel;
-
 import jaims_development_studio.jaims.client.gui.GUIMain;
+import jaims_development_studio.jaims.client.gui.customGUIComponents.ParentPanel;
 
-public class PanelChat extends JPanel {
+public class PanelChat extends ParentPanel {
 
 	private GUIMain					guiMain;
 	private UUID					contactID;

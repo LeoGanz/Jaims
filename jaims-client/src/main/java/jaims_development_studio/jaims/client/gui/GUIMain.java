@@ -15,22 +15,31 @@ import java.util.UUID;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import jaims_development_studio.jaims.api.settings.Settings;
+import jaims_development_studio.jaims.client.chatObjects.ChatInformation;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.CenterPanel;
+import jaims_development_studio.jaims.client.gui.customGUIComponents.ParentPanel;
 import jaims_development_studio.jaims.client.gui.login.PanelProgramStartup;
 import jaims_development_studio.jaims.client.gui.login.ShowGuiBuildingProcess;
 import jaims_development_studio.jaims.client.gui.messagePanels.ManageMessagePanels;
+import jaims_development_studio.jaims.client.gui.settings.PanelSelectSettings;
 import jaims_development_studio.jaims.client.gui.showContacts.PanelTabbedPane;
 import jaims_development_studio.jaims.client.gui.showContacts.PanelUserShowing;
 import jaims_development_studio.jaims.client.logic.ClientMain;
 import jaims_development_studio.jaims.client.logic.SimpleContact;
-import jaims_development_studio.jaims.client.settings.Settings;
 
 public class GUIMain implements Runnable {
+
+	private static final Logger				LOG	= LoggerFactory.getLogger(GUIMain.class);
 
 	private JaimsFrame						jaimsFrame;
 	private ClientMain						cm;
@@ -42,11 +51,15 @@ public class GUIMain implements Runnable {
 	private PanelUserShowing				panelUserShowing;
 	private JPanel							infoPanel;
 	private HashMap<UUID, SimpleContact>	allContacts;
+	private ParentPanel						parentPanel;
 	private PanelAddUser					panelAddUser;
+	private PanelSelectSettings				panelSelectSettings;
+	private boolean							showSplashScreen;
 
-	public GUIMain(ClientMain cm) {
+	public GUIMain(ClientMain cm, boolean showSplashScreen) {
 
 		this.cm = cm;
+		this.showSplashScreen = showSplashScreen;
 	}
 
 	private void initFrame() {
@@ -56,18 +69,20 @@ public class GUIMain implements Runnable {
 			UIManager.put("ScrollBarUI",
 					"jaims_development_studio.jaims.client.gui.customGUIComponents.CustomScrollBarUI");
 			UIManager.put("ScrollBar.width", 8);
+			ToolTipManager.sharedInstance().setInitialDelay(250);
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 				| UnsupportedLookAndFeelException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
-		jaimsFrame = new JaimsFrame();
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		jaimsFrame = new JaimsFrame(showSplashScreen);
+		if (showSplashScreen) {
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				LOG.error("Interrupted Sleep");
+			}
 		}
 		jaimsFrame.initLogin();
 
@@ -87,12 +102,32 @@ public class GUIMain implements Runnable {
 
 	}
 
-	public void showChatConversation() {
+	public void showParentPanel(ParentPanel pp) {
 
+		if (parentPanel != null)
+			jaimsFrame.getContentPane().remove(parentPanel);
+
+		jaimsFrame.getContentPane().add(parentPanel = pp, BorderLayout.CENTER);
+		jaimsFrame.getContentPane().repaint();
 	}
 
 	public void showSettings() {
 
+		jaimsFrame.getContentPane().removeAll();
+		if (panelSelectSettings == null)
+			panelSelectSettings = new PanelSelectSettings(this);
+
+		jaimsFrame.getContentPane().add(panelSelectSettings, BorderLayout.CENTER);
+		jaimsFrame.getContentPane().revalidate();
+		jaimsFrame.repaint();
+	}
+
+	public void removeSettings() {
+
+		jaimsFrame.getContentPane().remove(panelSelectSettings);
+		jaimsFrame.getContentPane().add(centerPanel, BorderLayout.CENTER);
+		jaimsFrame.getContentPane().revalidate();
+		jaimsFrame.getContentPane().repaint();
 	}
 
 	public void loginSuccessful() {
@@ -107,7 +142,6 @@ public class GUIMain implements Runnable {
 		showGuiBuildingProcess.revalidate();
 		jaimsFrame.repaint();
 
-		cm.connectToDatabase();
 		showGuiBuildingProcess.setProgress(10);
 
 		panelTabbedPane = new PanelTabbedPane(this);
@@ -197,6 +231,11 @@ public class GUIMain implements Runnable {
 		jaimsFrame.repaint();
 	}
 
+	public void updateSettings() {
+
+		cm.saveSettings();
+	}
+
 	public void setWrongUsername(boolean wrong) {
 
 		panelProgramStartup.wrongUsername(wrong);
@@ -212,9 +251,19 @@ public class GUIMain implements Runnable {
 		cm.sendLogin(username, password);
 	}
 
+	public SimpleContact getLoggedInUser() {
+
+		return cm.getUserContact();
+	}
+
 	public SimpleContact getSimpleContact(UUID uuid) {
 
 		return allContacts.get(uuid);
+	}
+
+	public ChatInformation getChatInformation(UUID uuid) {
+
+		return manageMessagePanels.getContactChatInformation(uuid);
 	}
 
 	public ArrayList<SimpleContact> getSimpleChatContacts() {
@@ -271,6 +320,11 @@ public class GUIMain implements Runnable {
 		return cm.getChatBackground();
 	}
 
+	public String getContactStatus(UUID uuid) {
+
+		return cm.getContactStatus(uuid);
+	}
+
 	public boolean isServerConnected() {
 
 		return cm.isServerConnected();
@@ -292,6 +346,25 @@ public class GUIMain implements Runnable {
 		String username = panelProgramStartup.getRegisteredUsername();
 		String password = panelProgramStartup.getRegisteredPassword();
 		panelProgramStartup.succesfulRegistration(username, password);
+	}
+
+	public String getRegisteredUsername() {
+
+		return panelProgramStartup.getRegisteredUsername();
+	}
+
+	public void doLogout() {
+
+		cm.doLogout();
+	}
+
+	public boolean closeGUI() {
+
+		jaimsFrame.dispose();
+
+		LOG.info("Disposed gui");
+
+		return true;
 	}
 
 	@Override
