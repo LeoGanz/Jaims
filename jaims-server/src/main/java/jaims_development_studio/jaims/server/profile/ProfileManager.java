@@ -1,8 +1,6 @@
 package jaims_development_studio.jaims.server.profile;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.persistence.OptimisticLockException;
@@ -27,27 +25,31 @@ import jaims_development_studio.jaims.api.sendables.SendableRequest;
 import jaims_development_studio.jaims.api.user.User;
 import jaims_development_studio.jaims.server.network.ClientManager;
 import jaims_development_studio.jaims.server.user.UserManager;
+import jaims_development_studio.jaims.server.util.EntityManager;
 
-public class ProfileManager {
+public class ProfileManager extends EntityManager<Profile> {
 
 	private final Logger				LOG	= LoggerFactory.getLogger(ClientManager.class);
 	private final UserManager			userManager;
-	private final ProfileDAO			profileDAO;
-	private final Map<UUID, Profile>	loadedProfiles;
 
 	public ProfileManager(UserManager userManager) {
+		super(new ProfileDAO());
 		this.userManager = userManager;
-		profileDAO = new ProfileDAO();
-		loadedProfiles = new HashMap<>();
 	}
 
+	/**
+	 * Server is not supposed to create Profiles. It is the client's job to send a SendableProfile which the server will
+	 * manage. Use method linked below instead.
+	 *
+	 * @see #saveOrUpdateProfile(SendableProfile)
+	 */
+	@Deprecated
 	public Profile newProfile(Account account, String nickname, String description, String status, byte[] profilePicture) throws ProfileAlreadyExistsException {
 
-		if (get(account.getUuid()) != null)
+		if (isUuidRegistered(account.getUuid()))
 			throw new ProfileAlreadyExistsException(account.getUuid(), "A profile for the specified account / uuid already exists");
 
 		Profile profile = new Profile(account, nickname, description, status, profilePicture, new Date());
-		loadedProfiles.put(account.getUuid(), profile);
 
 		save(profile);
 
@@ -85,31 +87,11 @@ public class ProfileManager {
 		sendSendable(sendableConfirmation, account.getUuid());
 	}
 	
-	public void save(Profile profile) {
-		if (profile != null) {
-			unload(profile);
-			profileDAO.saveOrUpdate(profile);
-		}
-	}
-
-	private void unload(Profile profile) {
-		if (profile != null)
-			loadedProfiles.remove(profile.getUuid());
-	}
 
 	private void sendSendable(Sendable sendable, UUID uuid) {
 		User user = userManager.get(uuid);
-		user.enqueueSendable(sendable);
-	}
-
-	public Profile get(UUID uuid) {
-		Profile result = loadedProfiles.get(uuid);
-		if (result == null) {
-			result = profileDAO.get(uuid);
-			if (result != null)
-				loadedProfiles.put(uuid, result);
-		}
-		return result;
+		if (user != null)
+			user.enqueueSendable(sendable);
 	}
 
 	public void manageProfileRequest(SendableRequest request) throws InvalidSendableTypeException, NoProfileAvailableException {

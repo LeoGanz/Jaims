@@ -1,6 +1,5 @@
 package jaims_development_studio.jaims.api.profile;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
@@ -9,7 +8,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
@@ -17,17 +15,17 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import jaims_development_studio.jaims.api.account.Account;
+import jaims_development_studio.jaims.api.util.UuidEntity;
 
 @Entity(name = "Profile")
 @Table(name = "PROFILES")
-public class Profile implements Serializable {
+public class Profile extends UuidEntity {
 
 	private static final long	serialVersionUID	= 1L;
-
-	@Column(name = "UUID", columnDefinition = "BINARY(16)")
-	@Id
-	private UUID				uuid;
 
 	@OneToOne(cascade = CascadeType.DETACH)
 	@MapsId
@@ -46,6 +44,7 @@ public class Profile implements Serializable {
 	@Lob
 	@Basic(fetch = FetchType.LAZY)
 	private byte[]				profilePicture;
+
 	@Column(name = "LAST_UPDATED", columnDefinition = "TIMESTAMP")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date				lastUpdated;
@@ -57,7 +56,7 @@ public class Profile implements Serializable {
 
 	public Profile(UUID uuid, Account account, String nickname, String description, String status, byte[] profilePicture, Date lastUpdated) {
 
-		this.uuid = uuid;
+		setUuid(uuid);
 		this.account = account;
 		this.nickname = nickname;
 		this.description = description;
@@ -69,20 +68,6 @@ public class Profile implements Serializable {
 	@SuppressWarnings("unused")
 	private Profile() {
 
-	}
-
-	public void setUuid(UUID uuid) {
-		this.uuid = uuid;
-	}
-	
-	public UUID getUuid() {
-
-		return uuid;
-	}
-
-	public void setUUID(UUID uuid) {
-
-		this.uuid = uuid;
 	}
 
 	public Account getAccount() {
@@ -147,7 +132,44 @@ public class Profile implements Serializable {
 
 	public Profile copyWithoutAccount() {
 
-		return new Profile(uuid, null, nickname, description, status, profilePicture, lastUpdated);
+		return new Profile(getUuid(), null, nickname, description, status, profilePicture, lastUpdated);
 	}
+
+	@Override
+	public String toString() {
+		return "Profile of " + account.toStringName();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null)
+			return false;
+		if (getClass() != o.getClass())
+			return false;
+		Profile other = (Profile) o;
+		return new EqualsBuilder()
+				.append(getUuid(), other.getUuid())
+				.append(nickname, other.nickname)
+				.append(description, other.description)
+				.append(status, other.status)
+				.append(profilePicture, other.profilePicture)
+				.append(lastUpdated, other.lastUpdated)
+				.isEquals();
+	}
+	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(17, 31)
+				.append(getUuid())
+				.append(nickname)
+				.append(description)
+				.append(status)
+				.append(profilePicture)
+				.append(lastUpdated)
+				.toHashCode();
+	}
+	
 
 }

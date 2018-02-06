@@ -1,6 +1,5 @@
 package jaims_development_studio.jaims.api.user;
 
-import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
@@ -11,7 +10,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
 import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -29,19 +27,16 @@ import jaims_development_studio.jaims.api.command.CommandBase;
 import jaims_development_studio.jaims.api.command.ICommandSender;
 import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.api.sendables.SendableTextMessage;
+import jaims_development_studio.jaims.api.util.UuidEntity;
 
 @Entity(name = "User")
 @Table(name = "USERS")
-public class User implements Serializable, ICommandSender {
+public class User extends UuidEntity implements ICommandSender {
 	
 	private static final long		serialVersionUID	= 1L;
 	
 	@Transient
 	private IServer					server;
-	
-	@Column(name = "ACCOUNT_UUID", columnDefinition = "BINARY(16)")
-	@Id
-	private UUID					uuid;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@MapsId
@@ -52,9 +47,6 @@ public class User implements Serializable, ICommandSender {
 	private Date					lastSeen;
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user", fetch = FetchType.EAGER)
-	//	@JoinColumn(name = "SENDABLE_UUID", columnDefinition = "BINARY(16)")
-	//	@Transient
-	//	private final Collection<Sendable>	sendables			= new LinkedBlockingDeque<>();	//(with a deque) it will be possible to delete messages that aren't yet delivered
 	private final List<Sendable>	sendables			= new LinkedList<>();
 	
 	public User() {
@@ -63,35 +55,21 @@ public class User implements Serializable, ICommandSender {
 	
 	public User(Account account) {
 		this.account = account;
-		//		sendables.sort((o1, o2) -> Integer.compare(o1.getPriority(), o2.getPriority()));
 	}
 	
 	public User(IServer server, Account account) {
 		this.server = server;
 		this.account = account;
-		//		sendables.sort((o1, o2) -> Integer.compare(o1.getPriority(), o2.getPriority()));
 	}
 	
 	public synchronized void enqueueSendable(Sendable sendable) {
 		sendables.add(sendable);
-		//		((LinkedBlockingDeque<Sendable>) sendables).addLast(sendable);
-		//		sendables.stream().filter(s -> s.getPriority() == sendable.getPriority()).reduce((first, second) -> second).get();
 		sendable.setUser(this);
 		notifyAll();
 	}
 	
-	@Deprecated
-	public synchronized void enqueueAsFirstElement(Sendable sendable) {
-		enqueueSendable(sendable);
-		//		((LinkedBlockingDeque<Sendable>) sendables).addFirst(sendable);
-		//		sendable.setUser(this);
-		//		notify();
-	}
-	
 	public synchronized Sendable takeSendable() {
-		//		Sendable sendable = sendables.stream().sorted((o1, o2) -> Integer.compare(o1.getPriority(), o2.getPriority())).findFirst().get();
 		Sendable sendable = sendables.stream().sorted(Comparator.comparingInt(Sendable::getPriority).reversed()).findFirst().get();
-		//			Sendable sendable = ((LinkedBlockingDeque<Sendable>) sendables).takeFirst();
 		if (sendable != null) {
 			sendables.remove(sendable);
 			sendable.setUser(null);
@@ -134,18 +112,16 @@ public class User implements Serializable, ICommandSender {
 			return false;
 		User other = (User) o;
 		return new EqualsBuilder()
-				.append(account, other.account)
+				.append(getUuid(), other.getUuid())
 				.append(lastSeen, other.lastSeen)
-				//				.append(sendables, other.sendables) TODO uncomment when sendable saving is implmented
 				.isEquals();
 	}
 	
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder(17, 31)
-				.append(account)
+				.append(getUuid())
 				.append(lastSeen)
-				//				.append(sendables)
 				.toHashCode();
 	}
 	

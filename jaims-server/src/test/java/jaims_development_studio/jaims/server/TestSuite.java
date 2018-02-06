@@ -9,12 +9,12 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ DAOTest.class, SendableAndUserTest.class })
+@SuiteClasses({ AccountManagerTest.class, ProfileManagerTest.class, SendableAndUserTest.class, UserManagerTest.class })
 public class TestSuite {
-	
+
 	public static void main(String[] args) {
 		Result result = JUnitCore.runClasses(TestSuite.class);
-
+		
 		for (Failure failure : result.getFailures())
 			System.out.println(failure.toString());
 		System.out.println("TestSuite successful: " + result.wasSuccessful());

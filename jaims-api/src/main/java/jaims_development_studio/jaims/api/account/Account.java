@@ -1,36 +1,27 @@
 package jaims_development_studio.jaims.api.account;
 
-import java.io.Serializable;
 import java.util.Date;
-import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.hibernate.annotations.GenericGenerator;
+
+import jaims_development_studio.jaims.api.util.UuidEntity;
 
 @Entity(name = "Account")
 @Table(name = "ACCOUNTS")
-public class Account implements Serializable {
+public class Account extends UuidEntity {
 	
 	private static final long	serialVersionUID	= 1L;
 
 	//	@Transient
 	//	private final Logger		LOG					= LoggerFactory.getLogger(Account.class);
 	
-	@GeneratedValue(generator = "uuid2")
-	@GenericGenerator(name = "uuid2", strategy = "uuid2")
-	@Column(name = "UUID", columnDefinition = "BINARY(16)")
-	@Id
-	private UUID				uuid;
-
 	@Column(name = "USERNAME", columnDefinition = "VARCHAR(256) NOT NULL UNIQUE")
 	private String				username;
 
@@ -83,10 +74,6 @@ public class Account implements Serializable {
 		this.email = email;
 	}
 	
-	public UUID getUuid() {
-		return uuid;
-	}
-	
 	public String getUsername() {
 		return username;
 	}
@@ -110,7 +97,7 @@ public class Account implements Serializable {
 	}
 	
 	public String toStringUuid() {
-		return uuid.toString();
+		return getUuid().toString();
 	}
 	
 	@Override
@@ -123,7 +110,7 @@ public class Account implements Serializable {
 			return false;
 		Account other = (Account) o;
 		return new EqualsBuilder()
-				.append(uuid, other.uuid)
+				.append(getUuid(), other.getUuid())
 				.append(username, other.username)
 				.append(password, other.password)
 				.append(email, other.email)
@@ -134,7 +121,7 @@ public class Account implements Serializable {
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder(17, 31)
-				.append(uuid)
+				.append(getUuid())
 				.append(username)
 				.append(password)
 				.append(email)
