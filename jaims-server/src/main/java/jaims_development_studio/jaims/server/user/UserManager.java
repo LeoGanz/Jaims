@@ -10,10 +10,9 @@ import org.slf4j.LoggerFactory;
 import jaims_development_studio.jaims.api.account.Account;
 import jaims_development_studio.jaims.api.account.IncorrectPasswordException;
 import jaims_development_studio.jaims.api.account.UserNameNotAvailableException;
-import jaims_development_studio.jaims.api.profile.NoProfileAvailableException;
 import jaims_development_studio.jaims.api.profile.Profile;
 import jaims_development_studio.jaims.api.sendables.EMessageType;
-import jaims_development_studio.jaims.api.sendables.InvalidSendableTypeException;
+import jaims_development_studio.jaims.api.sendables.InvalidSendableException;
 import jaims_development_studio.jaims.api.sendables.SendableLogin;
 import jaims_development_studio.jaims.api.sendables.SendableMessage;
 import jaims_development_studio.jaims.api.sendables.SendableProfile;
@@ -22,17 +21,23 @@ import jaims_development_studio.jaims.api.sendables.SendableRequest;
 import jaims_development_studio.jaims.api.sendables.SendableTextMessage;
 import jaims_development_studio.jaims.api.user.User;
 import jaims_development_studio.jaims.api.user.UserNotFoundException;
+import jaims_development_studio.jaims.api.util.NoEntityAvailableException;
 import jaims_development_studio.jaims.api.util.ObservableList;
 import jaims_development_studio.jaims.server.Server;
 import jaims_development_studio.jaims.server.account.AccountManager;
 import jaims_development_studio.jaims.server.profile.ProfileManager;
+import jaims_development_studio.jaims.server.settings.SettingsManager;
 import jaims_development_studio.jaims.server.util.EntityManager;
 
+/**
+ * @author WilliGross
+ */
 public class UserManager extends EntityManager<User> {
 
 	private final Logger			LOG					= LoggerFactory.getLogger(UserManager.class);
 	private final AccountManager	accountManager;
 	private final ProfileManager	profileManager;
+	private final SettingsManager	settingsManager;
 	private final Server			server;
 	private final List<User>		onlineUsers;
 
@@ -40,7 +45,8 @@ public class UserManager extends EntityManager<User> {
 		super(new UserDAO());
 		this.server = server;
 		profileManager = new ProfileManager(this);
-		accountManager = new AccountManager(this, profileManager);
+		settingsManager = new SettingsManager(this);
+		accountManager = new AccountManager(this, profileManager, settingsManager);
 		onlineUsers = new ObservableList<>(new LinkedList<>());
 	}
 	
@@ -144,7 +150,7 @@ public class UserManager extends EntityManager<User> {
 		return profileManager.get(uuid);
 	}
 	
-	public void manageRequest(SendableRequest request) throws InvalidSendableTypeException, NoProfileAvailableException {
+	public void manageRequest(SendableRequest request) throws InvalidSendableException, NoEntityAvailableException {
 		
 		switch (request.getRequestType()) {
 			case DELETE_ACCOUNT:
@@ -152,21 +158,30 @@ public class UserManager extends EntityManager<User> {
 				break;
 			case PROFILE:
 				try {
-					profileManager.manageProfileRequest(request);
-				} catch (InvalidSendableTypeException e) {
-					LOG.error("No InvalidSendableTypeException should have occured in this environment!", e);
-				} catch (NoProfileAvailableException e) {
+					profileManager.manageRequest(request);
+				} catch (InvalidSendableException e) {
+					LOG.error("No InvalidSendableException should have occured in this environment!", e);
+				} catch (NoEntityAvailableException e) {
+					throw e;
+				}
+				break;
+			case SETTINGS:
+				try {
+					settingsManager.manageRequest(request);
+				} catch (InvalidSendableException e) {
+					LOG.error("No InvalidSendableException should have occured in this environment!", e);
+				} catch (NoEntityAvailableException e) {
 					throw e;
 				}
 				break;
 			default:
-				throw new InvalidSendableTypeException("Cannot process SendableRequest of type " + request.getRequestType(), request);
+				throw new InvalidSendableException("Cannot process SendableRequest of type " + request.getRequestType(), request);
 		}
 		
 	}
 
-	public void manageReceiveProfile(SendableProfile profile) {
-		profileManager.saveOrUpdateProfile(profile);
+	public void manageReceiveProfile(SendableProfile profile) throws InvalidSendableException {
+		profileManager.saveOrUpdateEntity(profile);
 	}
 
 }

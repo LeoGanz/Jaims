@@ -10,9 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import jaims_development_studio.jaims.api.account.IncorrectPasswordException;
 import jaims_development_studio.jaims.api.account.UserNameNotAvailableException;
-import jaims_development_studio.jaims.api.profile.NoProfileAvailableException;
 import jaims_development_studio.jaims.api.sendables.EConfirmationType;
-import jaims_development_studio.jaims.api.sendables.InvalidSendableTypeException;
+import jaims_development_studio.jaims.api.sendables.InvalidSendableException;
 import jaims_development_studio.jaims.api.sendables.SendableConfirmation;
 import jaims_development_studio.jaims.api.sendables.SendableLogin;
 import jaims_development_studio.jaims.api.sendables.SendableMessage;
@@ -21,11 +20,15 @@ import jaims_development_studio.jaims.api.sendables.SendableRegistration;
 import jaims_development_studio.jaims.api.sendables.SendableRequest;
 import jaims_development_studio.jaims.api.user.User;
 import jaims_development_studio.jaims.api.user.UserNotFoundException;
+import jaims_development_studio.jaims.api.util.NoEntityAvailableException;
 import jaims_development_studio.jaims.api.util.ObservableList;
 import jaims_development_studio.jaims.server.ITickable;
 import jaims_development_studio.jaims.server.Server;
 import jaims_development_studio.jaims.server.user.UserManager;
 
+/**
+ * @author WilliGross
+ */
 public class ClientManager implements ITickable {
 
 	private final Logger					LOG					= LoggerFactory.getLogger(ClientManager.class);
@@ -120,11 +123,11 @@ public class ClientManager implements ITickable {
 		userManager.deleteUserAndAccount(uuid);
 	}
 
-	public void manageRequest(SendableRequest request) throws InvalidSendableTypeException, NoProfileAvailableException {
+	public void manageRequest(SendableRequest request) throws InvalidSendableException, NoEntityAvailableException {
 		userManager.manageRequest(request);
 	}
 	
-	public void manageReceiveProfile(SendableProfile profile) {
+	public void manageReceiveProfile(SendableProfile profile) throws InvalidSendableException {
 		userManager.manageReceiveProfile(profile);
 	}
 	

@@ -4,32 +4,23 @@ import java.util.Date;
 import java.util.UUID;
 
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
-import javax.persistence.MapsId;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import jaims_development_studio.jaims.api.account.Account;
-import jaims_development_studio.jaims.api.util.UuidEntity;
+import jaims_development_studio.jaims.api.util.UpdateTrackingUuidEntity;
 
 @Entity(name = "Profile")
 @Table(name = "PROFILES")
-public class Profile extends UuidEntity {
+public class Profile extends UpdateTrackingUuidEntity {
 
 	private static final long	serialVersionUID	= 1L;
-
-	@OneToOne(cascade = CascadeType.DETACH)
-	@MapsId
-	private Account				account;
 
 	@Column(name = "NICKNAME", columnDefinition = "NVARCHAR(256)")
 	private String				nickname;
@@ -45,39 +36,22 @@ public class Profile extends UuidEntity {
 	@Basic(fetch = FetchType.LAZY)
 	private byte[]				profilePicture;
 
-	@Column(name = "LAST_UPDATED", columnDefinition = "TIMESTAMP")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date				lastUpdated;
-
 	public Profile(Account account, String nickname, String description, String status, byte[] profilePicture, Date lastUpdated) {
 
 		this(null, account, nickname, description, status, profilePicture, lastUpdated);
 	}
 
 	public Profile(UUID uuid, Account account, String nickname, String description, String status, byte[] profilePicture, Date lastUpdated) {
-
+		super(lastUpdated, account);
 		setUuid(uuid);
-		this.account = account;
 		this.nickname = nickname;
 		this.description = description;
 		this.status = status;
 		this.profilePicture = profilePicture;
-		this.lastUpdated = lastUpdated;
 	}
 
-	@SuppressWarnings("unused")
 	private Profile() {
-
-	}
-
-	public Account getAccount() {
-
-		return account;
-	}
-
-	public void setAccount(Account account) {
-
-		this.account = account;
+		super(null, null);
 	}
 
 	public String getNickname() {
@@ -120,24 +94,20 @@ public class Profile extends UuidEntity {
 		this.profilePicture = profilePicture;
 	}
 
-	public Date getLastUpdated() {
 
-		return lastUpdated;
-	}
-
-	public void setLastUpdated(Date lastUpdated) {
-
-		this.lastUpdated = lastUpdated;
-	}
-
+	@Override
 	public Profile copyWithoutAccount() {
 
-		return new Profile(getUuid(), null, nickname, description, status, profilePicture, lastUpdated);
+		return new Profile(getUuid(), null, nickname, description, status, profilePicture, getLastUpdated());
 	}
 
 	@Override
 	public String toString() {
-		return "Profile of " + account.toStringName();
+		Account account = getAccount();
+		
+		if (account != null)
+			return "Profile of " + account.toStringName();
+		return "Profile of " + nickname + "[NICKNAME]";
 	}
 	
 	@Override
@@ -155,7 +125,7 @@ public class Profile extends UuidEntity {
 				.append(description, other.description)
 				.append(status, other.status)
 				.append(profilePicture, other.profilePicture)
-				.append(lastUpdated, other.lastUpdated)
+				.append(getLastUpdated(), other.getLastUpdated())
 				.isEquals();
 	}
 	
@@ -167,7 +137,7 @@ public class Profile extends UuidEntity {
 				.append(description)
 				.append(status)
 				.append(profilePicture)
-				.append(lastUpdated)
+				.append(getLastUpdated())
 				.toHashCode();
 	}
 	

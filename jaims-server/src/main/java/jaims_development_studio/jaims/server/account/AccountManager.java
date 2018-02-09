@@ -6,16 +6,17 @@ import java.util.UUID;
 
 import jaims_development_studio.jaims.api.account.Account;
 import jaims_development_studio.jaims.api.account.UserNameNotAvailableException;
-import jaims_development_studio.jaims.server.profile.ProfileManager;
-import jaims_development_studio.jaims.server.user.UserManager;
 import jaims_development_studio.jaims.server.util.EntityManager;
 
+/**
+ * @author WilliGross
+ */
 public class AccountManager extends EntityManager<Account> {
 
 	private final AccountDAO dao;
 	
-	public AccountManager(UserManager userManager, ProfileManager profileManager) {
-		super(new AccountDAO(userManager, profileManager));
+	public AccountManager(EntityManager<?>... managers) {
+		super(new AccountDAO(managers));
 		dao = (AccountDAO) getDao();
 		new Thread(() -> dao.get(UUID.randomUUID()), "Database Initializer").start();
 	}

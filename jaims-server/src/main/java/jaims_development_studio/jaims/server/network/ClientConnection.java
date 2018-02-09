@@ -16,10 +16,9 @@ import org.slf4j.LoggerFactory;
 import jaims_development_studio.jaims.api.account.IncorrectPasswordException;
 import jaims_development_studio.jaims.api.account.UserNameNotAvailableException;
 import jaims_development_studio.jaims.api.profile.InsufficientPermissionException;
-import jaims_development_studio.jaims.api.profile.NoProfileAvailableException;
 import jaims_development_studio.jaims.api.sendables.ERequestType;
 import jaims_development_studio.jaims.api.sendables.ESendableType;
-import jaims_development_studio.jaims.api.sendables.InvalidSendableTypeException;
+import jaims_development_studio.jaims.api.sendables.InvalidSendableException;
 import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.api.sendables.SendableException;
 import jaims_development_studio.jaims.api.sendables.SendableLogin;
@@ -31,10 +30,14 @@ import jaims_development_studio.jaims.api.sendables.SendableRequest;
 import jaims_development_studio.jaims.api.sendables.SendableUUID;
 import jaims_development_studio.jaims.api.user.User;
 import jaims_development_studio.jaims.api.user.UserNotFoundException;
+import jaims_development_studio.jaims.api.util.NoEntityAvailableException;
 import jaims_development_studio.jaims.server.user.UserNotLoggedInException;
 
+/**
+ * @author WilliGross
+ */
 public class ClientConnection implements Runnable {
-	
+
 	private final Logger		LOG	= LoggerFactory.getLogger(ClientConnection.class);
 	private final Socket		clientSocket;
 	private final ClientManager	clientManager;
@@ -44,16 +47,16 @@ public class ClientConnection implements Runnable {
 	private User				user;
 	private boolean				connectionTerminated;
 	private boolean				autoSendSendables;
-	
+
 	public ClientConnection(Socket clientSocket, ClientManager clientManager) {
 		this.clientSocket = clientSocket;
 		this.clientManager = clientManager;
 		connectionTerminated = false;
-
+		
 		try {
 			in = new ObjectInputStream(clientSocket.getInputStream());
 			out = new ObjectOutputStream(clientSocket.getOutputStream());
-			
+
 			UUID serverUUID = clientManager.getServer().getServerUUID();
 			SendableUUID sendableServerUUID = new SendableUUID(serverUUID);
 			manageSendSendable(sendableServerUUID);
@@ -68,14 +71,14 @@ public class ClientConnection implements Runnable {
 			terminate();
 		}
 	}
-	
+
 	public void startSendableAutoSender() throws UserNotLoggedInException {
-		
+
 		if (user == null)
 			throw new UserNotLoggedInException("SendableAutoSender can only be activated for logged in users!");
-		
-		autoSendSendables = true;
 
+		autoSendSendables = true;
+		
 		Thread sendableSender = new Thread(() -> {
 			while (autoSendSendables)
 				synchronized (user) {
@@ -86,36 +89,36 @@ public class ClientConnection implements Runnable {
 							break;
 						Sendable sendable = user.takeSendable();
 						manageSendSendable(sendable);
-
+						
 					} catch (@SuppressWarnings("unused") InterruptedException e) {
-
+						
 					}
 				}
 		});
 		sendableSender.setDaemon(true);
 		sendableSender.start();
 	}
-	
+
 	@Override
 	public void run() {
 		try {
-			
+
 			if (!connectionTerminated)
 				LOG.debug("ClientConnection " + connectionID + " running");
-			
+
 			//HANDLE DATA RECEIVING
 			Sendable sendable = null;
 			while (!connectionTerminated)
 				try {
 					sendable = (Sendable) in.readObject();
-
+					
 					if (user != null)
 						synchronized (user) {
 							processReceivedSendable(sendable);
 						}
 					else
 						processReceivedSendable(sendable);
-					
+
 				} catch (ClassCastException e) {
 					LOG.warn("Recieved data that's no instance of Sendable from client connection " + connectionID, e);
 					terminate();
@@ -131,25 +134,25 @@ public class ClientConnection implements Runnable {
 					LOG.info("ClientConnection-" + connectionID + " disconnected!");
 					terminate();
 				}
-			
+
 		} catch (Exception e) {
 			LOG.error("An unexpected exception occurred in client connection " + connectionID, e);
 		} finally {
 			terminate();
 		}
 	}
-	
+
 	private void processReceivedSendable(Sendable sendable) {
-		
+
 		LOG.debug("Received Sendable of type: " + sendable.getType());
-		
+
 		if (user == null)
 			if (!((sendable.getType() == ESendableType.LOGIN) || (sendable.getType() == ESendableType.REGISTRATION))) {
-				InvalidSendableTypeException invalidSendableTypeException = new InvalidSendableTypeException("No user is logged in!", sendable);
+				InvalidSendableException invalidSendableTypeException = new InvalidSendableException("No user is logged in!", sendable);
 				error(invalidSendableTypeException);
 				return;
 			}
-
+		
 		switch (sendable.getType()) {
 			case REGISTRATION:
 				manageReceiveRegistration((SendableRegistration) sendable);
@@ -174,11 +177,11 @@ public class ClientConnection implements Runnable {
 				break;
 		}
 	}
-	
+
 	private void manageReceiveRegistration(SendableRegistration registration) {
 		try {
 			user = clientManager.registerNewUser(registration);
-			
+
 			startSendableAutoSender();
 		} catch (NullPointerException | UserNameNotAvailableException e) {
 			error(e);
@@ -186,11 +189,11 @@ public class ClientConnection implements Runnable {
 			LOG.warn("Could not start SendableAutoSender eventhough the user should be logged in by now", e);
 		}
 	}
-	
+
 	private void manageReceiveLogin(SendableLogin login) {
 		try {
 			user = clientManager.loginUser(login);
-			
+
 			startSendableAutoSender();
 		} catch (NullPointerException | UserNotFoundException | IncorrectPasswordException e) {
 			error(e);
@@ -198,7 +201,7 @@ public class ClientConnection implements Runnable {
 			LOG.warn("Could not start SendableAutoSender eventhough the user should be logged in by now", e);
 		}
 	}
-	
+
 	private void manageReceiveMessage(SendableMessage message) {
 		try {
 			message.setTimestampServerReceived();
@@ -209,7 +212,7 @@ public class ClientConnection implements Runnable {
 			error(e);
 		}
 	}
-
+	
 	private void manageReceiveRequest(SendableRequest request) {
 		try {
 			if (user != null) {
@@ -218,6 +221,7 @@ public class ClientConnection implements Runnable {
 						request.setUniversalUuid(user.getAccount().getUuid());
 						user = null;
 						break;
+					case SETTINGS:
 					case PROFILE:
 						if ((request.getUniversalUuid() == null) && (request.getUniversalString() == null))
 							request.setUniversalUuid(user.getAccount().getUuid());
@@ -225,21 +229,21 @@ public class ClientConnection implements Runnable {
 					default:
 						clientManager.manageRequest(request);
 				}
-
+				
 				clientManager.manageRequest(request);
 			} else if (request.getRequestType() == ERequestType.DELETE_ACCOUNT)
 				throw new UserNotFoundException("User not logged in!");
 			else
 				clientManager.manageRequest(request);
-		} catch (InvalidSendableTypeException e) {
+		} catch (InvalidSendableException e) {
 			error(e);
 		} catch (UserNotFoundException e) {
 			error(e);
-		} catch (NoProfileAvailableException e) {
+		} catch (NoEntityAvailableException e) {
 			error(e);
 		}
 	}
-
+	
 	@Deprecated
 	private void manageReceiveAccountDeletion() {
 		if (user != null) {
@@ -250,7 +254,7 @@ public class ClientConnection implements Runnable {
 			error(userNotFoundException);
 		}
 	}
-
+	
 	private void manageReceiveProfile(SendableProfile profile) {
 		if (user != null) {
 			if (profile.getProfile() == null) {
@@ -258,40 +262,44 @@ public class ClientConnection implements Runnable {
 				error(nullPointerException);
 				return;
 			}
-			
+
 			if (!user.getAccount().getUuid().equals(profile.getProfile().getUuid())) {
 				InsufficientPermissionException insufficientPermissionException = new InsufficientPermissionException("No permission to alter other user's profiles!");
 				error(insufficientPermissionException);
 				return;
 			}
-			
+
 			if (profile.getProfile().getAccount() != null)
 				profile.getProfile().setAccount(null);
-			
-			clientManager.manageReceiveProfile(profile);
+
+			try {
+				clientManager.manageReceiveProfile(profile);
+			} catch (InvalidSendableException e) {
+				error(e);
+			}
 		} else {
 			UserNotFoundException userNotFoundException = new UserNotFoundException("User not logged in!");
 			error(userNotFoundException);
 		}
 	}
-	
+
 	private void manageReceiveInvalidSendable(Sendable sendable) {
 		LOG.warn("Recieved invalid data from client connection " + connectionID
 				+ ((user != null) ? " (" + user.toString() + ")" : ""));
-		
-		InvalidSendableTypeException invalidSendableTypeException = new InvalidSendableTypeException(
+
+		InvalidSendableException invalidSendableTypeException = new InvalidSendableException(
 				"Unknown sendable type!", sendable);
 		error(invalidSendableTypeException);
 	}
-
+	
 	private void error(Exception e) {
 		SendableException sendableException = new SendableException(e);
 		manageSendSendable(sendableException);
 	}
-
+	
 	private void manageSendSendable(Sendable sendable) {
 		LOG.debug("Sending sendable of type: " + sendable.getType());
-		
+
 		if (sendable.getType() == ESendableType.MESSAGE)
 			((SendableMessage) sendable).setTimestampServerSent();
 		else if (sendable.getType() == ESendableType.MESSAGE_RESPONSE) {
@@ -300,28 +308,28 @@ public class ClientConnection implements Runnable {
 					+ ": " + ((SendableException) sendable).getException().getMessage());
 		else if (sendable.getTimestampSent() == null)
 			sendable.setTimestampSent();
-		
+
 		try {
 			out.writeObject(sendable);
 			out.flush();
 		} catch (@SuppressWarnings("unused") IOException e) {
 			//Couldn't send sendable to client
 			LOG.debug("Couldn't deliver sendable!");
-			
-			autoSendSendables = false;
 
+			autoSendSendables = false;
+			
 			if (user != null)
 				user.enqueueSendable(sendable);
 			terminate();
 		}
 	}
-
+	
 	public synchronized void terminate() {
 		if (connectionTerminated)
 			return;
-		
-		try {
 
+		try {
+			
 			connectionTerminated = true;
 			if (in != null)
 				in.close();
@@ -333,22 +341,22 @@ public class ClientConnection implements Runnable {
 			LOG.error("An unexpected exception occurred while closing client connection" + connectionID, e);
 		}
 	}
-
+	
 	@Override
 	protected void finalize() {
 		terminate();
 	}
-
+	
 	public User getUser() {
 		return user;
 	}
-
+	
 	public int getConnectionID() {
 		return connectionID;
 	}
-
+	
 	public void setConnectionID(int connectionID) {
 		this.connectionID = connectionID;
 	}
-
+	
 }
