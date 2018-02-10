@@ -1,5 +1,8 @@
 package jaims_development_studio.jaims.api.sendables;
 
+/**
+ * @author WilliGross
+ */
 public enum ESendableType {
 	REGISTRATION(Values.REGISTRATION),
 	LOGIN(Values.LOGIN),
@@ -7,7 +10,9 @@ public enum ESendableType {
 	CONFIRMATION(Values.CONFIRMATION),
 	REQUEST(Values.REQUEST),
 	STORED_UUID(Values.STORED_UUID),
+	UUID_ENTITY(Values.UUID_ENTITY),
 	PROFILE(Values.PROFILE),
+	SETTINGS(Values.SETTINGS),
 	MESSAGE(Values.MESSAGE),
 	TEXT_MESSAGE(Values.TEXT_MESSAGE),
 	IMAGE_MESSAGE(Values.IMAGE_MESSAGE),
@@ -16,29 +21,31 @@ public enum ESendableType {
 	COMMAND(Values.COMMAND),
 	EXCEPTION(Values.EXCEPTION),
 	OTHER(Values.OTHER); //maybe friend request?
-	
+
 	private String value;
-	
+
 	private ESendableType(String value) {
 		//		if (!this.value.equals(value))
 		//			throw new IllegalArgumentException("Incorrect use of SendableType!");
 		this.value = value;
 	}
-	
+
 	public String getValue() {
 		return value;
 	}
-	
+
 	@SuppressWarnings("hiding")
 	public static class Values {
-		
+
 		public static final String	REGISTRATION		= "REGISTRATION";
 		public static final String	LOGIN				= "LOGIN";
 		public static final String	DELETE_ACCOUNT		= "DELETE_ACCOUNT";		//delete
 		public static final String	CONFIRMATION		= "CONFIRMATION";
 		public static final String	REQUEST				= "REQUEST";
 		public static final String	STORED_UUID			= "STORED_UUID";
+		public static final String	UUID_ENTITY			= "UUID_ENTITY";
 		public static final String	PROFILE				= "PROFILE";
+		public static final String	SETTINGS			= "SETTINGS";
 		public static final String	MESSAGE				= "MESSAGE";
 		public static final String	TEXT_MESSAGE		= "TEXT_MESSAGE";
 		public static final String	IMAGE_MESSAGE		= "IMAGE_MESSAGE";

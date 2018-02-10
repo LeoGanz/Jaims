@@ -29,6 +29,9 @@ import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.api.sendables.SendableTextMessage;
 import jaims_development_studio.jaims.api.util.UuidEntity;
 
+/**
+ * @author WilliGross
+ */
 @Entity(name = "User")
 @Table(name = "USERS")
 public class User extends UuidEntity implements ICommandSender {
@@ -119,7 +122,7 @@ public class User extends UuidEntity implements ICommandSender {
 	
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(17, 31)
+		return new HashCodeBuilder(32, 645)
 				.append(getUuid())
 				.append(lastSeen)
 				.toHashCode();

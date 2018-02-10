@@ -15,6 +15,7 @@
   <mapping class="jaims_development_studio.jaims.api.account.Account"/>
   <mapping class="jaims_development_studio.jaims.api.user.User"/>
   <mapping class="jaims_development_studio.jaims.api.profile.Profile"/>
+  <mapping class="jaims_development_studio.jaims.api.settings.Settings"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.Sendable"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableConfirmation"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableDeleteAccount"/>
@@ -25,7 +26,9 @@
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableImageMessage"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableVoiceMessage"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableMessageResponse"/>
+  <mapping class="jaims_development_studio.jaims.api.sendables.SendableUuidEntity"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableProfile"/>
+  <mapping class="jaims_development_studio.jaims.api.sendables.SendableSettings"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableRegistration"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableUUID"/>
  </session-factory>
