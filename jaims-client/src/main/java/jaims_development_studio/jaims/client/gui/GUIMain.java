@@ -23,6 +23,7 @@ import javax.swing.border.EmptyBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.api.settings.Settings;
 import jaims_development_studio.jaims.client.chatObjects.ChatInformation;
 import jaims_development_studio.jaims.client.chatObjects.Message;
@@ -365,6 +366,11 @@ public class GUIMain implements Runnable {
 		LOG.info("Disposed gui");
 
 		return true;
+	}
+
+	public void sendSendable(Sendable s) {
+
+		cm.sendSendable(s);
 	}
 
 	@Override

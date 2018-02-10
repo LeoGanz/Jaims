@@ -359,13 +359,13 @@ public class ReadFromDatabase {
 			pStatement.setObject(1, uuid);
 			rs = pStatement.executeQuery();
 
-			if (rs.getFetchSize() > 0)
+			if (rs.next())
 				return true;
 			else {
 				pStatement = con.prepareStatement("SELECT * from USER WHERE USER_ID=?");
 				pStatement.setObject(1, uuid);
 				rs = pStatement.executeQuery();
-				if (rs.getFetchSize() > 0)
+				if (rs.next())
 					return true;
 				else
 					return false;

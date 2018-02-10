@@ -29,6 +29,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 
+import jaims_development_studio.jaims.api.sendables.ERequestType;
+import jaims_development_studio.jaims.api.sendables.SendableRequest;
 import jaims_development_studio.jaims.client.gui.messagePanels.PanelTextField;
 
 public class PanelAddUser extends JPanel {
@@ -188,6 +190,7 @@ public class PanelAddUser extends JPanel {
 
 	private void sendEnquiry(String s) {
 
-		System.out.println(s);
+		SendableRequest sr = new SendableRequest(ERequestType.PROFILE, s);
+		guiMain.sendSendable(sr);
 	}
 }

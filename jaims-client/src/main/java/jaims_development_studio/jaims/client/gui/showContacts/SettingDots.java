@@ -98,8 +98,10 @@ public class SettingDots extends JPanel {
 
 					}
 				});
-				if (pum.isVisible() == false)
+				if (pum != null && pum.isVisible()) {
 					timer.start();
+					pum.dispose();
+				}
 
 			}
 

@@ -28,6 +28,7 @@ public class WriteToDatabase {
 	}
 
 	public void saveProfile(Profile pf, boolean contact) {
+
 		String sql;
 		if (contact)
 			sql = "INSERT INTO CONTACTS VALUES (?,?,?,?,?,?)";
@@ -53,11 +54,12 @@ public class WriteToDatabase {
 	}
 
 	public void updateProfile(Profile pf, boolean contact) {
+
 		String sql;
 		if (contact)
 			sql = "UPDATE CONTACTS SET NICKNAME=?, DESCRIPTION=?,STATUS=?,PROFILE_PICTURE=?,LAST_UPDATED=? WHERE CONTACT_ID=?";
 		else
-			sql = "UPDATE USER SET NICKNAME=?, DESCRIPTION=?,STATUS=?,PROFILE_PICTURE=?,LAST_UPDATED=? WHERE CONTACT_ID=?";
+			sql = "UPDATE USER SET NICKNAME=?, DESCRIPTION=?,STATUS=?,PROFILE_PICTURE=?,LAST_UPDATED=? WHERE USER_ID=?";
 
 		try {
 			pStatement = con.prepareStatement(sql);
@@ -66,6 +68,7 @@ public class WriteToDatabase {
 			pStatement.setString(3, pf.getStatus());
 			pStatement.setBytes(4, pf.getProfilePicture());
 			pStatement.setTimestamp(5, new Timestamp(pf.getLastUpdated().getTime()));
+			pStatement.setObject(6, pf.getUuid());
 			pStatement.executeUpdate();
 			con.commit();
 
