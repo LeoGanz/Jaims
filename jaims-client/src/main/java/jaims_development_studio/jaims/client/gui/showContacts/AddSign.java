@@ -21,6 +21,7 @@ public class AddSign extends JPanel {
 	private boolean	drawAnimation	= false;
 	private int		x				= 19, y = 19, width = 0, height = 0, xOval = 1, yOval = 1, ovalWidth = 34,
 			ovalHeight = 34;
+	private Timer	timer;
 
 	public AddSign(GUIMain guiMain, PanelUserShowing pus) {
 
@@ -63,7 +64,10 @@ public class AddSign extends JPanel {
 			@Override
 			public void mouseExited(MouseEvent e) {
 
-				Timer timer = new Timer(8, new ActionListener() {
+				if (timer.isRunning())
+					timer.stop();
+
+				timer = new Timer(8, new ActionListener() {
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -96,8 +100,12 @@ public class AddSign extends JPanel {
 			@Override
 			public void mouseEntered(MouseEvent e) {
 
+				if (timer != null)
+					if (timer.isRunning())
+						timer.stop();
+
 				drawAnimation = true;
-				Timer timer = new Timer(8, new ActionListener() {
+				timer = new Timer(8, new ActionListener() {
 
 					@Override
 					public void actionPerformed(ActionEvent e) {

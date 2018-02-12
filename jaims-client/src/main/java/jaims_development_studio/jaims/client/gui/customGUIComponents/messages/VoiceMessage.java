@@ -9,23 +9,15 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
-import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -38,7 +30,6 @@ import javax.swing.JSlider;
 import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicSliderUI;
 
-import jaims_development_studio.jaims.client.database.DatabaseConnection;
 import jaims_development_studio.jaims.client.gui.GUIMain;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.RoundBorder;
 import jaims_development_studio.jaims.client.logic.PlayAudio;
@@ -61,7 +52,13 @@ public class VoiceMessage extends JPanel {
 		path = pathToFile;
 		this.own = own;
 		this.guiMain = guiMain;
-		initGUI(uuid);
+
+		try {
+			initGUI(uuid);
+		} catch (NullPointerException npe) {
+			npe.printStackTrace();
+		}
+
 	}
 
 	private void initGUI(UUID uuid) {
@@ -176,7 +173,7 @@ public class VoiceMessage extends JPanel {
 		maxTime = new JLabel(sdf.format(d));
 		add(maxTime);
 
-		img = scaleMaintainAspectRatio(Toolkit.getDefaultToolkit().createImage(getPicture(uuid)));
+		img = scaleMaintainAspectRatio(guiMain.getProfileImage(uuid));
 		pa = new PlayAudio(path, currentTime, slider, p);
 		thread = new Thread(pa);
 	}
@@ -194,39 +191,6 @@ public class VoiceMessage extends JPanel {
 			return 0;
 		}
 
-	}
-
-	private byte[] getPicture(UUID uuid) {
-
-		Connection con = DatabaseConnection.getConnection();
-		PreparedStatement ps;
-		ResultSet rs;
-		try {
-			ps = con.prepareStatement("SELECT PROFILE_PICTURE FROM CONTACTS WHERE ID=?");
-			ps.setObject(1, uuid);
-			rs = ps.executeQuery();
-			con.commit();
-
-			rs.next();
-
-			return rs.getBytes(1);
-		} catch (SQLException e) {
-			BufferedImage bi;
-			try {
-				bi = ImageIO.read(getClass().getClassLoader().getResourceAsStream("images/Jaims_User.png"));
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				ImageIO.write(bi, "jpg", baos);
-				baos.flush();
-				byte[] imageInByte = baos.toByteArray();
-				baos.close();
-				return imageInByte;
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-		return null;
 	}
 
 	private Image scaleMaintainAspectRatio(Image image) {

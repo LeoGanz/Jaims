@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.sound.sampled.Mixer;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -48,6 +49,7 @@ public class ClientMain {
 	private String				loggedInUsername;
 	private ReadFromDatabase	readFromDatabase;
 	private Settings			settings;
+	private Mixer				systemOutputMixer;
 	private boolean				loggedIn				= false;
 	private final boolean		profileChanged			= false;
 
@@ -362,6 +364,11 @@ public class ClientMain {
 	public void sendSendable(Sendable s) {
 
 		sc.sendSendable(s);
+	}
+
+	public void setOutputMixer(Mixer mixer) {
+
+		systemOutputMixer = mixer;
 	}
 
 	public void doLogout() {

@@ -18,8 +18,9 @@ import jaims_development_studio.jaims.client.gui.customGUIComponents.messages.Vo
 
 public class PanelShowMessages extends JPanel {
 
-	private GUIMain	guiMain;
-	private UUID	contactUUID;
+	private GUIMain					guiMain;
+	private UUID					contactUUID;
+	private ArrayList<TextMessage>	allTextMessages	= new ArrayList<>();
 
 	public PanelShowMessages(GUIMain guiMain, ArrayList<Message> mList, UUID contactID, ManageMessagePanels mmp) {
 
@@ -42,6 +43,7 @@ public class PanelShowMessages extends JPanel {
 					tm.setAlignmentX(Component.RIGHT_ALIGNMENT);
 					add(tm);
 					add(Box.createRigidArea(new Dimension(0, 5)));
+					allTextMessages.add(tm);
 
 					mmp.getContactChatInformation(contactID).addNumberOwnTextMessages();
 					mmp.getContactChatInformation(contactID).setNumberWordsUsed(m.getMessage().split(" ").length);
@@ -72,6 +74,7 @@ public class PanelShowMessages extends JPanel {
 					tm.setAlignmentX(Component.LEFT_ALIGNMENT);
 					add(tm);
 					add(Box.createRigidArea(new Dimension(0, 5)));
+					allTextMessages.add(tm);
 
 					mmp.getContactChatInformation(contactID).addNumberContactTextMessages();
 					mmp.getContactChatInformation(contactID).setNumberWordsUsed(m.getMessage().split(" ").length);
@@ -99,6 +102,19 @@ public class PanelShowMessages extends JPanel {
 
 			}
 		}
+	}
+
+	public void updateMessages() {
+
+		Thread tTextMessages = new Thread() {
+			@Override
+			public void run() {
+
+				// for (TextMessage tm : allTextMessages)
+				// tm.updateTextMessage();
+			}
+		};
+		tTextMessages.start();
 	}
 
 	public UUID getContactID() {

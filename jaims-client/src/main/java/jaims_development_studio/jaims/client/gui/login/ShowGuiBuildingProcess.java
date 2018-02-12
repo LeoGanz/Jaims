@@ -27,7 +27,7 @@ public class ShowGuiBuildingProcess extends JPanel {
 
 		this.guiMain = guiMain;
 		img = Toolkit.getDefaultToolkit()
-				.getImage(getClass().getClassLoader().getResource("images/LoginBackground.jpeg"))
+				.getImage(getClass().getClassLoader().getResource("images/LoginBackground.png"))
 				.getScaledInstance(900, 600, Image.SCALE_FAST);
 
 	}

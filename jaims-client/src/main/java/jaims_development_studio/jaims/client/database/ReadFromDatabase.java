@@ -317,6 +317,9 @@ public class ReadFromDatabase {
 			// TODO Auto-generated catch block
 			return Toolkit.getDefaultToolkit()
 					.createImage(getClass().getClassLoader().getResource("images/LoginBackground.png"));
+		} catch (NullPointerException npe) {
+			return Toolkit.getDefaultToolkit()
+					.createImage(getClass().getClassLoader().getResource("images/LoginBackground.png"));
 		}
 	}
 

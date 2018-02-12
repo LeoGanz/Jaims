@@ -8,17 +8,24 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.TargetDataLine;
 
+import jaims_development_studio.jaims.client.gui.GUIMain;
+
 public class ListAudioDevices {
 
 	private ArrayList<Mixer.Info>	outputDevices	= new ArrayList<>();
 	private ArrayList<Mixer.Info>	inputDevices	= new ArrayList<>();
+	private GUIMain					guiMain;
 
-	public ListAudioDevices() {
+	public ListAudioDevices(GUIMain guiMain) {
 
+		this.guiMain = guiMain;
 		listAudioDevices();
 	}
 
 	private void listAudioDevices() {
+
+		outputDevices.clear();
+		inputDevices.clear();
 
 		Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
 		DataLine.Info dli2 = new DataLine.Info(Clip.class, null);
@@ -41,6 +48,16 @@ public class ListAudioDevices {
 	public ArrayList<Mixer.Info> getOutputDevices() {
 
 		return outputDevices;
+	}
+
+	public Mixer getSystemOutputMixer() {
+
+		for (Mixer.Info outputDevice : outputDevices) {
+			if (outputDevice.getName().equals(guiMain.getSettings().getOutputMixerInfoName()))
+				return AudioSystem.getMixer(outputDevice);
+		}
+
+		return AudioSystem.getMixer(outputDevices.get(0));
 	}
 
 }
