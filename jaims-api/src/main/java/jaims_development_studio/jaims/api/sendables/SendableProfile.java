@@ -17,10 +17,6 @@ public class SendableProfile extends SendableUuidEntity {
 	
 	private static final long	serialVersionUID	= 1L;
 	
-	//	@ManyToOne(cascade = CascadeType.DETACH)
-	//	@JoinColumn(name = "PROFILE"/* , insertable = false, updatable = false */)
-	//	private Profile				profile;
-	
 	@SuppressWarnings("unused")
 	private SendableProfile() {
 		this(null);

@@ -6,6 +6,7 @@ package jaims_development_studio.jaims.api.sendables;
 public enum EEntityType {
 	PROFILE(Values.PROFILE),
 	SETTINGS(Values.SETTINGS),
+	MESSAGE(Values.MESSAGE),
 	OTHER(Values.OTHER);
 
 	private String value;
@@ -38,7 +39,7 @@ public enum EEntityType {
 				return EConfirmationType.PROFILE_UPDATE_SUCCESFUL;
 			case Values.SETTINGS:
 				return EConfirmationType.SETTINGS_UPDATE_SUCCESFUL;
-			
+				
 			default:
 				return null;
 		}
@@ -49,6 +50,7 @@ public enum EEntityType {
 		
 		public static final String	PROFILE			= "PROFILE";
 		public static final String	SETTINGS		= "SETTINGS";
+		public static final String	MESSAGE		= "MESSAGE";
 		public static final String	OTHER			= "OTHER";
 	}
 }

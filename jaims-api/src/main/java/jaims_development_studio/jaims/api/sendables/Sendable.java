@@ -31,7 +31,8 @@ import jaims_development_studio.jaims.api.user.User;
 @Entity(name = "Sendable")
 @Table(name = "SENDABLES")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "SENDABLE_TYPE", discriminatorType = DiscriminatorType.STRING, columnDefinition = "VARCHAR(64)", length = 64)
+@DiscriminatorColumn(name = "SENDABLE_TYPE", discriminatorType = DiscriminatorType.STRING,
+columnDefinition = "VARCHAR(64)", length = 64)
 @DiscriminatorValue(value = ESendableType.Values.OTHER)
 public class Sendable implements Serializable {
 
@@ -53,11 +54,11 @@ public class Sendable implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ACCOUNT_UUID")
 	private User				user;
-	
+
 	@Column(name = "TS_SENT", columnDefinition = "TIMESTAMP")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date				timestampSent;
-	
+
 	@SuppressWarnings("unused")
 	private Sendable() {
 		this(null);
@@ -66,7 +67,7 @@ public class Sendable implements Serializable {
 	public Sendable(ESendableType type) {
 		this.type = type;
 	}
-	
+
 	public Sendable(ESendableType type, int priority) {
 		this.type = type;
 		if (priority < 0)
@@ -79,28 +80,21 @@ public class Sendable implements Serializable {
 	}
 
 	public ESendableType getType() {
-		switch (type) {
-			case TEXT_MESSAGE:
-			case IMAGE_MESSAGE:
-			case VOICE_MESSAGE:
-				return ESendableType.MESSAGE;
-			default:
-				return type;
-		}
+		return type;
 	}
 
 	public int getPriority() {
 		return priority;
 	}
-	
+
 	public User getUser() {
 		return user;
 	}
-	
+
 	public void setUser(User user) {
 		this.user = user;
 	}
-	
+
 	public Date getTimestampSent() {
 		return timestampSent;
 	}
@@ -118,16 +112,12 @@ public class Sendable implements Serializable {
 		if (getClass() != o.getClass())
 			return false;
 		Sendable other = (Sendable) o;
-		return new EqualsBuilder()
-				.append(uuid, other.uuid)
-				.isEquals();
+		return new EqualsBuilder().append(uuid, other.uuid).isEquals();
 	}
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(17, 31)
-				.append(uuid)
-				.toHashCode();
+		return new HashCodeBuilder(17, 31).append(uuid).toHashCode();
 	}
 
 }

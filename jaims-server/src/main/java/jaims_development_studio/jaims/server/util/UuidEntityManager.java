@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import jaims_development_studio.jaims.api.InternalServerErrorException;
 import jaims_development_studio.jaims.api.account.Account;
 import jaims_development_studio.jaims.api.profile.Profile;
+import jaims_development_studio.jaims.api.sendables.EConfirmationType;
 import jaims_development_studio.jaims.api.sendables.EEntityType;
 import jaims_development_studio.jaims.api.sendables.InvalidSendableException;
 import jaims_development_studio.jaims.api.sendables.Sendable;
@@ -57,7 +58,7 @@ public class UuidEntityManager<E extends UpdateTrackingUuidEntity> extends Entit
 
 		//Note: do not update field 'lastUpdated' as that would interfere with the client's update requests
 		@SuppressWarnings("unchecked")
-		E newUuidEntity = (E) sendableUuidEntity.getEntity(); //checked with second if statement
+		E newUuidEntity = (E) sendableUuidEntity.getEntity(); //checked more or less with if statements
 		E oldUuidEntity = get(newUuidEntity.getUuid());
 
 		if ((oldUuidEntity != null) && (oldUuidEntity.getLastUpdated().compareTo(newUuidEntity.getLastUpdated()) > 0)) {
@@ -86,7 +87,8 @@ public class UuidEntityManager<E extends UpdateTrackingUuidEntity> extends Entit
 		sendSendable(sendableConfirmation, account.getUuid());
 	}
 	
-	public void manageRequest(SendableRequest request) throws InvalidSendableException, NoEntityAvailableException {
+	public void manageRequest(SendableRequest request, UUID requester)
+			throws InvalidSendableException, NoEntityAvailableException {
 		if (request.getRequestType() != entityType.correspondingRequestType())
 			throw new InvalidSendableException("Invalid request type: " + request.getRequestType() + ". Expected: " + entityType, request);
 		
@@ -105,8 +107,9 @@ public class UuidEntityManager<E extends UpdateTrackingUuidEntity> extends Entit
 					throw new NoEntityAvailableException("There is no" + entityType + "available for UUID " + request.getUniversalUuid() + " or username " + request.getUniversalString());
 			}
 		
-		if ((request.getUniversalDate() == null) || (entity.getLastUpdated() == null) || (request.getUniversalDate().compareTo(entity.getLastUpdated()) < 0)) {
-			Sendable response;
+		Sendable response;
+		if ((request.getUniversalDate() == null) || (entity.getLastUpdated() == null)
+				|| (request.getUniversalDate().compareTo(entity.getLastUpdated()) < 0))
 			switch (entityType) {
 				case PROFILE:
 					response = new SendableProfile((Profile) entity);
@@ -117,8 +120,19 @@ public class UuidEntityManager<E extends UpdateTrackingUuidEntity> extends Entit
 				default:
 					throw new InvalidSendableException("Cannot process entity of type " + entityType, request);
 			}
-			sendSendable(response, request.getUniversalUuid());
-		}
+		else
+			switch (entityType) {
+				case PROFILE:
+					response = new SendableConfirmation(EConfirmationType.PROFILE_UP_TO_DATE,
+							request.getUniversalUuid());
+					break;
+				case SETTINGS:
+					response = new SendableConfirmation(EConfirmationType.SETTINGS_UP_TO_DATE,
+							request.getUniversalUuid());
+					break;
+				default:
+					throw new InvalidSendableException("Cannot process entity of type " + entityType, request);
+			}
+		sendSendable(response, requester);
 	}
-	
 }

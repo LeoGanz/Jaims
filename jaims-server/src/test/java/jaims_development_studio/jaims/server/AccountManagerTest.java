@@ -50,7 +50,9 @@ public class AccountManagerTest {
 		Account account = accountManager.get(username);
 		Assert.assertNotNull("Selected Account '" + username + "'. NotNull: ", account);
 		Assert.assertEquals("Saved and fetched accounts should be equal!", account, accountTestUser);
-
+		
+		Assert.assertNotNull("gettUuidForUsername() returned null", accountManager.getUuidForUsername(username));
+		System.out.println(accountManager.getUuidForUsername(username));
 	}
 
 	@Test

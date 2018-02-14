@@ -1,4 +1,4 @@
-package jaims_development_studio.jaims.api.sendables;
+package jaims_development_studio.jaims.api.message;
 
 import java.util.UUID;
 
@@ -9,10 +9,13 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
 
-@Entity(name = "SendableVoiceMessage")
-@DiscriminatorValue(value = ESendableType.Values.VOICE_MESSAGE)
-public class SendableVoiceMessage extends SendableMessage {
-
+/**
+ * @author WilliGross
+ */
+@Entity(name = "VoiceMessage")
+@DiscriminatorValue(value = EMessageType.Values.VOICE)
+public class VoiceMessage extends Message {
+	
 	private static final long	serialVersionUID	= 1L;
 
 	@Column(name = "VOICE_MESSAGE")
@@ -20,11 +23,11 @@ public class SendableVoiceMessage extends SendableMessage {
 	@Basic(fetch = FetchType.LAZY)
 	private final byte[]		voiceMessage;
 
-	public SendableVoiceMessage() {
+	public VoiceMessage() {
 		this(null, null, null);
 	}
 	
-	public SendableVoiceMessage(UUID sender, UUID recipient, byte[] voiceMessage) {
+	public VoiceMessage(UUID sender, UUID recipient, byte[] voiceMessage) {
 		super(sender, recipient, EMessageType.VOICE);
 		this.voiceMessage = voiceMessage;
 	}
@@ -32,5 +35,4 @@ public class SendableVoiceMessage extends SendableMessage {
 	public byte[] getVoiceMessage() {
 		return voiceMessage;
 	}
-
 }

@@ -10,46 +10,43 @@ import org.junit.Test;
 
 import jaims_development_studio.jaims.api.account.Account;
 import jaims_development_studio.jaims.api.account.UserNameNotAvailableException;
+import jaims_development_studio.jaims.api.message.TextMessage;
 import jaims_development_studio.jaims.api.sendables.EConfirmationType;
 import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.api.sendables.SendableConfirmation;
 import jaims_development_studio.jaims.api.sendables.SendableLogin;
-import jaims_development_studio.jaims.api.sendables.SendableTextMessage;
+import jaims_development_studio.jaims.api.sendables.SendableMessage;
 import jaims_development_studio.jaims.api.user.User;
-import jaims_development_studio.jaims.server.account.AccountManager;
-import jaims_development_studio.jaims.server.profile.ProfileManager;
 import jaims_development_studio.jaims.server.user.UserManager;
 
 public class SendableAndUserTest {
 
-	private AccountManager	accountManager;
 	private UserManager		userManager;
-	private ProfileManager	profileManager;
 
 	@Before
 	public void setup() {
 		userManager = new UserManager(null);
-		profileManager = new ProfileManager(userManager);
-		accountManager = new AccountManager(userManager, profileManager);
 	}
 	
 	@Test
 	public void test() {
 		String username = "SendableTester";
 
-		Account account = accountManager.get(username);
+		Account account = userManager.getAccountManager().get(username);
 		if (account == null) {
 			account = new Account(username, "123456", username + "@test.com");
 			Assert.assertNotNull("Acccount shouldn't be null!", account);
 			try {
-				accountManager.save(account);
+				userManager.getAccountManager().save(account);
 			} catch (@SuppressWarnings("unused") UserNameNotAvailableException e) {
 				Assert.fail("Couldn't create account, even though nothing was fetched for the same username!");
 			}
 		}
 
-		Assert.assertEquals("Fetched account object should match original!", account, accountManager.get(username));
+		Assert.assertEquals("Fetched account object should match original!", account,
+				userManager.getAccountManager().get(username));
 		System.out.println(account.getUsername());
+		System.out.println("" + 1);
 
 		User user = userManager.get(account.getUuid());
 		if (user == null) {
@@ -57,26 +54,39 @@ public class SendableAndUserTest {
 			userManager.save(user);
 		}
 		
+		System.out.println("" + 2);
+		
 		List<Sendable> sendables = new ArrayList<>(); //test probably only works if test sendables can be sorted unambiguously
 		sendables.add(new SendableConfirmation(EConfirmationType.LOGIN_SUCCESSFUL, UUID.randomUUID()));
-		sendables.add(new SendableTextMessage(account.getUuid(), account.getUuid(), "Hi!"));
+		SendableMessage sendableMessage = new SendableMessage(
+				new TextMessage(account.getUuid(), account.getUuid(), "Hi!"));
+		try {
+			System.out.println("" + 3);
+			userManager.deliverMessage(sendableMessage);
+			System.out.println("" + 4);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail("Caught exceptions. See log for details.");
+		}
 		sendables.add(new SendableLogin(username, "PW"));
 
-		sendables.sort((s1, s2) -> Integer.compare(s1.getPriority(), s2.getPriority()));
-		
 		for (Sendable s : sendables)
 			user.enqueueSendable(s);
+
+		sendables.add(sendableMessage);
 		
 		userManager.save(user);
-		
+		System.out.println("" + 5);
 		List<Sendable> retrievedSendables = new ArrayList<>();
 		while (!user.noSendableQueued())
 			retrievedSendables.add(user.takeSendable());
 		
+		sendables.sort((s1, s2) -> Integer.compare(s1.getPriority(), s2.getPriority()));
 		retrievedSendables.sort((s1, s2) -> Integer.compare(s1.getPriority(), s2.getPriority()));
 
 		Assert.assertEquals("Sendables should be equal!", sendables, retrievedSendables);
 		userManager.save(user); //important!!
+		System.out.println("" + 6);
 	}
 
 }

@@ -123,15 +123,16 @@ public class ClientManager implements ITickable {
 		userManager.deleteUserAndAccount(uuid);
 	}
 
-	public void manageRequest(SendableRequest request) throws InvalidSendableException, NoEntityAvailableException {
-		userManager.manageRequest(request);
+	public void manageRequest(SendableRequest request, UUID requester)
+			throws InvalidSendableException, NoEntityAvailableException {
+		userManager.manageRequest(request, requester);
 	}
 	
 	public void manageReceiveProfile(SendableProfile profile) throws InvalidSendableException {
 		userManager.manageReceiveProfile(profile);
 	}
 	
-	public void deliverMessage(SendableMessage message) throws UserNotFoundException {
+	public void deliverMessage(SendableMessage message) throws UserNotFoundException, InvalidSendableException {
 		userManager.deliverMessage(message);
 	}
 

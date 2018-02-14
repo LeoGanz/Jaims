@@ -1,29 +1,32 @@
-package jaims_development_studio.jaims.api.sendables;
+package jaims_development_studio.jaims.api.message;
 
 
+/**
+ * @author WilliGross
+ */
 public enum EMessageType {
-	TEXT(Values.TEXT), 
-	IMAGE(Values.IMAGE), 
-	VOICE(Values.VOICE), 
-	FILE(Values.FILE), 
-	LOCATION(Values.LOCATION), 
+	TEXT(Values.TEXT),
+	IMAGE(Values.IMAGE),
+	VOICE(Values.VOICE),
+	FILE(Values.FILE),
+	LOCATION(Values.LOCATION),
 	OTHER(Values.OTHER);
-
-	private String value;
 	
+	private String value;
+
 	private EMessageType(String value) {
 		//		if (!this.value.equals(value))
 		//			throw new IllegalArgumentException("Incorrect use of EMessageType!");
 		this.value = value;
 	}
-
+	
 	public String getValue() {
 		return value;
 	}
-
+	
 	@SuppressWarnings("hiding")
 	public static class Values {
-		
+
 		public static final String	TEXT		= "TEXT";
 		public static final String	IMAGE		= "IMAGE";
 		public static final String	VOICE		= "VOICE";

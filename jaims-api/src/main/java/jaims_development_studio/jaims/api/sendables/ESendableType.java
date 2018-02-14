@@ -14,9 +14,6 @@ public enum ESendableType {
 	PROFILE(Values.PROFILE),
 	SETTINGS(Values.SETTINGS),
 	MESSAGE(Values.MESSAGE),
-	TEXT_MESSAGE(Values.TEXT_MESSAGE),
-	IMAGE_MESSAGE(Values.IMAGE_MESSAGE),
-	VOICE_MESSAGE(Values.VOICE_MESSAGE),
 	MESSAGE_RESPONSE(Values.MESSAGE_RESPONSE),
 	COMMAND(Values.COMMAND),
 	EXCEPTION(Values.EXCEPTION),
@@ -47,9 +44,6 @@ public enum ESendableType {
 		public static final String	PROFILE				= "PROFILE";
 		public static final String	SETTINGS			= "SETTINGS";
 		public static final String	MESSAGE				= "MESSAGE";
-		public static final String	TEXT_MESSAGE		= "TEXT_MESSAGE";
-		public static final String	IMAGE_MESSAGE		= "IMAGE_MESSAGE";
-		public static final String	VOICE_MESSAGE		= "VOICE_MESSAGE";
 		public static final String	MESSAGE_RESPONSE	= "MESSAGE_RESPONSE";
 		public static final String	COMMAND				= "COMMAND";
 		public static final String	EXCEPTION			= "EXCEPTION";
