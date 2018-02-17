@@ -1,6 +1,7 @@
 package jaims_development_studio.jaims.client.gui.settings;
 
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -35,7 +36,6 @@ import org.slf4j.LoggerFactory;
 import jaims_development_studio.jaims.api.settings.EEndianness;
 import jaims_development_studio.jaims.api.settings.EFileFormatType;
 import jaims_development_studio.jaims.api.settings.EInputEncodingType;
-import jaims_development_studio.jaims.client.audio.ListAudioDevices;
 import jaims_development_studio.jaims.client.gui.GUIMain;
 
 public class PanelAudioSettings extends SettingPanelsParent {
@@ -48,7 +48,6 @@ public class PanelAudioSettings extends SettingPanelsParent {
 	private String[]			inputMixerNames, outputMixerNames,
 			sampleRate = {"8000 Hz", "11025 Hz", "16000 Hz", "22050 Hz", "44100 Hz", "48000 Hz"},
 			sampleSize = {"8 bit", "16 bit"}, channels = {"1", "2", "5", "7"};
-	private ListAudioDevices	selectAudioDevices;
 	private JComboBox<String>	jccInputDevices, jccOutputDevices;
 	private boolean				lineSupported;
 
@@ -60,11 +59,12 @@ public class PanelAudioSettings extends SettingPanelsParent {
 
 	private void initGUI() {
 
-		selectAudioDevices = new ListAudioDevices();
-
-		setBorder(new EmptyBorder(20, 40, 20, 40));
 		setBackground(Color.DARK_GRAY);
-		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+		setLayout(new BorderLayout());
+
+		JPanel p = new JPanel();
+		p.setBackground(Color.DARK_GRAY);
+		p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
 
 		JLabel lbl = new JLabel() {
 			/**
@@ -108,8 +108,8 @@ public class PanelAudioSettings extends SettingPanelsParent {
 		lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
 		lbl.setOpaque(false);
 		lbl.setBackground(new Color(0, 0, 0, 0));
-		add(lbl);
-		add(Box.createRigidArea(new Dimension(0, 5)));
+		p.add(lbl);
+		p.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		JLabel lblInputMixer = new JLabel() {
 			/**
@@ -139,7 +139,7 @@ public class PanelAudioSettings extends SettingPanelsParent {
 		lblInputMixer.setAlignmentX(Component.CENTER_ALIGNMENT);
 		lblInputMixer.setOpaque(false);
 		lblInputMixer.setBackground(new Color(0, 0, 0, 0));
-		add(lblInputMixer);
+		p.add(lblInputMixer);
 
 		panelInputDevice = new JPanel();
 		panelInputDevice.setLayout(new BoxLayout(panelInputDevice, BoxLayout.PAGE_AXIS));
@@ -157,9 +157,9 @@ public class PanelAudioSettings extends SettingPanelsParent {
 			panelInputDevice.add(lblSelectMixerIn);
 			panelInputDevice.add(Box.createRigidArea(new Dimension(0, 2)));
 
-			inputMixerNames = new String[selectAudioDevices.getInputDevices().size()];
-			for (int i = 0; i < selectAudioDevices.getInputDevices().size(); i++) {
-				inputMixerNames[i] = selectAudioDevices.getInputDevices().get(i).getName();
+			inputMixerNames = new String[guiMain.getListAudioDevices().getInputDevices().size()];
+			for (int i = 0; i < guiMain.getListAudioDevices().getInputDevices().size(); i++) {
+				inputMixerNames[i] = guiMain.getListAudioDevices().getInputDevices().get(i).getName();
 
 			}
 
@@ -187,8 +187,8 @@ public class PanelAudioSettings extends SettingPanelsParent {
 				public void itemStateChanged(ItemEvent e) {
 
 					if (e.getStateChange() == ItemEvent.SELECTED) {
-						guiMain.getSettings().setInputMixerInfo(
-								selectAudioDevices.getInputDevices().get(jccInputDevices.getSelectedIndex()).getName());
+						guiMain.getSettings().setInputMixerInfo(guiMain.getListAudioDevices().getInputDevices()
+								.get(jccInputDevices.getSelectedIndex()).getName());
 
 						updateInputLine();
 					}
@@ -199,8 +199,8 @@ public class PanelAudioSettings extends SettingPanelsParent {
 
 		}
 
-		add(panelInputDevice);
-		add(Box.createRigidArea(new Dimension(0, 10)));
+		p.add(panelInputDevice);
+		p.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		JLabel lblSelectInputVolume = new JLabel() {
 			/**
@@ -230,7 +230,7 @@ public class PanelAudioSettings extends SettingPanelsParent {
 		lblSelectInputVolume.setAlignmentX(Component.CENTER_ALIGNMENT);
 		lblSelectInputVolume.setOpaque(false);
 		lblSelectInputVolume.setBackground(new Color(0, 0, 0, 0));
-		add(lblSelectInputVolume);
+		p.add(lblSelectInputVolume);
 
 		panelInputVolume = new JPanel();
 		panelInputVolume.setLayout(new BoxLayout(panelInputVolume, BoxLayout.PAGE_AXIS));
@@ -281,8 +281,8 @@ public class PanelAudioSettings extends SettingPanelsParent {
 			sliderGain.setPaintLabels(true);
 			panelInputVolume.add(sliderGain);
 		}
-		add(panelInputVolume);
-		add(Box.createRigidArea(new Dimension(0, 10)));
+		p.add(panelInputVolume);
+		p.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		JLabel lblSelectFileFormat = new JLabel() {
 			/**
@@ -312,7 +312,7 @@ public class PanelAudioSettings extends SettingPanelsParent {
 		lblSelectFileFormat.setAlignmentX(Component.CENTER_ALIGNMENT);
 		lblSelectFileFormat.setOpaque(false);
 		lblSelectFileFormat.setBackground(new Color(0, 0, 0, 0));
-		add(lblSelectFileFormat);
+		p.add(lblSelectFileFormat);
 
 		JPanel panelSelectFileFormat = new JPanel();
 		panelSelectFileFormat.setBorder(new EmptyBorder(5, 10, 5, 10));
@@ -371,8 +371,8 @@ public class PanelAudioSettings extends SettingPanelsParent {
 			panelSelectFileFormat.add(jccFileFormat);
 
 		}
-		add(panelSelectFileFormat);
-		add(Box.createRigidArea(new Dimension(0, 10)));
+		p.add(panelSelectFileFormat);
+		p.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		JLabel lblInputFormat = new JLabel() {
 			/**
@@ -402,7 +402,7 @@ public class PanelAudioSettings extends SettingPanelsParent {
 		lblInputFormat.setAlignmentX(Component.CENTER_ALIGNMENT);
 		lblInputFormat.setOpaque(false);
 		lblInputFormat.setBackground(new Color(0, 0, 0, 0));
-		add(lblInputFormat);
+		p.add(lblInputFormat);
 
 		panelInputFormat = new JPanel();
 		panelInputFormat.setLayout(new BoxLayout(panelInputFormat, BoxLayout.PAGE_AXIS));
@@ -708,8 +708,8 @@ public class PanelAudioSettings extends SettingPanelsParent {
 			panelInputFormat.add(Box.createRigidArea(new Dimension(0, 5)));
 			panelInputFormat.add(panelSecondFormats);
 		}
-		add(panelInputFormat);
-		add(Box.createRigidArea(new Dimension(0, 10)));
+		p.add(panelInputFormat);
+		p.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		panelSupported = new JPanel() {
 			/**
@@ -764,8 +764,8 @@ public class PanelAudioSettings extends SettingPanelsParent {
 		panelSupported.setPreferredSize(new Dimension(600, 50));
 		panelSupported.setMaximumSize(panelSupported.getPreferredSize());
 		panelSupported.setAlignmentX(Component.CENTER_ALIGNMENT);
-		add(panelSupported);
-		add(Box.createRigidArea(new Dimension(0, 20)));
+		p.add(panelSupported);
+		p.add(Box.createRigidArea(new Dimension(0, 20)));
 
 		JLabel lblOutput = new JLabel() {
 			/**
@@ -809,8 +809,8 @@ public class PanelAudioSettings extends SettingPanelsParent {
 		lblOutput.setAlignmentX(Component.CENTER_ALIGNMENT);
 		lblOutput.setOpaque(false);
 		lblOutput.setBackground(new Color(0, 0, 0, 0));
-		add(lblOutput);
-		add(Box.createRigidArea(new Dimension(0, 5)));
+		p.add(lblOutput);
+		p.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		JLabel lblOutputMixer = new JLabel() {
 			/**
@@ -840,7 +840,7 @@ public class PanelAudioSettings extends SettingPanelsParent {
 		lblOutputMixer.setAlignmentX(Component.CENTER_ALIGNMENT);
 		lblOutputMixer.setOpaque(false);
 		lblOutputMixer.setBackground(new Color(0, 0, 0, 0));
-		add(lblOutputMixer);
+		p.add(lblOutputMixer);
 
 		panelOutputDevice = new JPanel();
 		panelOutputDevice.setLayout(new BoxLayout(panelOutputDevice, BoxLayout.PAGE_AXIS));
@@ -857,9 +857,9 @@ public class PanelAudioSettings extends SettingPanelsParent {
 			panelOutputDevice.add(lblSelectOutput);
 			panelOutputDevice.add(Box.createRigidArea(new Dimension(0, 2)));
 
-			outputMixerNames = new String[selectAudioDevices.getOutputDevices().size()];
-			for (int i = 0; i < selectAudioDevices.getOutputDevices().size(); i++) {
-				outputMixerNames[i] = selectAudioDevices.getOutputDevices().get(i).getName();
+			outputMixerNames = new String[guiMain.getListAudioDevices().getOutputDevices().size()];
+			for (int i = 0; i < guiMain.getListAudioDevices().getOutputDevices().size(); i++) {
+				outputMixerNames[i] = guiMain.getListAudioDevices().getOutputDevices().get(i).getName();
 
 			}
 
@@ -888,7 +888,7 @@ public class PanelAudioSettings extends SettingPanelsParent {
 				public void itemStateChanged(ItemEvent e) {
 
 					if (e.getStateChange() == ItemEvent.SELECTED) {
-						guiMain.getSettings().setOutputMixerInfo(selectAudioDevices.getOutputDevices()
+						guiMain.getSettings().setOutputMixerInfo(guiMain.getListAudioDevices().getOutputDevices()
 								.get(jccOutputDevices.getSelectedIndex()).getName());
 					}
 
@@ -896,8 +896,8 @@ public class PanelAudioSettings extends SettingPanelsParent {
 			});
 			panelOutputDevice.add(jccOutputDevices);
 		}
-		add(panelOutputDevice);
-		add(Box.createRigidArea(new Dimension(0, 5)));
+		p.add(panelOutputDevice);
+		p.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		JLabel lblOutputVolume = new JLabel() {
 			/**
@@ -927,7 +927,7 @@ public class PanelAudioSettings extends SettingPanelsParent {
 		lblOutputVolume.setAlignmentX(Component.CENTER_ALIGNMENT);
 		lblOutputVolume.setOpaque(false);
 		lblOutputVolume.setBackground(new Color(0, 0, 0, 0));
-		add(lblOutputVolume);
+		p.add(lblOutputVolume);
 
 		panelOutputVolume = new JPanel();
 		panelOutputVolume.setLayout(new BoxLayout(panelOutputVolume, BoxLayout.PAGE_AXIS));
@@ -977,10 +977,17 @@ public class PanelAudioSettings extends SettingPanelsParent {
 			sliderGain.setPaintLabels(true);
 			panelOutputVolume.add(sliderGain);
 		}
-		add(panelOutputVolume);
-		add(Box.createRigidArea(new Dimension(0, 10)));
+		p.add(panelOutputVolume);
+		p.add(Box.createRigidArea(new Dimension(0, 10)));
 
-		add(Box.createVerticalGlue());
+		p.add(Box.createVerticalGlue());
+
+		JScrollPane jsp = new JScrollPane(p, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		jsp.setBackground(Color.DARK_GRAY);
+		jsp.setBorder(new EmptyBorder(20, 40, 20, 40));
+		jsp.getVerticalScrollBar().setUnitIncrement(16);
+		add(jsp, BorderLayout.CENTER);
 
 		updateInputLine();
 	}

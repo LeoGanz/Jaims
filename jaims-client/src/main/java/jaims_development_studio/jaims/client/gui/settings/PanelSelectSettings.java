@@ -39,7 +39,7 @@ public class PanelSelectSettings extends JPanel {
 		panelLineStart = new JPanel();
 		panelLineStart.setLayout(new BorderLayout());
 		panelLineStart.setBackground(Color.DARK_GRAY);
-		panelLineStart.setBorder(new MatteBorder(0, 0, 0, 2, Color.GRAY));
+		panelLineStart.setBorder(new MatteBorder(0, 0, 0, 2, Color.DARK_GRAY));
 		{
 
 			panelIconsLineStart = new PanelShowIcons(this, guiMain);
@@ -96,35 +96,16 @@ public class PanelSelectSettings extends JPanel {
 		}
 		add(panelLineStart, BorderLayout.LINE_START);
 
-		jspCenterPanel = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		jspCenterPanel.setComponentZOrder(jspCenterPanel.getVerticalScrollBar(), 0);
-		jspCenterPanel.setComponentZOrder(jspCenterPanel.getViewport(), 1);
-		jspCenterPanel.setBackground(getBackground());
-		jspCenterPanel.setBorder(null);
-		jspCenterPanel.getViewport().setBackground(Color.DARK_GRAY);
-		jspCenterPanel.getVerticalScrollBar().setBackground(getBackground());
-		jspCenterPanel.getVerticalScrollBar().setUnitIncrement(10);
-		jspCenterPanel.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-
-			@Override
-			public void adjustmentValueChanged(AdjustmentEvent e) {
-
-				jspCenterPanel.getViewport().repaint();
-
-			}
-
-		});
-		add(jspCenterPanel, BorderLayout.CENTER);
 	}
 
 	public void setCenterPanel(SettingPanelsParent sp) {
 
 		if (spp != null)
-			jspCenterPanel.remove(spp);
+			remove(spp);
 
-		jspCenterPanel.setViewportView(spp = sp);
-		jspCenterPanel.revalidate();
+		add(spp = sp);
+		sp.repaint();
+		revalidate();
 		repaint();
 
 	}

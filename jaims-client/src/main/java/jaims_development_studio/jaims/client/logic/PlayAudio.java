@@ -60,66 +60,69 @@ public class PlayAudio implements Runnable {
 	 */
 	private void initPlayback() {
 
-		sdf = new SimpleDateFormat("mm:ss");
-		d = new Date();
+		if (file != null) {
+			sdf = new SimpleDateFormat("mm:ss");
+			d = new Date();
 
-		try {
-			clip = AudioSystem.getClip();
-			AudioInputStream ais = AudioSystem.getAudioInputStream(new File(file));
-			clip.open(ais);
-			clip.addLineListener(new LineListener() {
+			try {
+				clip = AudioSystem.getClip();
+				AudioInputStream ais = AudioSystem.getAudioInputStream(new File(file));
+				clip.open(ais);
+				clip.addLineListener(new LineListener() {
 
-				@Override
-				public void update(LineEvent event) {
+					@Override
+					public void update(LineEvent event) {
 
-					if (event.getType() == Type.STOP) {
-						try {
-							Thread.sleep(800);
-						} catch (InterruptedException e) {
-							LOG.error("Interrupted Sleep", e);
+						if (event.getType() == Type.STOP) {
+							try {
+								Thread.sleep(800);
+							} catch (InterruptedException e) {
+								LOG.error("Interrupted Sleep", e);
+							}
+							// sets the slider's value to 0 after the clip has finished playing
+							slider.setValue(0);
+							d.setTime(0);
+							actualTime.setText(sdf.format(d) + " / ");
+							actualTime.repaint();
+
+							clip.close();
 						}
-						// sets the slider's value to 0 after the clip has finished playing
-						slider.setValue(0);
-						d.setTime(0);
-						actualTime.setText(sdf.format(d) + " / ");
-						actualTime.repaint();
 
-						clip.close();
 					}
+				});
+				clip.start();
 
-				}
-			});
-			clip.start();
+				Thread thread = new Thread() {
+					@Override
+					public void run() {
 
-			Thread thread = new Thread() {
-				@Override
-				public void run() {
+						while (clip.isOpen()) {
+							d.setTime(clip.getMicrosecondPosition() / 1000); // converts microseconds into milliseconds
+							actualTime.setText(sdf.format(d) + " / ");
+							actualTime.repaint();
 
-					while (clip.isOpen()) {
-						d.setTime(clip.getMicrosecondPosition() / 1000); // converts microseconds into milliseconds
-						actualTime.setText(sdf.format(d) + " / ");
-						actualTime.repaint();
-
-						slider.setValue((int) (clip.getMicrosecondPosition() / 1000000)); // converts Microseconds into
-																							// seconds
-						slider.revalidate();
-						p.repaint(); // vm.repaint();
-						try {
-							Thread.sleep(300);
-						} catch (InterruptedException e) {
-							LOG.error("Interrupted Sleep", e);
+							slider.setValue((int) (clip.getMicrosecondPosition() / 1000000)); // converts Microseconds
+																								// into
+																								// seconds
+							slider.revalidate();
+							p.repaint(); // vm.repaint();
+							try {
+								Thread.sleep(300);
+							} catch (InterruptedException e) {
+								LOG.error("Interrupted Sleep", e);
+							}
 						}
-					}
 
-				}
-			};
-			thread.start();
-		} catch (LineUnavailableException e) {
-			LOG.error("Line is unavailable - probably used by other program/device", e);
-		} catch (UnsupportedAudioFileException e) {
-			LOG.error("Audio file is unsupported - propbably unsupported audio format", e);
-		} catch (IOException e) {
-			LOG.error("Error when reading file", e);
+					}
+				};
+				thread.start();
+			} catch (LineUnavailableException e) {
+				LOG.error("Line is unavailable - probably used by other program/device", e);
+			} catch (UnsupportedAudioFileException e) {
+				LOG.error("Audio file is unsupported - propbably unsupported audio format", e);
+			} catch (IOException e) {
+				LOG.error("Error when reading file", e);
+			}
 		}
 
 	}

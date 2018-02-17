@@ -23,7 +23,9 @@ import javax.swing.border.EmptyBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.api.settings.Settings;
+import jaims_development_studio.jaims.client.audio.ListAudioDevices;
 import jaims_development_studio.jaims.client.chatObjects.ChatInformation;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.CenterPanel;
@@ -54,6 +56,7 @@ public class GUIMain implements Runnable {
 	private ParentPanel						parentPanel;
 	private PanelAddUser					panelAddUser;
 	private PanelSelectSettings				panelSelectSettings;
+	private ListAudioDevices				listAudioDevices;
 	private boolean							showSplashScreen;
 
 	public GUIMain(ClientMain cm, boolean showSplashScreen) {
@@ -164,6 +167,9 @@ public class GUIMain implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		listAudioDevices = new ListAudioDevices(this);
+		cm.setOutputMixer(listAudioDevices.getSystemOutputMixer());
 
 		buildChatStart();
 	}
@@ -300,11 +306,6 @@ public class GUIMain implements Runnable {
 		return manageMessagePanels;
 	}
 
-	public int getPanelWidth() {
-
-		return 0;
-	}
-
 	public Image getProfileImage(UUID uuid) {
 
 		return cm.getProfileImage(uuid);
@@ -353,6 +354,11 @@ public class GUIMain implements Runnable {
 		return panelProgramStartup.getRegisteredUsername();
 	}
 
+	public ListAudioDevices getListAudioDevices() {
+
+		return listAudioDevices;
+	}
+
 	public void doLogout() {
 
 		cm.doLogout();
@@ -365,6 +371,11 @@ public class GUIMain implements Runnable {
 		LOG.info("Disposed gui");
 
 		return true;
+	}
+
+	public void sendSendable(Sendable s) {
+
+		cm.sendSendable(s);
 	}
 
 	@Override

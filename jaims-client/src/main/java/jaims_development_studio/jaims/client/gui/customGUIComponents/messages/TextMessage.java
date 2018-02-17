@@ -1,11 +1,10 @@
 package jaims_development_studio.jaims.client.gui.customGUIComponents.messages;
 
-import java.awt.BorderLayout;
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -13,11 +12,13 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
 
 import jaims_development_studio.jaims.client.gui.GUIMain;
-import jaims_development_studio.jaims.client.gui.customGUIComponents.RoundBorder;
 
 public class TextMessage extends JPanel {
 
@@ -26,177 +27,124 @@ public class TextMessage extends JPanel {
 	private boolean				own, multipleLines;
 	private int					height, width;
 	private ArrayList<String>	lineStrings	= new ArrayList<>();
-	private String				longestLine;
+	private String				longestLine, message;
+	private Color				border;
 
 	public TextMessage(String message, GUIMain guiMain, boolean own) {
 
 		this.guiMain = guiMain;
 		this.own = own;
-		initGUI(message);
+		this.message = message;
+		initGUI();
 	}
 
-	private void initGUI(String message) {
+	private void initGUI() {
 
-		setLayout(new BorderLayout(0, 5));
+		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+		// setLayout(new BorderLayout(10, 10));
+		setBorder(new EmptyBorder(5, 8, 5, 5));
 
-		jta = new JTextArea();
+		super.setMinimumSize(new Dimension(50, 30));
+		super.setMaximumSize(new Dimension(computeMaximumWidth(), Integer.MAX_VALUE));
+
+		jta = new JTextArea(message);
+		jta.setAlignmentY(Component.CENTER_ALIGNMENT);
+		jta.setLineWrap(true);
+		jta.setWrapStyleWord(true);
+		jta.setEditable(false);
+		jta.setVisible(true);
+		jta.setBackground(new Color(0, 0, 0, 0));
 		jta.setOpaque(false);
+		jta.setCursor(new Cursor(Cursor.TEXT_CURSOR));
+		if (own) {
+			jta.setFont(guiMain.getSettings().getOwnFont());
+			jta.setForeground(new Color(guiMain.getSettings().getColorOwnMessageFont()));
+		} else {
+			jta.setFont(guiMain.getSettings().getContactFont());
+			jta.setForeground(new Color(guiMain.getSettings().getColorContactMessageFont()));
+		}
+
+		int preferredWidth = jta.getFontMetrics(jta.getFont()).stringWidth(message);
+		if (preferredWidth < computeMaximumWidth()) {
+			super.setPreferredSize(new Dimension(preferredWidth + 40, 35));
+			jta.setPreferredSize(new Dimension(preferredWidth + 10, 30));
+		} else {
+			super.setPreferredSize(new Dimension(computeMaximumWidth(), Integer.MAX_VALUE));
+			jta.setPreferredSize(new Dimension(computeMaximumWidth(), Integer.MAX_VALUE));
+		}
+		add(Box.createRigidArea(new Dimension(5, 0)));
+		add(Box.createHorizontalGlue());
+		add(jta);
+		add(Box.createHorizontalGlue());
+		add(Box.createRigidArea(new Dimension(5, 0)));
+
+		guiMain.getJaimsFrame().addComponentListener(new ComponentAdapter() {
+
+			@Override
+			public void componentResized(ComponentEvent e) {
+
+				int preferredWidth = jta.getFontMetrics(jta.getFont()).stringWidth(message);
+				if (preferredWidth < computeMaximumWidth()) {
+					TextMessage.super.setPreferredSize(new Dimension(preferredWidth + 40, 35));
+					jta.setPreferredSize(new Dimension(preferredWidth + 10, 30));
+				} else {
+					TextMessage.super.setPreferredSize(new Dimension(computeMaximumWidth(), Integer.MAX_VALUE));
+					jta.setPreferredSize(new Dimension(computeMaximumWidth(), Integer.MAX_VALUE));
+				}
+
+			}
+
+		});
+	}
+
+	private int computeMaximumWidth() {
+
+		double ratio = -0.000000000031829 * Math.pow(guiMain.getJaimsFrame().getWidth(), 3)
+				+ 0.000000404015684 * Math.pow(guiMain.getJaimsFrame().getWidth(), 2)
+				- 0.000992064197966 * guiMain.getJaimsFrame().getWidth() + 1.210427932031404;
+
+		return (int) ((guiMain.getJaimsFrame().getWidth() - 260) * ratio);
+	}
+
+	public void updateMessage() {
 
 		if (own) {
-			jta.setFont(new Font(guiMain.getSettings().getOwnFontName(), guiMain.getSettings().getOwnFontStyle(),
-					guiMain.getSettings().getOwnFontSize()));
+			jta.setFont(guiMain.getSettings().getOwnFont());
 			jta.setForeground(new Color(guiMain.getSettings().getColorOwnMessageFont()));
-			setBorder(new RoundBorder(width, height, new Color(guiMain.getSettings().getColorOwnMessageBorder())));
 		} else {
-			jta.setFont(new Font(guiMain.getSettings().getContactFontName(),
-					guiMain.getSettings().getContactFontStyle(), guiMain.getSettings().getContactFontSize()));
+			jta.setFont(guiMain.getSettings().getContactFont());
 			jta.setForeground(new Color(guiMain.getSettings().getColorContactMessageFont()));
-			setBorder(new RoundBorder(width, height, new Color(guiMain.getSettings().getColorContactMessageBorder())));
+		}
+		int preferredWidth = jta.getFontMetrics(jta.getFont()).stringWidth(message);
+		if (preferredWidth < computeMaximumWidth()) {
+			TextMessage.super.setPreferredSize(new Dimension(preferredWidth + 40, 35));
+			jta.setPreferredSize(new Dimension(preferredWidth + 10, 30));
+		} else {
+			TextMessage.super.setPreferredSize(new Dimension(computeMaximumWidth(), Integer.MAX_VALUE));
+			jta.setPreferredSize(new Dimension(computeMaximumWidth(), Integer.MAX_VALUE));
 		}
 
-		height = getStringHeight(message, jta) + 10;
-		width = getStringWidth(message, jta) + 15;
-
-		jta.setPreferredSize(new Dimension(width, height));
-		jta.setMaximumSize(getPreferredSize());
-		jta.setEditable(false);
-		setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-
-		// setBorder(new LineBorder(Color.BLACK));
-		if (multipleLines) {
-			addComponentListener(new ComponentAdapter() {
-
-				@Override
-				public void componentShown(ComponentEvent e) {
-
-					if (own)
-						jta.setFont(new Font(guiMain.getSettings().getOwnFontName(),
-								guiMain.getSettings().getOwnFontStyle(), guiMain.getSettings().getOwnFontSize()));
-					else
-						jta.setFont(new Font(guiMain.getSettings().getContactFontName(),
-								guiMain.getSettings().getContactFontStyle(),
-								guiMain.getSettings().getContactFontSize()));
-
-					int height = getStringHeight(message, jta) + 10;
-					int width = getStringWidth(message, jta) + 10;
-
-					setPreferredSize(new Dimension(width, height));
-					setMaximumSize(getPreferredSize());
-					revalidate();
-					repaint();
-				}
-
-				@Override
-				public void componentResized(ComponentEvent e) {
-
-					int height = getStringHeight(message, jta) + 10;
-					int width = getStringWidth(message, jta) + 10;
-
-					if (own) {
-						jta.setFont(new Font(guiMain.getSettings().getOwnFontName(),
-								guiMain.getSettings().getOwnFontStyle(), guiMain.getSettings().getOwnFontSize()));
-						jta.setForeground(new Color(guiMain.getSettings().getColorOwnMessageFont()));
-						setBorder(new RoundBorder(width, height,
-								new Color(guiMain.getSettings().getColorOwnMessageBorder())));
-					} else {
-						jta.setFont(new Font(guiMain.getSettings().getContactFontName(),
-								guiMain.getSettings().getContactFontStyle(),
-								guiMain.getSettings().getContactFontSize()));
-						jta.setForeground(new Color(guiMain.getSettings().getColorContactMessageFont()));
-						setBorder(new RoundBorder(width, height,
-								new Color(guiMain.getSettings().getColorContactMessageBorder())));
-					}
-
-					setPreferredSize(new Dimension(width, height));
-					setMaximumSize(getPreferredSize());
-					jta.repaint();
-					revalidate();
-					repaint();
-				}
-			});
-		}
-
-		setPreferredSize(new Dimension(width, (int) lineStrings.size() * 19 + 15));
-		setMaximumSize(getPreferredSize());
-
-		add(jta);
+		jta.revalidate();
+		jta.repaint();
+		repaint();
 	}
 
-	private int countLines(String s, FontMetrics fm, JTextArea jta) {
+	@Override
+	public Dimension getMinimumSize() {
 
-		lineStrings.clear();
-		longestLine = "";
-
-		int width = (int) guiMain.getJaimsFrame().getSize().getWidth() - guiMain.getPanelWidth() - 16;
-		double ratio = -0.000000000031829 * Math.pow(width, 3) + 0.000000404015684 * Math.pow(width, 2)
-				- 0.000992064197966 * width + 1.210427932031404;
-		int preferredWidth = (int) (width * ratio);
-
-		String wholeString = "";
-		String[] split = s.split(" ");
-
-		String text = "";
-		int countLines = 1;
-
-		for (String st : split) {
-			if ((fm.stringWidth(wholeString) + fm.stringWidth(st + " ")) < preferredWidth) {
-				wholeString += st;
-				wholeString += " ";
-			} else {
-				if (fm.stringWidth(wholeString) > fm.stringWidth(longestLine))
-					longestLine = wholeString;
-
-				lineStrings.add(wholeString);
-				text += wholeString;
-				text += "\n";
-				wholeString = "";
-				countLines++;
-				wholeString += st;
-				wholeString += " ";
-			}
-		}
-
-		if (text.equals("")) {
-			lineStrings.add(wholeString);
-			text = wholeString;
-			longestLine = wholeString;
-			jta.setText(text);
-			return 1;
-		} else {
-			text += wholeString;
-			jta.setText(text);
-			multipleLines = true;
-			return countLines;
-		}
-
+		return super.getMinimumSize();
 	}
 
-	public int getStringHeight(String s, JTextArea lbl) {
+	@Override
+	public Dimension getPreferredSize() {
 
-		FontMetrics fm = lbl.getFontMetrics(lbl.getFont());
-		int lines = countLines(s, fm, lbl);
-		int height = fm.getHeight();
-		if (lines == 1) {
-			return ((lines * height) + 5);
-		} else {
-			return (lines * (height + 1));
-		}
-
+		return super.getPreferredSize();
 	}
 
-	public int getStringWidth(String s, JTextArea lbl) {
+	@Override
+	public Dimension getMaximumSize() {
 
-		int width = (int) guiMain.getJaimsFrame().getSize().getWidth() - guiMain.getPanelWidth() - 16;
-		double preferredWidth = -0.000000000031829 * Math.pow(width, 3) + 0.000000404015684 * Math.pow(width, 2)
-				- 0.000992064197966 * width + 1.210427932031404;
-
-		FontMetrics fm = lbl.getFontMetrics(lbl.getFont());
-		int i = fm.stringWidth(s) + 5;
-		if (i > (width * preferredWidth)) {
-			return fm.stringWidth(longestLine);
-		} else {
-			return i;
-		}
+		return super.getMaximumSize();
 	}
 
 	@Override
@@ -209,14 +157,22 @@ public class TextMessage extends JPanel {
 			g2d.setColor(new Color(guiMain.getSettings().getColorOwnMessages()));
 			g2d.fillRoundRect(0, 0, (int) getPreferredSize().getWidth() - 1, (int) getPreferredSize().getHeight() - 1,
 					20, 20);
+			g2d.setColor(new Color(guiMain.getSettings().getColorOwnMessageBorder()));
+			g2d.setStroke(new BasicStroke(2.0F));
+			g2d.drawRoundRect(0, 0, (int) super.getPreferredSize().getWidth() - 2,
+					(int) super.getPreferredSize().getHeight() - 2, 20, 20);
 			g2d.dispose();
 		} else {
 			g2d.setColor(new Color(guiMain.getSettings().getColorContactMessages()));
 			g2d.fillRoundRect(0, 0, (int) getPreferredSize().getWidth() - 1, (int) getPreferredSize().getHeight() - 1,
 					20, 20);
-
+			g2d.setColor(new Color(guiMain.getSettings().getColorContactMessageBorder()));
+			g2d.setStroke(new BasicStroke(2.0F));
+			g2d.drawRoundRect(0, 0, (int) super.getPreferredSize().getWidth() - 2,
+					(int) super.getPreferredSize().getHeight() - 2, 20, 20);
 			g2d.dispose();
 		}
+
 	}
 
 }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+import javax.swing.SwingWorker;
+
 import jaims_development_studio.jaims.client.chatObjects.ChatInformation;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.gui.GUIMain;
@@ -12,6 +14,7 @@ import jaims_development_studio.jaims.client.logic.SimpleContact;
 public class ManageMessagePanels {
 
 	private GUIMain								guiMain;
+	private ArrayList<SimpleContact>			list;
 	private HashMap<UUID, ArrayList<Message>>	availableChats			= new HashMap<>();
 	private HashMap<UUID, ChatInformation>		contactChatInformation	= new HashMap<>();
 	private HashMap<UUID, PanelShowMessages>	availableChatPanels		= new HashMap<>();
@@ -62,6 +65,8 @@ public class ManageMessagePanels {
 					availableChatPanels.get(list.get(i).getContactID()));
 			availablePanelChats.put(list.get(i).getContactID(), pc);
 		}
+
+		this.list = list;
 	}
 
 	public PanelChat getChatPanelForUser(UUID uuid) {
@@ -93,7 +98,23 @@ public class ManageMessagePanels {
 	}
 
 	public ChatInformation getContactChatInformation(UUID uuid) {
+
 		return contactChatInformation.get(uuid);
+	}
+
+	public void updateMessages() {
+
+		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+			@Override
+			public Void doInBackground() {
+
+				for (int i = 0; i < list.size(); i++)
+					availableChatPanels.get(list.get(i).getContactID()).updateMessages();
+
+				return null;
+			}
+
+		};
 	}
 
 	public void addNewMessage(UUID uuid, Message m) {

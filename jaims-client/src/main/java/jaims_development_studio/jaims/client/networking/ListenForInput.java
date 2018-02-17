@@ -143,6 +143,7 @@ public class ListenForInput implements Runnable {
 				break;
 			case "PROFILE":
 				SendableProfile sp = (SendableProfile) s;
+				System.out.println(cm.hasEntry(sp.getProfile().getUuid()));
 				if (cm.hasEntry(sp.getProfile().getUuid()) == false)
 					cm.saveProfile(sp.getProfile());
 				else
