@@ -29,7 +29,7 @@ public class MessageManager extends EntityManager<Message> {
 	public void deliverMessage(SendableMessage sendableMessage, Server server)
 			throws UserNotFoundException, InvalidSendableException {
 		Message message = sendableMessage.getMessage();
-		//		save(message);
+		save(message);
 		
 		UUID recipientUuid = message.getRecipient();
 		

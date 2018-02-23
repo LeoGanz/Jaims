@@ -11,7 +11,7 @@
   <property name="hibernate.default_catalog">PUBLIC</property>
   <property name="hibernate.default_schema">PUBLIC</property>
   <property name="hibernate.hbm2ddl.auto">update</property>
-  
+  <property name="hibernate.show_sql">false</property>
   <mapping class="jaims_development_studio.jaims.api.account.Account"/>
   <mapping class="jaims_development_studio.jaims.api.user.User"/>
   <mapping class="jaims_development_studio.jaims.api.profile.Profile"/>
@@ -27,7 +27,6 @@
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableLogin"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableMessage"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableMessageResponse"/>
-  <mapping class="jaims_development_studio.jaims.api.sendables.SendableUuidEntity"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableProfile"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableSettings"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableRegistration"/>

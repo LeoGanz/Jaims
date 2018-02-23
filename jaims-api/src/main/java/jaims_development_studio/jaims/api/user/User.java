@@ -10,9 +10,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -28,23 +26,19 @@ import jaims_development_studio.jaims.api.command.ICommandSender;
 import jaims_development_studio.jaims.api.message.TextMessage;
 import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.api.sendables.SendableMessage;
-import jaims_development_studio.jaims.api.util.UuidEntity;
+import jaims_development_studio.jaims.api.util.AccountUuidEntity;
 
 /**
  * @author WilliGross
  */
 @Entity(name = "User")
 @Table(name = "USERS")
-public class User extends UuidEntity implements ICommandSender {
+public class User extends AccountUuidEntity implements ICommandSender {
 
 	private static final long		serialVersionUID	= 1L;
 
 	@Transient
 	private IServer					server;
-
-	@OneToOne(cascade = CascadeType.ALL)
-	@MapsId
-	private Account					account;
 
 	@Column(name = "LAST_SEEN", columnDefinition = "TIMESTAMP")
 	@Temporal(TemporalType.TIMESTAMP)
@@ -54,16 +48,16 @@ public class User extends UuidEntity implements ICommandSender {
 	private final List<Sendable>	sendables			= new LinkedList<>();
 
 	public User() {
-
+		this(null);
 	}
 
 	public User(Account account) {
-		this.account = account;
+		this(null, account);
 	}
 
 	public User(IServer server, Account account) {
+		super(account);
 		this.server = server;
-		this.account = account;
 	}
 
 	public synchronized void enqueueSendable(Sendable sendable) {
@@ -89,9 +83,6 @@ public class User extends UuidEntity implements ICommandSender {
 		this.server = server;
 	}
 	
-	public Account getAccount() {
-		return account;
-	}
 
 	public Date getLastSeen() {
 		return lastSeen;
@@ -103,7 +94,7 @@ public class User extends UuidEntity implements ICommandSender {
 
 	@Override
 	public String toString() {
-		return account.toStringName();
+		return getAccount().toStringName();
 	}
 
 	@Override
@@ -135,7 +126,7 @@ public class User extends UuidEntity implements ICommandSender {
 
 	@Override
 	public String getName() {
-		return account.getUsername();
+		return getAccount().getUsername();
 	}
 
 	@Override
@@ -144,7 +135,7 @@ public class User extends UuidEntity implements ICommandSender {
 			UUID senderUUID = null;
 			if (server != null)
 				senderUUID = server.getServerUUID();
-			TextMessage message = new TextMessage(senderUUID, account.getUuid(), msg);
+			TextMessage message = new TextMessage(senderUUID, getAccount().getUuid(), msg);
 			SendableMessage sendableMessage = new SendableMessage(message);
 			enqueueSendable(sendableMessage);
 			notifyAll();

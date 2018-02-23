@@ -14,39 +14,43 @@ import jaims_development_studio.jaims.api.message.Message;
  */
 @Entity(name = "SendableMessage")
 @DiscriminatorValue(value = ESendableType.Values.MESSAGE)
-public class SendableMessage extends SendableUuidEntity {
-	
+public class SendableMessage extends Sendable {
+
 	private static final long serialVersionUID = 1L;
 
+	@ManyToOne(cascade = CascadeType.DETACH)
+	@JoinColumn(name = "MESSAGE", columnDefinition = "BINARY(16)")
+	private final Message		message;
+	
 	@SuppressWarnings("unused")
 	private SendableMessage() {
 		this(null);
 	}
-
+	
 	public SendableMessage(Message message) {
-		super(message, EEntityType.MESSAGE, ESendableType.MESSAGE);
-	}
-
-	@ManyToOne(cascade = CascadeType.DETACH)
-	@JoinColumn(name = "MESSAGES")
-	public Message getMessage() {
-		return (Message) getEntity();
+		super(ESendableType.MESSAGE);
+		this.message = message;
 	}
 	
+
+	public Message getMessage() {
+		return message;
+	}
+
 	public EMessageType getMessageType() {
 		return getMessage().getMessageType();
 	}
-
+	
 	public void setTimestampServerReceived() {
 		getMessage().setTimestampServerReceived();
 	}
-
+	
 	public SendableMessageResponse buildMessageResponse() {
 		return getMessage().buildMessageResponse();
 	}
-	
+
 	public void setTimestampServerSent() {
 		getMessage().setTimestampServerSent();
 	}
-	
+
 }

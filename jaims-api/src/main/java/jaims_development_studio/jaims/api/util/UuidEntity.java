@@ -10,6 +10,11 @@ import javax.persistence.MappedSuperclass;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import jaims_development_studio.jaims.api.message.Message;
+import jaims_development_studio.jaims.api.profile.Profile;
+import jaims_development_studio.jaims.api.sendables.EEntityType;
+import jaims_development_studio.jaims.api.settings.Settings;
+
 @MappedSuperclass
 public class UuidEntity implements Serializable {
 	
@@ -27,5 +32,15 @@ public class UuidEntity implements Serializable {
 
 	public void setUuid(UUID uuid) {
 		this.uuid = uuid;
+	}
+	
+	public EEntityType getEntityType() {
+		if (this instanceof Profile)
+			return EEntityType.PROFILE;
+		if (this instanceof Settings)
+			return EEntityType.SETTINGS;
+		if (this instanceof Message)
+			return EEntityType.MESSAGE;
+		return EEntityType.OTHER;
 	}
 }

@@ -13,23 +13,28 @@ import jaims_development_studio.jaims.api.settings.Settings;
  */
 @Entity(name = "SendableSettings")
 @DiscriminatorValue(value = ESendableType.Values.SETTINGS)
-public class SendableSettings extends SendableUuidEntity {
+public class SendableSettings extends Sendable {
 
 	private static final long serialVersionUID = 1L;
+	
+	@ManyToOne(cascade = CascadeType.DETACH)
+	@JoinColumn(name = "SETTINGS", columnDefinition = "BINARY(16)")
+	private Settings			settings;
 
+	
 	@SuppressWarnings("unused")
 	private SendableSettings() {
 		this(null);
 	}
 	
 	public SendableSettings(Settings settings) {
-		super(settings, EEntityType.SETTINGS, ESendableType.SETTINGS);
+		super(ESendableType.SETTINGS);
+		if (settings != null)
+			this.settings = settings.copyWithoutAccount();
 	}
 	
-	@ManyToOne(cascade = CascadeType.DETACH)
-	@JoinColumn(name = "SETTINGS")
 	public Settings getSettings() {
-		return (Settings) getEntity();
+		return settings;
 	}
 	
 }

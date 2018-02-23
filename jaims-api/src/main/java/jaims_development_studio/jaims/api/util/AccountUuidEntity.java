@@ -5,6 +5,8 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 
+import org.apache.commons.lang3.NotImplementedException;
+
 import jaims_development_studio.jaims.api.account.Account;
 
 /**
@@ -23,7 +25,10 @@ public abstract class AccountUuidEntity extends UuidEntity {
 		this.account = account;
 	}
 
-	public abstract AccountUuidEntity copyWithoutAccount();
+	@SuppressWarnings("static-method")
+	public AccountUuidEntity copyWithoutAccount() {
+		throw new NotImplementedException("Method copyWithoutAccount() not implemented!");
+	}
 	
 	public Account getAccount() {
 

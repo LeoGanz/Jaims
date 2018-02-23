@@ -10,7 +10,6 @@ public enum ESendableType {
 	CONFIRMATION(Values.CONFIRMATION),
 	REQUEST(Values.REQUEST),
 	STORED_UUID(Values.STORED_UUID),
-	UUID_ENTITY(Values.UUID_ENTITY),
 	PROFILE(Values.PROFILE),
 	SETTINGS(Values.SETTINGS),
 	MESSAGE(Values.MESSAGE),
@@ -40,7 +39,6 @@ public enum ESendableType {
 		public static final String	CONFIRMATION		= "CONFIRMATION";
 		public static final String	REQUEST				= "REQUEST";
 		public static final String	STORED_UUID			= "STORED_UUID";
-		public static final String	UUID_ENTITY			= "UUID_ENTITY";
 		public static final String	PROFILE				= "PROFILE";
 		public static final String	SETTINGS			= "SETTINGS";
 		public static final String	MESSAGE				= "MESSAGE";

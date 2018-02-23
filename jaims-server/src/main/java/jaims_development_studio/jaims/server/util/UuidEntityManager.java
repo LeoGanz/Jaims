@@ -19,12 +19,12 @@ import jaims_development_studio.jaims.api.sendables.SendableException;
 import jaims_development_studio.jaims.api.sendables.SendableProfile;
 import jaims_development_studio.jaims.api.sendables.SendableRequest;
 import jaims_development_studio.jaims.api.sendables.SendableSettings;
-import jaims_development_studio.jaims.api.sendables.SendableUuidEntity;
 import jaims_development_studio.jaims.api.settings.Settings;
 import jaims_development_studio.jaims.api.user.User;
 import jaims_development_studio.jaims.api.util.EntityUpdateFailedException;
 import jaims_development_studio.jaims.api.util.NoEntityAvailableException;
 import jaims_development_studio.jaims.api.util.UpdateTrackingUuidEntity;
+import jaims_development_studio.jaims.api.util.UuidEntity;
 import jaims_development_studio.jaims.server.user.UserManager;
 
 /**
@@ -50,15 +50,15 @@ public class UuidEntityManager<E extends UpdateTrackingUuidEntity> extends Entit
 			user.enqueueSendable(sendable);
 	}
 	
-	public void saveOrUpdateEntity(SendableUuidEntity sendableUuidEntity) throws InvalidSendableException {
-		if (sendableUuidEntity.getEntityType() != entityType)
-			throw new InvalidSendableException("Invalid request type: " + sendableUuidEntity.getEntityType() + ". Expected: " + entityType, sendableUuidEntity);
-		if (!(sendableUuidEntity.getEntity() instanceof UpdateTrackingUuidEntity))
-			throw new InvalidSendableException("Cannot process non update tracking uuid enitites!", sendableUuidEntity);
+	public void saveOrUpdateEntity(UuidEntity uuidEntity) {
+		if (uuidEntity.getEntityType() != entityType)
+			throw new IllegalArgumentException("Invalid entity type: " + uuidEntity.getEntityType() + ". Expected: " + entityType);
+		if (!(uuidEntity instanceof UpdateTrackingUuidEntity))
+			throw new IllegalArgumentException("Cannot process non update tracking uuid enitites!");
 
 		//Note: do not update field 'lastUpdated' as that would interfere with the client's update requests
 		@SuppressWarnings("unchecked")
-		E newUuidEntity = (E) sendableUuidEntity.getEntity(); //checked more or less with if statements
+		E newUuidEntity = (E) uuidEntity; //checked more or less with if statements
 		E oldUuidEntity = get(newUuidEntity.getUuid());
 
 		if ((oldUuidEntity != null) && (oldUuidEntity.getLastUpdated().compareTo(newUuidEntity.getLastUpdated()) > 0)) {
