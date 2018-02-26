@@ -38,19 +38,33 @@ public class SendableMessage extends Sendable {
 	}
 
 	public EMessageType getMessageType() {
-		return getMessage().getMessageType();
+		return message.getMessageType();
+	}
+	
+	@Override
+	public void setTimestampSent() {
+		super.setTimestampSent();
+		message.setTimestampSent();
 	}
 	
 	public void setTimestampServerReceived() {
-		getMessage().setTimestampServerReceived();
+		message.setTimestampServerReceived();
+	}
+	
+	public void setTimestampServerSent() {
+		message.setTimestampServerSent();
+	}
+	
+	public void setTimestampDelivered() {
+		message.setTimestampDelivered();
+	}
+	
+	public void setTimestampRead() {
+		message.setTimestampRead();
 	}
 	
 	public SendableMessageResponse buildMessageResponse() {
 		return getMessage().buildMessageResponse();
-	}
-
-	public void setTimestampServerSent() {
-		getMessage().setTimestampServerSent();
 	}
 
 }
