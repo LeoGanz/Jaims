@@ -23,6 +23,8 @@ import javax.swing.border.EmptyBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.api.message.EMessageType;
+import jaims_development_studio.jaims.api.profile.Profile;
 import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.api.settings.Settings;
 import jaims_development_studio.jaims.client.audio.ListAudioDevices;
@@ -33,7 +35,9 @@ import jaims_development_studio.jaims.client.gui.customGUIComponents.ParentPanel
 import jaims_development_studio.jaims.client.gui.login.PanelProgramStartup;
 import jaims_development_studio.jaims.client.gui.login.ShowGuiBuildingProcess;
 import jaims_development_studio.jaims.client.gui.messagePanels.ManageMessagePanels;
+import jaims_development_studio.jaims.client.gui.messagePanels.PanelChat;
 import jaims_development_studio.jaims.client.gui.settings.PanelSelectSettings;
+import jaims_development_studio.jaims.client.gui.showContacts.PanelContactShowing;
 import jaims_development_studio.jaims.client.gui.showContacts.PanelTabbedPane;
 import jaims_development_studio.jaims.client.gui.showContacts.PanelUserShowing;
 import jaims_development_studio.jaims.client.logic.ClientMain;
@@ -41,7 +45,7 @@ import jaims_development_studio.jaims.client.logic.SimpleContact;
 
 public class GUIMain implements Runnable {
 
-	private static final Logger				LOG	= LoggerFactory.getLogger(GUIMain.class);
+	private static final Logger				LOG			= LoggerFactory.getLogger(GUIMain.class);
 
 	private JaimsFrame						jaimsFrame;
 	private ClientMain						cm;
@@ -52,12 +56,13 @@ public class GUIMain implements Runnable {
 	private CenterPanel						centerPanel;
 	private PanelUserShowing				panelUserShowing;
 	private JPanel							infoPanel;
-	private HashMap<UUID, SimpleContact>	allContacts;
+	private HashMap<UUID, SimpleContact>	allContacts	= new HashMap<>();
 	private ParentPanel						parentPanel;
 	private PanelAddUser					panelAddUser;
 	private PanelSelectSettings				panelSelectSettings;
 	private ListAudioDevices				listAudioDevices;
 	private boolean							showSplashScreen;
+	private PanelContactShowing				caller;
 
 	public GUIMain(ClientMain cm, boolean showSplashScreen) {
 
@@ -107,11 +112,66 @@ public class GUIMain implements Runnable {
 
 	public void showParentPanel(ParentPanel pp) {
 
-		if (parentPanel != null)
-			jaimsFrame.getContentPane().remove(parentPanel);
+		if (parentPanel != null) {
+			if (parentPanel.getPanelUUID().equals(pp.getPanelUUID()) == false) {
+				manageMessagePanels.updateChatPanel(parentPanel);
+				centerPanel.remove(parentPanel);
 
-		jaimsFrame.getContentPane().add(parentPanel = pp, BorderLayout.CENTER);
-		jaimsFrame.getContentPane().repaint();
+				centerPanel.add(parentPanel = pp, BorderLayout.CENTER);
+				centerPanel.revalidate();
+				jaimsFrame.getContentPane().revalidate();
+				jaimsFrame.getContentPane().repaint();
+			}
+		} else {
+			centerPanel.add(parentPanel = pp, BorderLayout.CENTER);
+			centerPanel.revalidate();
+			jaimsFrame.getContentPane().revalidate();
+			jaimsFrame.getContentPane().repaint();
+		}
+
+	}
+
+	public void showParentPanel(ParentPanel pp, PanelContactShowing caller) {
+
+		if (this.caller != null)
+			this.caller.removeAnimation();
+
+		this.caller = caller;
+		caller.paintAnimation();
+
+		if (parentPanel != null) {
+			if (parentPanel.getPanelUUID().equals(pp.getPanelUUID()) == false && parentPanel instanceof PanelChat) {
+				manageMessagePanels.updateChatPanel(parentPanel);
+				centerPanel.remove(parentPanel);
+
+				centerPanel.add(parentPanel = pp, BorderLayout.CENTER);
+				centerPanel.revalidate();
+				jaimsFrame.getContentPane().revalidate();
+				jaimsFrame.getContentPane().repaint();
+			} else {
+
+				centerPanel.remove(parentPanel);
+
+				centerPanel.add(parentPanel = pp, BorderLayout.CENTER);
+				centerPanel.revalidate();
+				jaimsFrame.getContentPane().revalidate();
+				jaimsFrame.getContentPane().repaint();
+				caller.revalidate();
+				caller.repaint();
+			}
+		} else {
+
+			centerPanel.add(parentPanel = pp, BorderLayout.CENTER);
+			centerPanel.revalidate();
+			jaimsFrame.getContentPane().revalidate();
+			jaimsFrame.getContentPane().repaint();
+		}
+
+	}
+
+	public void repaintParentPanel() {
+
+		parentPanel.repaint();
 	}
 
 	public void showSettings() {
@@ -141,6 +201,7 @@ public class GUIMain implements Runnable {
 		jaimsFrame.getContentPane().add(showGuiBuildingProcess);
 		jaimsFrame.initGUI();
 		jaimsFrame.repaint();
+
 		showGuiBuildingProcess.initGUI();
 		showGuiBuildingProcess.revalidate();
 		jaimsFrame.repaint();
@@ -156,9 +217,10 @@ public class GUIMain implements Runnable {
 		showGuiBuildingProcess.setProgress(15);
 
 		manageMessagePanels = new ManageMessagePanels(this);
+		manageMessagePanels.createMessageLists();
 		showGuiBuildingProcess.setProgress(80);
 
-		panelTabbedPane.buildPanelChatContacts(cm.getSimpleContacts());
+		panelTabbedPane.buildPanelChatContacts(cm.getSimpleChatContacts());
 		showGuiBuildingProcess.setProgress(98);
 
 		try {
@@ -190,7 +252,7 @@ public class GUIMain implements Runnable {
 			}
 		};
 		panelLeftSide.setLayout(new BoxLayout(panelLeftSide, BoxLayout.PAGE_AXIS));
-		panelLeftSide.setBorder(new EmptyBorder(7, 0, 0, 8));
+		panelLeftSide.setBorder(new EmptyBorder(15, 8, 8, 16));
 		{
 			panelUserShowing = new PanelUserShowing(this, cm.getUserContact());
 			panelLeftSide.add(panelUserShowing);
@@ -209,7 +271,6 @@ public class GUIMain implements Runnable {
 		}
 
 		centerPanel = new CenterPanel();
-		centerPanel.setBorder(new EmptyBorder(8, 8, 8, 8));
 		centerPanel.add(panelLeftSide, BorderLayout.LINE_START);
 		jaimsFrame.getContentPane().removeAll();
 		jaimsFrame.getContentPane().add(centerPanel, BorderLayout.CENTER);
@@ -220,8 +281,7 @@ public class GUIMain implements Runnable {
 
 	public void showPanelAddUser() {
 
-		if (panelAddUser == null)
-			panelAddUser = new PanelAddUser(this);
+		panelAddUser = new PanelAddUser(this);
 
 		jaimsFrame.getContentPane().remove(centerPanel);
 		jaimsFrame.getContentPane().add(panelAddUser, BorderLayout.CENTER);
@@ -232,9 +292,21 @@ public class GUIMain implements Runnable {
 	public void removePanelAddUser() {
 
 		jaimsFrame.remove(panelAddUser);
+
+		setAddingNewUser(false);
+
 		jaimsFrame.add(centerPanel, BorderLayout.CENTER);
 		jaimsFrame.revalidate();
 		jaimsFrame.repaint();
+
+		panelAddUser = null;
+	}
+
+	public void addChatUser(SimpleContact simpleContact) {
+
+		panelTabbedPane.addChatUser(simpleContact);
+		centerPanel.revalidate();
+		centerPanel.repaint();
 	}
 
 	public void updateSettings() {
@@ -275,6 +347,11 @@ public class GUIMain implements Runnable {
 	public ArrayList<SimpleContact> getSimpleChatContacts() {
 
 		return cm.getSimpleChatContacts();
+	}
+
+	public ArrayList<SimpleContact> getSimpleContacts() {
+
+		return cm.getSimpleContacts();
 	}
 
 	public ArrayList<Message> getMessageList(UUID uuid) {
@@ -359,6 +436,60 @@ public class GUIMain implements Runnable {
 		return listAudioDevices;
 	}
 
+	public void saveTextMessage(jaims_development_studio.jaims.api.message.TextMessage m) {
+
+		cm.saveTextMessage(m);
+	}
+
+	public void addMessageToChat(jaims_development_studio.jaims.api.message.Message m, EMessageType messageType) {
+
+		if (manageMessagePanels != null) {
+			manageMessagePanels.addMessageToChat(m, messageType);
+			if (parentPanel != null) {
+				parentPanel.repaint();
+			}
+
+		}
+	}
+
+	public void updateHasChat(boolean hasChat, UUID contactUUID) {
+
+		cm.updateHasChat(hasChat, contactUUID);
+	}
+
+	public void setAddingNewUser(boolean b) {
+
+		cm.setAddingNewContact(b);
+	}
+
+	public void showAvailableUsersForAdding(Profile... users) {
+
+		panelAddUser.showAvailableUsersForAdding(users);
+	}
+
+	public boolean hasEntry(UUID uuid) {
+
+		return cm.hasEntry(uuid);
+	}
+
+	public boolean saveProfile(Profile p) {
+
+		boolean b = cm.saveProfile(p);
+		if (b) {
+			allContacts.put(p.getUuid(), new SimpleContact(p.getUuid(), p.getNickname(), false));
+			panelTabbedPane.addContact();
+		}
+		return b;
+	}
+
+	public boolean deleteProfile(UUID uuid) {
+
+		boolean b = cm.deleteProfile(uuid);
+		if (b)
+			panelTabbedPane.removeContact(uuid);
+		return b;
+	}
+
 	public void doLogout() {
 
 		cm.doLogout();
@@ -383,6 +514,16 @@ public class GUIMain implements Runnable {
 
 		initFrame();
 
+	}
+
+	public SimpleContact getUserContact() {
+
+		return cm.getUserContact();
+	}
+
+	public String getUsername() {
+
+		return cm.getUsername();
 	}
 
 }

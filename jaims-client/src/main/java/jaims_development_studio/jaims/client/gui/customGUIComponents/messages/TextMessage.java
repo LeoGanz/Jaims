@@ -1,19 +1,18 @@
 package jaims_development_studio.jaims.client.gui.customGUIComponents.messages;
 
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
@@ -40,61 +39,79 @@ public class TextMessage extends JPanel {
 
 	private void initGUI() {
 
-		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-		// setLayout(new BorderLayout(10, 10));
-		setBorder(new EmptyBorder(5, 8, 5, 5));
-
-		super.setMinimumSize(new Dimension(50, 30));
-		super.setMaximumSize(new Dimension(computeMaximumWidth(), Integer.MAX_VALUE));
+		setLayout(new BorderLayout(0, 0));
+		setBorder(new EmptyBorder(2, 8, 3, 8));
 
 		jta = new JTextArea(message);
+		jta.setMargin(new Insets(5, 8, 5, 5));
 		jta.setAlignmentY(Component.CENTER_ALIGNMENT);
 		jta.setLineWrap(true);
 		jta.setWrapStyleWord(true);
 		jta.setEditable(false);
 		jta.setVisible(true);
-		jta.setBackground(new Color(0, 0, 0, 0));
-		jta.setOpaque(false);
-		jta.setCursor(new Cursor(Cursor.TEXT_CURSOR));
+
 		if (own) {
 			jta.setFont(guiMain.getSettings().getOwnFont());
 			jta.setForeground(new Color(guiMain.getSettings().getColorOwnMessageFont()));
+			jta.setBackground(new Color(guiMain.getSettings().getColorOwnMessages()));
 		} else {
 			jta.setFont(guiMain.getSettings().getContactFont());
 			jta.setForeground(new Color(guiMain.getSettings().getColorContactMessageFont()));
+			jta.setBackground(new Color(guiMain.getSettings().getColorContactMessages()));
 		}
-
-		int preferredWidth = jta.getFontMetrics(jta.getFont()).stringWidth(message);
-		if (preferredWidth < computeMaximumWidth()) {
-			super.setPreferredSize(new Dimension(preferredWidth + 40, 35));
-			jta.setPreferredSize(new Dimension(preferredWidth + 10, 30));
-		} else {
-			super.setPreferredSize(new Dimension(computeMaximumWidth(), Integer.MAX_VALUE));
-			jta.setPreferredSize(new Dimension(computeMaximumWidth(), Integer.MAX_VALUE));
-		}
-		add(Box.createRigidArea(new Dimension(5, 0)));
-		add(Box.createHorizontalGlue());
+		;
 		add(jta);
-		add(Box.createHorizontalGlue());
-		add(Box.createRigidArea(new Dimension(5, 0)));
 
 		guiMain.getJaimsFrame().addComponentListener(new ComponentAdapter() {
 
 			@Override
 			public void componentResized(ComponentEvent e) {
 
-				int preferredWidth = jta.getFontMetrics(jta.getFont()).stringWidth(message);
-				if (preferredWidth < computeMaximumWidth()) {
-					TextMessage.super.setPreferredSize(new Dimension(preferredWidth + 40, 35));
-					jta.setPreferredSize(new Dimension(preferredWidth + 10, 30));
-				} else {
-					TextMessage.super.setPreferredSize(new Dimension(computeMaximumWidth(), Integer.MAX_VALUE));
-					jta.setPreferredSize(new Dimension(computeMaximumWidth(), Integer.MAX_VALUE));
-				}
+				setMaximumSize(jta.getText(), jta);
 
 			}
 
 		});
+	}
+
+	private void setMaximumSize(String text, JTextArea jta) {
+
+		int preferredWidth = computeMaximumWidth();
+
+		int textLength = jta.getFontMetrics(jta.getFont()).stringWidth(text);
+		int textHeight = jta.getFontMetrics(jta.getFont()).getHeight();
+		if (textLength < preferredWidth) {
+			if (textLength < jta.getMinimumSize().getWidth())
+				textLength = (int) jta.getMinimumSize().getWidth();
+			jta.setMaximumSize(new Dimension(textLength + 5, textHeight));
+			jta.setPreferredSize(jta.getMaximumSize());
+
+			super.setMaximumSize(new Dimension((int) jta.getMaximumSize().getWidth() + 25,
+					(int) jta.getMaximumSize().getHeight() + 15));
+			super.setPreferredSize(super.getMaximumSize());
+			super.setMinimumSize(super.getMaximumSize());
+		} else if (textLength == preferredWidth) {
+			jta.setMaximumSize(new Dimension(textLength + 5, textHeight));
+			jta.setPreferredSize(jta.getMaximumSize());
+			super.setMaximumSize(new Dimension((int) jta.getMaximumSize().getWidth() + 25,
+					(int) jta.getMaximumSize().getHeight() + 15));
+			super.setPreferredSize(super.getMaximumSize());
+			super.setMinimumSize(super.getMaximumSize());
+		} else {
+			int height = (textLength / textHeight) + 1;
+			jta.setMaximumSize(new Dimension(preferredWidth, (height * textHeight)));
+			jta.setPreferredSize(jta.getMaximumSize());
+			super.setMaximumSize(new Dimension((int) jta.getMaximumSize().getWidth() + 25,
+					(int) jta.getMaximumSize().getHeight() + 15));
+			super.setPreferredSize(super.getMaximumSize());
+			super.setMinimumSize(super.getMaximumSize());
+
+		}
+
+		jta.revalidate();
+		super.revalidate();
+		super.repaint();
+
 	}
 
 	private int computeMaximumWidth() {
@@ -111,18 +128,14 @@ public class TextMessage extends JPanel {
 		if (own) {
 			jta.setFont(guiMain.getSettings().getOwnFont());
 			jta.setForeground(new Color(guiMain.getSettings().getColorOwnMessageFont()));
+			jta.setBackground(new Color(guiMain.getSettings().getColorOwnMessages()));
 		} else {
 			jta.setFont(guiMain.getSettings().getContactFont());
 			jta.setForeground(new Color(guiMain.getSettings().getColorContactMessageFont()));
+			jta.setBackground(new Color(guiMain.getSettings().getColorContactMessages()));
 		}
-		int preferredWidth = jta.getFontMetrics(jta.getFont()).stringWidth(message);
-		if (preferredWidth < computeMaximumWidth()) {
-			TextMessage.super.setPreferredSize(new Dimension(preferredWidth + 40, 35));
-			jta.setPreferredSize(new Dimension(preferredWidth + 10, 30));
-		} else {
-			TextMessage.super.setPreferredSize(new Dimension(computeMaximumWidth(), Integer.MAX_VALUE));
-			jta.setPreferredSize(new Dimension(computeMaximumWidth(), Integer.MAX_VALUE));
-		}
+
+		setMaximumSize(jta.getText(), jta);
 
 		jta.revalidate();
 		jta.repaint();
@@ -172,6 +185,8 @@ public class TextMessage extends JPanel {
 					(int) super.getPreferredSize().getHeight() - 2, 20, 20);
 			g2d.dispose();
 		}
+
+		jta.repaint();
 
 	}
 

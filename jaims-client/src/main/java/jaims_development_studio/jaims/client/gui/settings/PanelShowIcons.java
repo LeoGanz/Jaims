@@ -20,8 +20,9 @@ import jaims_development_studio.jaims.client.gui.GUIMain;
 
 public class PanelShowIcons extends JPanel {
 
-	private PanelAudioSettings		pas;
-	private PanelMessageSettings	pms;
+	private PanelAudioSettings			pas;
+	private PanelMessageSettings		pms;
+	private PanelChatBackgroundSettings	pcbs;
 
 	public PanelShowIcons(PanelSelectSettings pss, GUIMain guiMain) {
 
@@ -81,6 +82,30 @@ public class PanelShowIcons extends JPanel {
 		});
 		add(Box.createRigidArea(new Dimension(0, 10)));
 		add(lblMessages);
+
+		JLabel lblChatBackground = new JLabel(new ImageIcon(
+				Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/calendar.png"))
+						.getScaledInstance(70, 70, Image.SCALE_SMOOTH)),
+				JLabel.CENTER);
+		lblChatBackground.setBackground(new Color(0, 0, 0, 0));
+		lblChatBackground.setOpaque(false);
+		lblChatBackground.setAlignmentX(Component.CENTER_ALIGNMENT);
+		lblChatBackground.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		lblChatBackground.setToolTipText("Chat background settings");
+		lblChatBackground.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+				if (pcbs == null)
+					pcbs = new PanelChatBackgroundSettings(guiMain);
+
+				pss.setCenterPanel(pcbs);
+
+			}
+		});
+		add(Box.createRigidArea(new Dimension(0, 10)));
+		add(lblChatBackground);
 
 		add(Box.createVerticalGlue());
 

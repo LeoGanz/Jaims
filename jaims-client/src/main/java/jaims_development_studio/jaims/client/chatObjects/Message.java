@@ -1,10 +1,9 @@
 package jaims_development_studio.jaims.client.chatObjects;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-public class Message implements Serializable {
+public class Message {
 	/**
 	 * 
 	 */
@@ -71,5 +70,4 @@ public class Message implements Serializable {
 
 		return recieved;
 	}
-
 }

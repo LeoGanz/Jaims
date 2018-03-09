@@ -69,6 +69,10 @@ public class SettingDots extends JPanel {
 				ovalHeight -= 6;
 				repaint();
 
+				System.out.println(pum == null);
+				if (pum == null)
+					pum = new PopUpMenu(guimain, SettingDots.this);
+
 			}
 
 			@Override
@@ -103,10 +107,7 @@ public class SettingDots extends JPanel {
 
 					}
 				});
-				if (pum != null && pum.isVisible() == false) {
-					timer.start();
-					pum.dispose();
-				}
+				timer.start();
 
 			}
 
@@ -139,7 +140,6 @@ public class SettingDots extends JPanel {
 
 						if (x == 1) {
 							((Timer) e.getSource()).stop();
-							pum = new PopUpMenu(guimain, SettingDots.this);
 						}
 
 					}
@@ -148,6 +148,21 @@ public class SettingDots extends JPanel {
 
 			}
 		});
+		guimain.getJaimsFrame().addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+				if (pum != null) {
+					if (pum.contains(e.getPoint()) == false) {
+						pum.dispose();
+						pum = null;
+					}
+				}
+
+			}
+		});
+
 	}
 
 	@Override

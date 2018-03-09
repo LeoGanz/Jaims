@@ -1,6 +1,7 @@
 package jaims_development_studio.jaims.client.gui.messagePanels;
 
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -17,15 +18,18 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 public class PanelTextField extends JPanel {
 	private JTextArea	jta;
 	private JScrollPane	jsp	= null;
 	private JTextField	jtf;
+	private PanelChat	pc;
 
-	public PanelTextField(JTextArea jta) {
+	public PanelTextField(JTextArea jta, PanelChat pc) {
 
 		this.jta = jta;
+		this.pc = pc;
 		initGUI();
 	}
 
@@ -37,7 +41,6 @@ public class PanelTextField extends JPanel {
 
 	private void initGUI() {
 
-		JPanel p = this;
 		jta.addKeyListener(new KeyAdapter() {
 
 			@Override
@@ -45,36 +48,37 @@ public class PanelTextField extends JPanel {
 
 				if (jta.getSize().getHeight() > (jta.getFontMetrics(jta.getFont()).getHeight() * 5 + 10)) {
 					if (jsp == null) {
+
 						jsp = new JScrollPane(jta, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 								JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-						jsp.setPreferredSize(new Dimension(p.getWidth() - 50,
+						jsp.setPreferredSize(new Dimension(pc.getWidth() - 90,
 								jta.getFontMetrics(jta.getFont()).getHeight() * 5 + 10));
-						jta.setMaximumSize(jta.getPreferredSize());
+						jsp.setMaximumSize(jsp.getPreferredSize());
+						jsp.setBorder(new LineBorder(Color.WHITE));
 
 						removeAll();
-						add(Box.createRigidArea(new Dimension(25, 0)));
-						add(jsp);
-						add(Box.createRigidArea(new Dimension(25, 0)));
+						add(jsp, BorderLayout.CENTER);
+						revalidate();
 						repaint();
 					}
 				} else {
 					if (jsp != null) {
 						removeAll();
-						add(Box.createRigidArea(new Dimension(25, 0)));
-						add(jta);
-						add(Box.createRigidArea(new Dimension(25, 0)));
+						add(jta, BorderLayout.CENTER);
+						revalidate();
 						repaint();
-
+						jsp = null;
 					}
 				}
 			}
 		});
-		setBorder(new EmptyBorder(6, 0, 6, 0));
-		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+
+		setBorder(new EmptyBorder(6, 25, 6, 25));
+		setLayout(new BorderLayout());
 		setOpaque(false);
-		add(Box.createRigidArea(new Dimension(25, 0)));
-		add(jta);
-		add(Box.createRigidArea(new Dimension(25, 0)));
+		// add(Box.createRigidArea(new Dimension(25, 0)));
+		add(jta, BorderLayout.CENTER);
+		// add(Box.createRigidArea(new Dimension(25, 0)));
 	}
 
 	private void initGUITextField() {
