@@ -12,6 +12,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -22,7 +24,10 @@ import javax.swing.JTextArea;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
+import jaims_development_studio.jaims.api.message.TextMessage;
+import jaims_development_studio.jaims.api.sendables.SendableMessage;
 import jaims_development_studio.jaims.client.gui.GUIMain;
+import jaims_development_studio.jaims.client.gui.recordingFrame.RecordingWindow;
 
 public class PanelChatWindowBottom extends JPanel {
 
@@ -49,7 +54,7 @@ public class PanelChatWindowBottom extends JPanel {
 		imgRecord = Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/mic.png"))
 				.getScaledInstance(34, 34, Image.SCALE_SMOOTH);
 		imgSend = Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Jaims_Send.png"))
-				.getScaledInstance(34, 34, Image.SCALE_SMOOTH);
+				.getScaledInstance(34, 22, Image.SCALE_SMOOTH);
 
 		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 		setBorder(new EmptyBorder(0, 8, 3, 8));
@@ -81,7 +86,8 @@ public class PanelChatWindowBottom extends JPanel {
 								|| jta.getText().trim().isEmpty()) {
 						} else {
 
-							// sendSendable(jta.getText());
+							sendSendable(jta.getText().trim());
+							panelChat.addNewUserMessage(jta.getText().trim());
 							jta.setText("");
 							showRecordIcon();
 						}
@@ -102,13 +108,14 @@ public class PanelChatWindowBottom extends JPanel {
 			}
 		});
 
-		panelTextField = new PanelTextField(jta);
+		panelTextField = new PanelTextField(jta, panelChat);
 		add(panelTextField);
 
 		panelIcons = new JPanel();
 		panelIcons.setBackground(new Color(0, 0, 0, 0));
 		panelIcons.setOpaque(false);
 		panelIcons.setPreferredSize(new Dimension(35, 35));
+		panelIcons.setMinimumSize(new Dimension(35, 35));
 		panelIcons.setLayout(null);
 		{
 			lblRecord = new JLabel(new ImageIcon(imgRecord));
@@ -118,6 +125,15 @@ public class PanelChatWindowBottom extends JPanel {
 			lblRecord.setPreferredSize(new Dimension(34, 34));
 			lblRecord.setMaximumSize(new Dimension(34, 34));
 			lblRecord.setBounds(0, 0, 34, 34);
+			lblRecord.addMouseListener(new MouseAdapter() {
+
+				@Override
+				public void mousePressed(MouseEvent e) {
+
+					RecordingWindow rw = new RecordingWindow(guiMain, panelChat);
+
+				}
+			});
 			panelIcons.add(lblRecord);
 
 			lblSend = new JLabel(new ImageIcon(imgSend));
@@ -127,6 +143,23 @@ public class PanelChatWindowBottom extends JPanel {
 			lblSend.setPreferredSize(new Dimension(34, 34));
 			lblSend.setMaximumSize(new Dimension(34, 34));
 			lblSend.setBounds(40, 0, 34, 34);
+			lblSend.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+
+					if (jta.getText().equals("") || jta.getText().equals("[\\s]*") || jta.getText().equals("[\\n]*")
+							|| jta.getText().trim().isEmpty()) {
+					} else {
+
+						sendSendable(jta.getText());
+						panelChat.addNewUserMessage(jta.getText());
+						jta.setText("");
+						showRecordIcon();
+					}
+
+				}
+			});
+			panelIcons.add(lblSend);
 
 		}
 		panelIcons.addComponentListener(new ComponentAdapter() {
@@ -137,10 +170,23 @@ public class PanelChatWindowBottom extends JPanel {
 				lblRecord.setBounds(lblRecord.getX(), getHeight() / 2 - 17, 34, 34);
 				lblSend.setBounds(lblSend.getX(), getHeight() / 2 - 17, 34, 34);
 				panelIcons.repaint();
+				revalidate();
 			}
 		});
 		add(Box.createHorizontalGlue());
 		add(panelIcons);
+		add(Box.createRigidArea(new Dimension(0, 2)));
+
+		guiMain.getJaimsFrame().addComponentListener(new ComponentAdapter() {
+
+			@Override
+			public void componentResized(ComponentEvent e) {
+
+				revalidate();
+				repaint();
+
+			}
+		});
 
 	}
 
@@ -164,12 +210,16 @@ public class PanelChatWindowBottom extends JPanel {
 
 					if (xSend == 0) {
 						((Timer) timerSend).stop();
+						panelIcons.revalidate();
 						panelIcons.repaint();
+						revalidate();
+						repaint();
 						animationRunning = false;
 						sendIsShowing = true;
 					}
 				}
 			});
+			timerSend.start();
 		}
 	}
 
@@ -185,7 +235,7 @@ public class PanelChatWindowBottom extends JPanel {
 					int xRecord = lblRecord.getX() + 2;
 					int xSend = lblSend.getX() + 2;
 
-					if (xSend <= -2)
+					if (xSend <= 40)
 						lblSend.setBounds(xSend, lblSend.getY(), 34, 34);
 
 					if (xRecord <= 38)
@@ -195,12 +245,22 @@ public class PanelChatWindowBottom extends JPanel {
 						((Timer) timerSend).stop();
 						panelIcons.revalidate();
 						panelIcons.repaint();
+						revalidate();
+						repaint();
 						animationRunning = false;
 						sendIsShowing = false;
 					}
 				}
 			});
+			timerSend.start();
 		}
+	}
+
+	private void sendSendable(String message) {
+
+		TextMessage tm = new TextMessage(guiMain.getUserUUID(), panelChat.getContactID(), message);
+		SendableMessage sm = new SendableMessage(tm);
+		guiMain.sendSendable(sm);
 	}
 
 }

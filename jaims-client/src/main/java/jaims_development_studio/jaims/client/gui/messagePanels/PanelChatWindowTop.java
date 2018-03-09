@@ -93,8 +93,6 @@ public class PanelChatWindowTop extends JPanel {
 
 	private Image scaleMaintainAspectRatio(Image image) {
 
-		image.getHeight(this);
-		image.getWidth(this);
 		Image returnImg = image.getScaledInstance(45, 45, Image.SCALE_SMOOTH);
 		return returnImg;
 	}

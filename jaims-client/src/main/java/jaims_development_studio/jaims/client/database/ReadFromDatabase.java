@@ -68,7 +68,7 @@ public class ReadFromDatabase {
 			Statement s = con.createStatement();
 			if (messagesExist == false) {
 				s.execute(
-						"CREATE TABLE MESSAGES (MESSAGE_ID UUID PRIMARY KEY NOT NULL, SENDER_ID UUID NOT NULL, RECIPIENT_ID UUID NOT NULL, MESSAGE_TYPE VARCHAR(128) NOT NULL, TIMESTAMP_DELIEVERED TIMESTAMP NOT NULL, TIMESTAMP_READ TIMESTAMP,TIMESTAMP_RECIEVED TIMESTAMP NOT NULL, MESSAGE_STRING VARCHAR(8192))");
+						"CREATE TABLE MESSAGES (MESSAGE_ID UUID PRIMARY KEY NOT NULL, SENDER_ID UUID NOT NULL, RECIPIENT_ID UUID NOT NULL, MESSAGE_TYPE VARCHAR(64) NOT NULL,TIMESTAMP_SENT TIMESTAMP, TIMESTAMP_READ TIMESTAMP, TIMESTAMP_RECIEVED TIMESTAMP, MESSAGE_STRING VARCHAR(8096))");
 				con.commit();
 			}
 			if (contactsExist == false) {
@@ -198,8 +198,9 @@ public class ReadFromDatabase {
 				SimpleContact simpleContact = new SimpleContact((UUID) rs.getObject(1), rs.getString(2),
 						rs.getBoolean(7));
 				getSimpleChatContact.add(simpleContact);
+				System.out.println(simpleContact.getContactNickname());
 			}
-			statement.close();
+			pStatement.close();
 		} catch (SQLException e) {
 			LOG.error("Failed to create statement or resultSet!", e);
 		}
@@ -221,7 +222,7 @@ public class ReadFromDatabase {
 						convertToDate(rs.getTimestamp(7)), rs.getString(8));
 				mList.add(message);
 			}
-			statement.close();
+			pStatement.close();
 		} catch (SQLException e) {
 			LOG.error("Failed to create statement or resultSet!", e);
 		}
@@ -233,10 +234,10 @@ public class ReadFromDatabase {
 			while (rs.next()) {
 				Message message = new Message((UUID) rs.getObject(1), (UUID) rs.getObject(2), (UUID) rs.getObject(3),
 						rs.getString(4), convertToDate(rs.getTimestamp(5)), convertToDate(rs.getTimestamp(6)),
-						convertToDate(rs.getTimestamp(7)), rs.getString(8));
+						convertToDate(rs.getTimestamp(5)), rs.getString(8));
 				mList.add(message);
 			}
-			statement.close();
+			pStatement.close();
 		} catch (SQLException e) {
 			LOG.error("Failed to create statement or resultSet!", e);
 		}
@@ -244,9 +245,9 @@ public class ReadFromDatabase {
 		mList.sort((m1, m2) -> {
 
 			if (m1.getRecieved().compareTo(m2.getRecieved()) > 0)
-				return -1;
-			else if (m1.getRecieved().compareTo(m2.getRecieved()) < 0)
 				return 1;
+			else if (m1.getRecieved().compareTo(m2.getRecieved()) < 0)
+				return -1;
 			else
 				return 0;
 		});
@@ -382,8 +383,11 @@ public class ReadFromDatabase {
 
 	private Date convertToDate(Timestamp ts) {
 
-		long millis = ts.getTime();
-		return new Date(millis);
+		if (ts != null) {
+			long millis = ts.getTime();
+			return new Date(millis);
+		} else
+			return null;
 	}
 
 }

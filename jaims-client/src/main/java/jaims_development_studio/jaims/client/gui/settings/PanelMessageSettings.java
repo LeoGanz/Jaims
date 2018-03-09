@@ -61,15 +61,16 @@ public class PanelMessageSettings extends SettingPanelsParent {
 		panelTop.setLayout(new BoxLayout(panelTop, BoxLayout.PAGE_AXIS));
 		panelTop.setBorder(new CompoundBorder(new MatteBorder(0, 0, 0, 0, Color.WHITE), new EmptyBorder(5, 30, 5, 30)));
 		{
-			JPanel pTM = new JPanel();
+			pTM = new JPanel();
 			pTM.setLayout(new BoxLayout(pTM, BoxLayout.LINE_AXIS));
 			pTM.setBackground(new Color(0, 0, 0, 0));
 			tm = new TextMessage("I'm a test message", guiMain, false);
+
 			pTM.add(tm);
 			pTM.add(Box.createHorizontalGlue());
 			panelTop.add(pTM);
 
-			JPanel pTM2 = new JPanel();
+			pTM2 = new JPanel();
 			pTM2.setLayout(new BoxLayout(pTM2, BoxLayout.LINE_AXIS));
 			pTM2.setBackground(new Color(0, 0, 0, 0));
 			tm2 = new TextMessage("I'm a test message", guiMain, true);
@@ -936,7 +937,7 @@ public class PanelMessageSettings extends SettingPanelsParent {
 				jccContactFontNames.setBackground(new Color(0, 0, 0, 0));
 				jccContactFontNames.setMaximumRowCount(15);
 				jccContactFontNames.setEditable(false);
-				jccContactFontNames.setSelectedItem(guiMain.getSettings().getOwnFontName());
+				jccContactFontNames.setSelectedItem(guiMain.getSettings().getContactFontName());
 				jccContactFontNames.setPreferredSize(new Dimension(250, 30));
 				jccContactFontNames.setMaximumSize(jccContactFontNames.getPreferredSize());
 				jccContactFontNames.setAlignmentX(Component.CENTER_ALIGNMENT);

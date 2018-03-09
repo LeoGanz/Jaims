@@ -19,6 +19,7 @@ import javax.swing.SwingUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.api.message.EMessageType;
 import jaims_development_studio.jaims.api.profile.Profile;
 import jaims_development_studio.jaims.api.sendables.ERequestType;
 import jaims_development_studio.jaims.api.sendables.Sendable;
@@ -50,8 +51,8 @@ public class ClientMain {
 	private ReadFromDatabase	readFromDatabase;
 	private Settings			settings;
 	private Mixer				systemOutputMixer;
-	private boolean				loggedIn				= false;
-	private final boolean		profileChanged			= false;
+	private boolean				loggedIn				= false, addingNewContact = false;
+	private boolean				profileChanged			= false;
 
 	/**
 	 * Static profile which represents the logged-in user.
@@ -160,6 +161,7 @@ public class ClientMain {
 	public void loginSuccesful(UUID uuid) {
 
 		setUserContact(uuid);
+		System.out.println(userContact.getContactNickname() + " has uuid: " + uuid);
 		loadSettings();
 		guiMain.loginSuccessful();
 	}
@@ -230,12 +232,12 @@ public class ClientMain {
 		guiMain.setWrongPassword(wrong);
 	}
 
-	public void saveProfile(Profile p) {
+	public boolean saveProfile(Profile p) {
 
 		if (p.getUuid().equals(userContact.getContactID()))
-			databaseConnection.saveProfile(p, false);
+			return databaseConnection.saveProfile(p, false);
 		else
-			databaseConnection.saveProfile(p, true);
+			return databaseConnection.saveProfile(p, true);
 	}
 
 	public void updateProfile(Profile p) {
@@ -277,6 +279,41 @@ public class ClientMain {
 		System.out.println(pf.getUuid());
 		SendableProfile sp = new SendableProfile(pf);
 		sc.sendSendable(sp);
+	}
+
+	public void saveTextMessage(jaims_development_studio.jaims.api.message.TextMessage m) {
+
+		databaseConnection.saveTextMessage(m);
+	}
+
+	public void addMessageToChat(jaims_development_studio.jaims.api.message.Message m, EMessageType messageType) {
+
+		guiMain.addMessageToChat(m, messageType);
+	}
+
+	public void updateHasChat(boolean hasChat, UUID contactID) {
+
+		databaseConnection.updateHasChat(hasChat, contactID);
+	}
+
+	public void setAddingNewContact(boolean b) {
+
+		addingNewContact = b;
+	}
+
+	public boolean isAddingNewContact() {
+
+		return addingNewContact;
+	}
+
+	public boolean deleteProfile(UUID uuid) {
+
+		return databaseConnection.deleteProfile(uuid);
+	}
+
+	public void showAvailableUsersForAdding(Profile... users) {
+
+		guiMain.showAvailableUsersForAdding(users);
 	}
 
 	private void loadSettings() {

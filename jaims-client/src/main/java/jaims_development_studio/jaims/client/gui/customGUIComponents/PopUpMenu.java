@@ -1,14 +1,13 @@
 package jaims_development_studio.jaims.client.gui.customGUIComponents;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.Toolkit;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -24,7 +23,8 @@ public class PopUpMenu extends JWindow {
 
 	private GUIMain		guiMain;
 	private SettingDots	sd;
-	private Image		img;
+	private Image		img, imgLogout;
+	private boolean		mouseOnLogout	= false;
 
 	public PopUpMenu(GUIMain guiMain, SettingDots sd) {
 
@@ -39,6 +39,9 @@ public class PopUpMenu extends JWindow {
 	private void initGUI() {
 
 		img = Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/calendar.png"))
+				.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+		imgLogout = Toolkit.getDefaultToolkit()
+				.getImage(getClass().getClassLoader().getResource("images/logout_button.png"))
 				.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
 
 		setFocusable(true);
@@ -86,17 +89,7 @@ public class PopUpMenu extends JWindow {
 				g.setColor(new Color(0, 0, 0, 0));
 				g.fillRect(0, 0, getWidth(), getHeight());
 
-				Graphics2D g2 = (Graphics2D) g;
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Color.BLACK);
-				g2.setStroke(new BasicStroke(1.8F));
-				g2.drawRoundRect(1, 1, 22, 38, 15, 15);
-
-				g2.setColor(new Color(0, 0, 0, 0));
-				g2.drawRect(19, 10, 6, 20);
-
-				g2.setColor(Color.CYAN);
-				g2.fillRect(15, 12, 12, 16);
+				g.drawImage(imgLogout, 1, 1, this);
 			}
 		};
 		panelLogout.setMinimumSize(new Dimension(42, 42));
@@ -117,21 +110,60 @@ public class PopUpMenu extends JWindow {
 		pBackground.add(Box.createRigidArea(new Dimension(0, 5)));
 		pBackground.add(panelLogout);
 
-		add(pBackground);
-
-		guiMain.getJaimsFrame().addMouseListener(new MouseAdapter() {
+		pBackground.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-				if (PopUpMenu.this.contains(e.getPoint()) == false) {
+				if (mouseOnLogout) {
 					dispose();
-					sd.setDrawAnimation(false);
+					guiMain.doLogout();
 				}
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+
+				if (mouseOnLogout) {
+					if ((e.getX() >= panelLogout.getX() && e.getY() >= panelLogout.getY()
+							&& e.getX() <= panelLogout.getX() + panelLogout.getWidth()
+							&& e.getY() <= panelLogout.getY() + panelLogout.getHeight()) == false) {
+						mouseOnLogout = false;
+						setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+					}
+				}
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+
+				if (e.getX() >= panelLogout.getX() && e.getY() >= panelLogout.getY()
+						&& e.getX() <= panelLogout.getX() + panelLogout.getWidth()
+						&& e.getY() <= panelLogout.getY() + panelLogout.getHeight()) {
+					mouseOnLogout = true;
+					setCursor(new Cursor(Cursor.HAND_CURSOR));
+				}
+
 			}
 		});
 
+		add(pBackground);
+
+		guiMain.getJaimsFrame().addComponentListener(new ComponentAdapter() {
+
+			@Override
+			public void componentMoved(ComponentEvent e) {
+
+				setLocation((int) sd.getLocationOnScreen().getX() - 2, (int) sd.getLocationOnScreen().getY() + 40);
+
+			}
+
+		});
+
 		setVisible(true);
+
 	}
 
 }

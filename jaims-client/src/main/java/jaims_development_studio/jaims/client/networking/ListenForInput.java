@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import jaims_development_studio.jaims.api.account.IncorrectPasswordException;
 import jaims_development_studio.jaims.api.account.UserNameNotAvailableException;
+import jaims_development_studio.jaims.api.message.EMessageType;
+import jaims_development_studio.jaims.api.message.TextMessage;
 import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.api.sendables.SendableConfirmation;
 import jaims_development_studio.jaims.api.sendables.SendableException;
@@ -101,21 +103,24 @@ public class ListenForInput implements Runnable {
 			switch (s.getType().getValue()) {
 			case "MESSAGE":
 				SendableMessage sm = (SendableMessage) s;
-				switch (sm.getMessageType().getValue()) {
-				case "TEXT":
-					LOG.info("Received sendable of type " + sm.getType().toString());
-					break;
-				case "IMAGE":
+				LOG.info("Recieved sendable of type " + sm.getType());
+				if (sm.getMessageType().equals(EMessageType.TEXT)) {
+					TextMessage tm = (TextMessage) sm.getMessage();
+					tm.setTimestampDelivered();
+					LOG.info("Cast to " + tm.getMessageType());
+					cm.saveTextMessage(tm);
+				} else if (sm.getMessageType().equals(EMessageType.IMAGE)) {
 
-				case "VOICE":
+				} else if (sm.getMessageType().equals(EMessageType.VOICE)) {
 
-				case "FILE":
+				} else if (sm.getMessageType().equals(EMessageType.FILE)) {
 
-				case "LOCATION":
+				} else if (sm.getMessageType().equals(EMessageType.LOCATION)) {
 
-				case "OTHER":
+				} else if (sm.getMessageType().equals(EMessageType.OTHER)) {
 
 				}
+				cm.addMessageToChat(sm.getMessage(), sm.getMessageType());
 				break;
 			case "MESSAGE_RESPONSE":
 				SendableMessageResponse smr = (SendableMessageResponse) s;
@@ -124,6 +129,7 @@ public class ListenForInput implements Runnable {
 			case "EXCEPTION":
 				SendableException se = (SendableException) s;
 				LOG.info("Received Sendable of type " + se.getType().toString());
+				LOG.error("There goes the exception... ", se.getException());
 				if (se.getException() instanceof IncorrectPasswordException) {
 					cm.setWrongPassword(true);
 					cm.setWrongUsername(false);
@@ -143,11 +149,14 @@ public class ListenForInput implements Runnable {
 				break;
 			case "PROFILE":
 				SendableProfile sp = (SendableProfile) s;
-				System.out.println(cm.hasEntry(sp.getProfile().getUuid()));
-				if (cm.hasEntry(sp.getProfile().getUuid()) == false)
-					cm.saveProfile(sp.getProfile());
-				else
-					cm.updateProfile(sp.getProfile());
+				if (cm.isAddingNewContact()) {
+					cm.showAvailableUsersForAdding(sp.getProfile());
+				} else {
+					if (cm.hasEntry(sp.getProfile().getUuid()) == false)
+						cm.saveProfile(sp.getProfile());
+					else
+						cm.updateProfile(sp.getProfile());
+				}
 				break;
 			case "CONFIRMATION":
 				SendableConfirmation sc = (SendableConfirmation) s;

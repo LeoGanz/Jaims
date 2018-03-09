@@ -8,7 +8,10 @@ import java.util.Date;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
+
+import jaims_development_studio.jaims.client.gui.GUIMain;
 
 public class RecordAudio implements Runnable {
 
@@ -17,7 +20,7 @@ public class RecordAudio implements Runnable {
 	ByteArrayOutputStream	out			= new ByteArrayOutputStream();
 	File					audioFile	= null;
 	AudioInputStream		ais;
-	private ClientMain		cm;
+	private GUIMain			guiMain;
 
 	/**
 	 * Constructor of this class. Initialises only the fields, recording has to be
@@ -29,10 +32,16 @@ public class RecordAudio implements Runnable {
 	 *            A ClientMain object the class need to access the settings.
 	 * 
 	 */
-	public RecordAudio(TargetDataLine line, ClientMain cm) {
+	public RecordAudio(GUIMain guiMain) {
 
-		this.line = line;
-		this.cm = cm;
+		try {
+			line = AudioSystem.getTargetDataLine(guiMain.getSettings().getAudioFormat(),
+					guiMain.getListAudioDevices().getSystemInputMixerInfo());
+		} catch (LineUnavailableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.guiMain = guiMain;
 	}
 
 	/**
@@ -40,19 +49,21 @@ public class RecordAudio implements Runnable {
 	 */
 	private void createFile() {
 
-		SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss"); // date example: 20171231_014523 (yyyy: year; MM:
+		SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd-HHmmss"); // date example: 20171231_014523 (yyyy: year; MM:
 																		// month; dd: day; HH: hour; mm: minute;
 																		// ss: second
 		Date dt = new Date(System.currentTimeMillis());
-		File f = new File(
-				System.getProperty("user.home").replace("\\", "/") + "/Jaims/" + cm.getUsername() + "/VoiceMessages");
+		File f = new File(System.getProperty("user.home").replace("\\", "/") + "/Jaims/" + guiMain.getUsername()
+				+ "/VoiceMessages");
 		if (f.exists())
-			audioFile = new File(System.getProperty("user.home").replace("\\", "/") + "/Jaims/" + cm.getUsername()
-					+ "/VoiceMessages/vm" + df.format(dt) + "." + cm.getSettings().getInputFileFormat().getExtension());
+			audioFile = new File(System.getProperty("user.home").replace("\\", "/") + "/Jaims/" + guiMain.getUsername()
+					+ "/VoiceMessages/" + guiMain.getUserContact().getContactNickname() + "_JaimsVm_" + df.format(dt)
+					+ "." + guiMain.getSettings().getInputFileFormat().getExtension());
 		else {
 			f.mkdirs();
-			audioFile = new File(System.getProperty("user.home").replace("\\", "/") + "/Jaims/" + cm.getUsername()
-					+ "/VoiceMessages/vm" + df.format(dt) + "." + cm.getSettings().getInputFileFormat().getExtension());
+			audioFile = new File(System.getProperty("user.home").replace("\\", "/") + "/Jaims/" + guiMain.getUsername()
+					+ "/VoiceMessages/" + guiMain.getUserContact().getContactNickname() + "_JaimsVm_" + df.format(dt)
+					+ "." + guiMain.getSettings().getInputFileFormat().getExtension());
 		}
 
 	}
@@ -66,7 +77,7 @@ public class RecordAudio implements Runnable {
 		ais = new AudioInputStream(line);
 		line.start();
 		try {
-			AudioSystem.write(ais, cm.getSettings().getInputFileFormat(), audioFile);
+			AudioSystem.write(ais, guiMain.getSettings().getInputFileFormat(), audioFile);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -139,9 +150,7 @@ public class RecordAudio implements Runnable {
 	@Override
 	public void run() {
 
-		if (audioFile == null) {
-			createFile();
-		}
+		createFile();
 		record();
 
 	}

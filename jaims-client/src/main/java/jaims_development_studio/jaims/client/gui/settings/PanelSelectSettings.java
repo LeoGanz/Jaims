@@ -36,6 +36,7 @@ public class PanelSelectSettings extends JPanel {
 	private void initGUI() {
 
 		setLayout(new BorderLayout());
+		setBackground(Color.DARK_GRAY);
 		panelLineStart = new JPanel();
 		panelLineStart.setLayout(new BorderLayout());
 		panelLineStart.setBackground(Color.DARK_GRAY);

@@ -3,6 +3,7 @@ package jaims_development_studio.jaims.client.gui.showContacts;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -10,6 +11,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -18,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.Timer;
+import javax.swing.border.EmptyBorder;
 
 import jaims_development_studio.jaims.client.gui.GUIMain;
 import jaims_development_studio.jaims.client.logic.SimpleContact;
@@ -27,7 +30,7 @@ public class PanelTabbedPane extends JPanel {
 	private GUIMain		guiMain;
 	private boolean		chatsSelected		= true;
 	private JScrollPane	jspChats, jspContacts;
-	private JPanel		panelChats, panelContacts, panelCenter;
+	private JPanel		panelChats, panelContacts, panelCenter, panelTabs;
 	private int			xChats				= 10, yChats = 30, xContacts = -130, yContacts = 30, xJspChats = 0,
 			xJspContacts = 260;
 	private boolean		animationRunning	= false;
@@ -43,7 +46,7 @@ public class PanelTabbedPane extends JPanel {
 
 		setLayout(new BorderLayout());
 
-		JPanel panelTabs = new JPanel();
+		panelTabs = new JPanel();
 		panelTabs.setBackground(Color.GRAY);
 		panelTabs.setPreferredSize(new Dimension(250, 35));
 		panelTabs.setMaximumSize(new Dimension(350, 35));
@@ -119,6 +122,9 @@ public class PanelTabbedPane extends JPanel {
 
 	public void buildPanelContacts(ArrayList<SimpleContact> list) {
 
+		panelContacts = null;
+		jspContacts = null;
+
 		if (list.size() > 0) {
 			list.sort((o1, o2) -> {
 
@@ -141,17 +147,18 @@ public class PanelTabbedPane extends JPanel {
 			};
 			panelContacts.setLayout(new BoxLayout(panelContacts, BoxLayout.PAGE_AXIS));
 			panelContacts.setOpaque(false);
-			JLabel lbl = new JLabel(list.get(0).getContactNickname().substring(0, 1).toUpperCase(), JLabel.LEFT);
+			panelContacts.setBorder(new EmptyBorder(0, 3, 0, 3));
+			JLabel lbl = new JLabel(list.get(0).getContactNickname().substring(0, 1).toUpperCase());
 			lbl.setForeground(Color.CYAN);
-			lbl.setBackground(new Color(0, 0, 0, 0));
-			lbl.setOpaque(false);
-			lbl.setFont(new Font("Sans Serif", Font.BOLD, 18));
+			lbl.setFont(new Font("Sans Serif", Font.BOLD, 32));
+			lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
 			panelContacts.add(Box.createRigidArea(new Dimension(0, 5)));
 			panelContacts.add(lbl);
 			panelContacts.add(Box.createRigidArea(new Dimension(0, 3)));
 
 			for (int i = 0; i < list.size(); i++) {
-				if (i + i < list.size()) {
+
+				if (i + 1 < list.size()) {
 					PanelContactShowing panelContactShowing = new PanelContactShowing(guiMain, list.get(i));
 					panelContacts.add(panelContactShowing);
 
@@ -165,7 +172,7 @@ public class PanelTabbedPane extends JPanel {
 						label.setForeground(Color.CYAN);
 						label.setBackground(new Color(0, 0, 0, 0));
 						label.setOpaque(false);
-						label.setFont(new Font("Sans Serif", Font.BOLD, 18));
+						label.setFont(new Font("Sans Serif", Font.BOLD, 32));
 						panelContacts.add(label);
 						panelContacts.add(Box.createRigidArea(new Dimension(0, 3)));
 					}
@@ -192,8 +199,7 @@ public class PanelTabbedPane extends JPanel {
 
 		jspContacts = new JScrollPane(panelContacts, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		jspContacts.setOpaque(false);
-		jspContacts.setBackground(new Color(0, 0, 0, 0));
+		jspContacts.setBackground(Color.LIGHT_GRAY);
 		jspContacts.setOpaque(false);
 	}
 
@@ -210,19 +216,75 @@ public class PanelTabbedPane extends JPanel {
 		};
 		panelChats.setLayout(new BoxLayout(panelChats, BoxLayout.PAGE_AXIS));
 		panelChats.setOpaque(false);
+		panelChats.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		for (SimpleContact contact : sortedList) {
-			PanelContactShowing panelContactShowing = new PanelContactShowing(guiMain, contact);
-			panelChats.add(panelContactShowing);
-			panelChats.add(Box.createRigidArea(new Dimension(0, 5)));
+			if (contact.chatExists()) {
+				PanelContactShowing panelContactShowing = new PanelContactShowing(guiMain, contact);
+				panelChats.add(panelContactShowing);
+				panelChats.add(Box.createRigidArea(new Dimension(0, 5)));
+			}
 		}
 
 		jspChats = new JScrollPane(panelChats, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		jspChats.setOpaque(true);
 		jspChats.setBackground(Color.LIGHT_GRAY);
 		jspChats.setOpaque(false);
 		add(jspChats, BorderLayout.CENTER);
+	}
+
+	public void addChatUser(SimpleContact simpleContact) {
+
+		PanelContactShowing pcs = new PanelContactShowing(guiMain, simpleContact);
+		panelChats.add(pcs, 0);
+		panelChats.add(Box.createRigidArea(new Dimension(0, 5)), 1);
+		panelChats.revalidate();
+		panelChats.repaint();
+		jspChats.revalidate();
+		revalidate();
+		repaint();
+	}
+
+	public void addContact() {
+
+		removeAll();
+
+		buildPanelContacts(guiMain.getSimpleContacts());
+		add(panelTabs, BorderLayout.PAGE_START);
+		if (chatsSelected)
+			add(jspChats, BorderLayout.CENTER);
+		else
+			add(jspContacts, BorderLayout.CENTER);
+		revalidate();
+		repaint();
+	}
+
+	public void removeContact(UUID panelID) {
+
+		removeAll();
+
+		buildPanelContacts(guiMain.getSimpleChatContacts());
+
+		for (Component c : panelChats.getComponents()) {
+			if (c instanceof PanelContactShowing) {
+				if (((PanelContactShowing) c).getPanelID().equals(panelID)) {
+					panelChats.remove(c);
+					panelChats.revalidate();
+					panelChats.repaint();
+
+					break;
+				}
+			}
+		}
+
+		add(panelTabs, BorderLayout.PAGE_START);
+		if (chatsSelected)
+			add(jspChats, BorderLayout.CENTER);
+		else
+			add(jspContacts, BorderLayout.CENTER);
+
+		revalidate();
+		repaint();
 	}
 
 	private void handleAnimationToContacts() {
@@ -277,6 +339,8 @@ public class PanelTabbedPane extends JPanel {
 		if (animationRunning == false && chatsSelected == false) {
 			remove(jspContacts);
 			add(jspChats, BorderLayout.CENTER);
+			jspChats.revalidate();
+			revalidate();
 			repaint();
 			animationRunning = true;
 

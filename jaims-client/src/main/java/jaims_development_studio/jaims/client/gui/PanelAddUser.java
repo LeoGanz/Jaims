@@ -29,9 +29,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 
+import jaims_development_studio.jaims.api.profile.Profile;
 import jaims_development_studio.jaims.api.sendables.ERequestType;
 import jaims_development_studio.jaims.api.sendables.SendableRequest;
 import jaims_development_studio.jaims.client.gui.messagePanels.PanelTextField;
+import jaims_development_studio.jaims.client.gui.showContacts.PanelContactShowing;
 
 public class PanelAddUser extends JPanel {
 	private GUIMain		guiMain;
@@ -186,6 +188,28 @@ public class PanelAddUser extends JPanel {
 			});
 		}
 		add(panelShowUser, BorderLayout.CENTER);
+
+		guiMain.setAddingNewUser(true);
+	}
+
+	public void showAvailableUsersForAdding(Profile... users) {
+
+		panelUsers.removeAll();
+
+		for (Profile user : users) {
+			if (guiMain.hasEntry(user.getUuid())) {
+				PanelContactShowing pcs = new PanelContactShowing(guiMain, user, true);
+				panelUsers.add(pcs);
+			} else {
+				;
+				PanelContactShowing pcs = new PanelContactShowing(guiMain, user, false);
+				panelUsers.add(pcs);
+			}
+
+		}
+
+		revalidate();
+		repaint();
 	}
 
 	private void sendEnquiry(String s) {

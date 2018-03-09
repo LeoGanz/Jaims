@@ -60,4 +60,14 @@ public class ListAudioDevices {
 		return AudioSystem.getMixer(outputDevices.get(0));
 	}
 
+	public Mixer.Info getSystemInputMixerInfo() {
+
+		for (Mixer.Info inputdevice : inputDevices) {
+			if (inputdevice.getName().equals(guiMain.getSettings().getInputMixerInfoName()))
+				return inputdevice;
+		}
+
+		return inputDevices.get(0);
+	}
+
 }

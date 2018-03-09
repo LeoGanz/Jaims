@@ -13,8 +13,8 @@ import javax.swing.JOptionPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.api.message.Message;
 import jaims_development_studio.jaims.api.profile.Profile;
-import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.logic.ClientMain;
 import jaims_development_studio.jaims.client.logic.SimpleContact;
 
@@ -78,7 +78,7 @@ public class DatabaseConnection {
 		return readFromDatabase.getSimpleChatContacts();
 	}
 
-	public ArrayList<Message> getContactMessages(UUID uuid) {
+	public ArrayList<jaims_development_studio.jaims.client.chatObjects.Message> getContactMessages(UUID uuid) {
 
 		return readFromDatabase.getContactMessages(uuid);
 	}
@@ -116,14 +116,29 @@ public class DatabaseConnection {
 		return readFromDatabase.hasEntry(uuid);
 	}
 
-	public void saveProfile(Profile pf, boolean contact) {
+	public boolean saveProfile(Profile pf, boolean contact) {
 
-		writeToDatabase.saveProfile(pf, contact);
+		return writeToDatabase.saveProfile(pf, contact);
+	}
+
+	public boolean deleteProfile(UUID uuid) {
+
+		return writeToDatabase.deleteContact(uuid);
 	}
 
 	public void updateProfile(Profile pf, boolean contact) {
 
 		writeToDatabase.updateProfile(pf, contact);
+	}
+
+	public void saveTextMessage(Message m) {
+
+		writeToDatabase.saveTextMessage(m);
+	}
+
+	public void updateHasChat(boolean hasChat, UUID contactID) {
+
+		writeToDatabase.updateHasChat(hasChat, contactID);
 	}
 
 	public Profile getAndUpdateProfile(UUID uuid) {

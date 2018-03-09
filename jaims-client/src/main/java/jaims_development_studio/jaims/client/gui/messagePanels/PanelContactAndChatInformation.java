@@ -12,6 +12,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.geom.RoundRectangle2D;
+import java.util.UUID;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -50,8 +51,10 @@ public class PanelContactAndChatInformation extends ParentPanel {
 	}
 
 	private void initGUI() {
+
 		setLayout(new BorderLayout());
 		setBackground(Color.DARK_GRAY);
+		super.setPanelUUID(UUID.randomUUID());
 
 		JLabel lbl = new JLabel(simpleContact.getContactNickname(), JLabel.CENTER);
 		lbl.setBackground(new Color(0, 0, 0, 0));
@@ -68,6 +71,7 @@ public class PanelContactAndChatInformation extends ParentPanel {
 		JPanel panelImage = new JPanel() {
 			@Override
 			public void paintComponent(Graphics g) {
+
 				g.setColor(new Color(0, 0, 0, 0));
 				g.fillRect(0, 0, getWidth(), getHeight());
 
@@ -89,7 +93,7 @@ public class PanelContactAndChatInformation extends ParentPanel {
 		panelImage.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		centerPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 		centerPanel.add(panelImage);
-		centerPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+		centerPanel.add(Box.createRigidArea(new Dimension(0, 100)));
 
 		JPanel panelStatus = new JPanel();
 		panelStatus.setLayout(new BorderLayout());
