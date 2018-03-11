@@ -21,6 +21,7 @@
   <mapping class="jaims_development_studio.jaims.api.message.ImageMessage"/>
   <mapping class="jaims_development_studio.jaims.api.message.VoiceMessage"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.Sendable"/>
+  <mapping class="jaims_development_studio.jaims.api.sendables.SendableSendableGroup"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableConfirmation"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableDeleteAccount"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableException"/>
