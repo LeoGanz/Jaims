@@ -132,6 +132,8 @@ public class PanelChat extends ParentPanel {
 
 	public void setScrollBarValueToMax() {
 
+		jsp.revalidate();
+		jsp.repaint();
 		jsp.getVerticalScrollBar()
 				.setValue(jsp.getVerticalScrollBar().getMaximum() - jsp.getVerticalScrollBar().getVisibleAmount());
 		jsp.revalidate();

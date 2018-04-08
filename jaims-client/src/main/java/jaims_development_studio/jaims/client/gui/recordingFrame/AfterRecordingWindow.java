@@ -32,7 +32,6 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -234,10 +233,6 @@ public class AfterRecordingWindow extends JWindow {
 
 			}
 		});
-
-		JFrame f = new JFrame();
-		f.add(new JLabel(new ImageIcon(bim.getScaledInstance(200, 180, Image.SCALE_SMOOTH))));
-		f.setVisible(true);
 
 		JScrollPane jsp = new JScrollPane(waveForm, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);

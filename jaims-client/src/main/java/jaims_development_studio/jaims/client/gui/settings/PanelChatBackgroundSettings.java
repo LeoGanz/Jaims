@@ -173,13 +173,12 @@ public class PanelChatBackgroundSettings extends SettingPanelsParent {
 				jrb3.setForeground(Color.WHITE);
 				jrb3.setFont(guiMain.getSettings().getOwnFont());
 				jrb3.setMnemonic(KeyEvent.VK_F);
-				jrb3.setSelected(true);
 				jrb3.addActionListener(new ActionListener() {
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
 
-						guiMain.getSettings().setImageResizeHint(Settings.RESIZE_ALONG_HEIGHT);
+						guiMain.getSettings().setImageResizeHint(Settings.RESIZE_FILL_SCREEN);
 						img = scaleMaintainRatio();
 						pBack.repaint();
 
@@ -188,6 +187,13 @@ public class PanelChatBackgroundSettings extends SettingPanelsParent {
 				rbPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 				rbPanel.add(jrb3);
 
+				if (guiMain.getSettings().getImageResizeHint() == Settings.RESIZE_ALONG_HEIGHT) {
+					jrb2.setSelected(true);
+				} else if (guiMain.getSettings().getImageResizeHint() == Settings.RESIZE_ALONG_WIDTH) {
+					jrb1.setSelected(true);
+				} else {
+					jrb3.setSelected(true);
+				}
 				ButtonGroup bg = new ButtonGroup();
 				bg.add(jrb1);
 				bg.add(jrb2);
