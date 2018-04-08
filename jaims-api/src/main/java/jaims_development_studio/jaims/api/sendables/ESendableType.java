@@ -16,23 +16,24 @@ public enum ESendableType {
 	MESSAGE_RESPONSE(Values.MESSAGE_RESPONSE),
 	COMMAND(Values.COMMAND),
 	EXCEPTION(Values.EXCEPTION),
+	SENDABLE_GROUP(Values.SENDABLE_GROUP),
 	OTHER(Values.OTHER); //maybe friend request?
-
+	
 	private String value;
-
+	
 	private ESendableType(String value) {
 		//		if (!this.value.equals(value))
 		//			throw new IllegalArgumentException("Incorrect use of SendableType!");
 		this.value = value;
 	}
-
+	
 	public String getValue() {
 		return value;
 	}
-
+	
 	@SuppressWarnings("hiding")
 	public static class Values {
-
+		
 		public static final String	REGISTRATION		= "REGISTRATION";
 		public static final String	LOGIN				= "LOGIN";
 		public static final String	DELETE_ACCOUNT		= "DELETE_ACCOUNT";		//delete
@@ -45,6 +46,7 @@ public enum ESendableType {
 		public static final String	MESSAGE_RESPONSE	= "MESSAGE_RESPONSE";
 		public static final String	COMMAND				= "COMMAND";
 		public static final String	EXCEPTION			= "EXCEPTION";
+		public static final String	SENDABLE_GROUP		= "SENDABLE_GROUP";
 		public static final String	OTHER				= "OTHER";
 	}
 }

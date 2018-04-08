@@ -27,15 +27,15 @@ import jaims_development_studio.jaims.server.util.EntityManager;
  */
 @SuppressWarnings("static-method")
 public class AccountDAO extends DAO<Account> {
-	
+
 	private final Logger				LOG	= LoggerFactory.getLogger(AccountDAO.class);
 	private final EntityManager<?>[]	managers;
-	
+
 	public AccountDAO(EntityManager<?>... managers) {
 		super(Account.class);
 		this.managers = managers;
 	}
-	
+
 	@Override
 	public void saveOrUpdate(Account account) throws UserNameNotAvailableException {
 		try {
@@ -46,18 +46,18 @@ public class AccountDAO extends DAO<Account> {
 			LOG.error("Unexpected exception: ", e);
 		}
 	}
-	
+
 	private void cascadeDelete(UUID uuid) {
 		for (EntityManager<?> manager : managers)
 			manager.delete(uuid);
 	}
-	
+
 	@Override
 	public void delete(UUID uuid) {
 		cascadeDelete(uuid);
 		super.delete(uuid);
 	}
-	
+
 	public void delete(String username) {
 		cascadeDelete(getUUID(username));
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -71,7 +71,7 @@ public class AccountDAO extends DAO<Account> {
 			query.executeUpdate();
 		}
 	}
-	
+
 	public List<String> getAllUsernames() {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
@@ -81,10 +81,10 @@ public class AccountDAO extends DAO<Account> {
 			TypedQuery<String> query = session.createQuery(criteriaQuery);
 			List<String> result = query.getResultList();
 			return result;
-			
+
 		}
 	}
-	
+
 	public Account get(String username) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
@@ -98,8 +98,13 @@ public class AccountDAO extends DAO<Account> {
 			return result.isEmpty() ? null : result.get(0);
 		}
 	}
-	
+
 	public UUID getUUID(String username) {
+		List<UUID> uuids = getUUIDs(username);
+		return uuids.isEmpty() ? null : uuids.get(0);
+	}
+
+	public List<UUID> getUUIDs(String username) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
 			CriteriaQuery<UUID> criteriaQuery = criteriaBuilder.createQuery(UUID.class);
@@ -109,10 +114,10 @@ public class AccountDAO extends DAO<Account> {
 			criteriaQuery.where(condition);
 			TypedQuery<UUID> query = session.createQuery(criteriaQuery);
 			List<UUID> result = query.getResultList();
-			return result.isEmpty() ? null : result.get(0);
+			return result;
 		}
 	}
-	
+
 	public String getUsername(UUID uuid) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
@@ -126,7 +131,7 @@ public class AccountDAO extends DAO<Account> {
 			return result.isEmpty() ? null : result.get(0);
 		}
 	}
-	
+
 	public boolean isUsernameAvailable(String username) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
@@ -141,5 +146,5 @@ public class AccountDAO extends DAO<Account> {
 			return count == 0 ? true : false;
 		}
 	}
-	
+
 }
