@@ -29,9 +29,11 @@ import jaims_development_studio.jaims.api.util.UpdateTrackingUuidEntity;
 @Entity(name = "Settings")
 @Table(name = "SETTINGS")
 public class Settings extends UpdateTrackingUuidEntity {
-	
+
 	private static final long	serialVersionUID			= 1176941652188927120L;
-	
+	public static final int		RESIZE_ALONG_WIDTH			= 0;
+	public static final int		RESIZE_ALONG_HEIGHT			= 1;
+	public static final int		RESIZE_FILL_SCREEN			= 2;;
 	@Column(name = "ARC_MESSAGE", columnDefinition = "INTEGER")
 	private int					arcMessages					= 20;
 	@Column(name = "ARC_CONTACT_IMAGE", columnDefinition = "INTEGER")
@@ -40,7 +42,7 @@ public class Settings extends UpdateTrackingUuidEntity {
 	private int					arcProfileImage				= 15;
 	@Column(name = "CHAT_BACKGROUND", columnDefinition = "INTEGER")
 	private int					chatBackground				= Color.DARK_GRAY.getRGB();
-	
+
 	// Font attributes for User-Message
 	@Column(name = "OWN_FONT_NAME", columnDefinition = "VARCHAR(128)")
 	private String				ownFontName					= "Serif";
@@ -48,7 +50,7 @@ public class Settings extends UpdateTrackingUuidEntity {
 	private int					ownFontStyle				= 0;
 	@Column(name = "OWN_FONT_SIZE", columnDefinition = "INTEGER")
 	private int					ownFontSize					= 14;
-	
+
 	// Color Attributes for User-Message
 	@Column(name = "COLOR_OWN_MESSAGE", columnDefinition = "INTEGER")
 	private int					colorOwnMessages			= new Color(191, 225, 14).getRGB();
@@ -56,7 +58,7 @@ public class Settings extends UpdateTrackingUuidEntity {
 	private int					colorOwnMessageBorder		= Color.GRAY.getRGB();
 	@Column(name = "COLOR_OWN_MESSAGE_FONT", columnDefinition = "INTEGER")
 	private int					colorOwnMessageFont			= Color.BLACK.getRGB();
-	
+
 	// Font attributes for Contact-Message
 	@Column(name = "CONTACT_FONT_NAME", columnDefinition = "VARCHAR(128)")
 	private String				contactFontName				= "Serif";
@@ -64,7 +66,7 @@ public class Settings extends UpdateTrackingUuidEntity {
 	private int					contactFontStyle			= 0;
 	@Column(name = "CONTACT_FONT_SIZE", columnDefinition = "INTEGER")
 	private int					contactFontSize				= 14;
-	
+
 	// Color attributes for Contact-Message
 	@Column(name = "COLOR_CONTACT_MESSAGE", columnDefinition = "INTEGER")
 	private int					colorContactMessages		= new Color(255, 250, 240).getRGB();
@@ -72,7 +74,7 @@ public class Settings extends UpdateTrackingUuidEntity {
 	private int					colorContactMessageBorder	= Color.GRAY.getRGB();
 	@Column(name = "COLOR_CONTACT_MESSAGE_FONT", columnDefinition = "INTEGER")
 	private int					colorContactMessageFont		= Color.BLACK.getRGB();
-	
+
 	// Devices
 	@Column(name = "INPUT_MIXER_INFO_NAME", columnDefinition = "VARCHAR(128)")
 	private String				inputMixerInfoName			= null;
@@ -99,18 +101,20 @@ public class Settings extends UpdateTrackingUuidEntity {
 	@Column(name = "INPUT_FORMAT_TYPE", columnDefinition = "VARCHAR(64)")
 	@Enumerated(EnumType.STRING)
 	private EFileFormatType		inputFormatType				= EFileFormatType.FORMAT_WAVE;
-	
+	@Column(name = "IMAGE_RESIZE_HINT", columnDefinition = "INTEGER")
+	private int					imageResizeHint				= RESIZE_FILL_SCREEN;
+
 	public Settings() {
-		
+
 		this(null);
 	}
-	
+
 	public Settings(UUID uuid) {
-		
+
 		super(new Date(), null);
 		setUuid(uuid);
 	}
-	
+
 	public Settings(Date lastUpdated, Account account, UUID uuid, int arcMessages, int arcContactImage,
 			int arcProfileImage, String ownFontName, int ownFontStyle, int ownFontSize, int colorOwnMessages,
 			int colorOwnMessageBorder, int colorOwnMessageFont, String contactFontName, int contactFontStyle,
@@ -118,7 +122,7 @@ public class Settings extends UpdateTrackingUuidEntity {
 			String inputMixerInfoName, String outputMixerInfoName, float inputGain, float outputVolume,
 			EInputEncodingType inputEncoding, float inputSampleRate, int inputSampleSize, int inputChannels,
 			EEndianness endianness, int frameSize, EFileFormatType inputFormatType) {
-		
+
 		super(lastUpdated, account);
 		setUuid(uuid);
 		this.arcMessages = arcMessages;
@@ -148,30 +152,30 @@ public class Settings extends UpdateTrackingUuidEntity {
 		this.frameSize = frameSize;
 		this.inputFormatType = inputFormatType;
 	}
-	
+
 	@Override
 	public Settings copyWithoutAccount() {
-		
+
 		return new Settings(getLastUpdated(), null, getUuid(), arcMessages, arcContactImage, arcProfileImage,
 				ownFontName, ownFontStyle, ownFontSize, colorOwnMessages, colorOwnMessageBorder, colorOwnMessageFont,
 				contactFontName, contactFontStyle, contactFontSize, colorContactMessages, colorContactMessageBorder,
 				colorContactMessageFont, inputMixerInfoName, outputMixerInfoName, inputGain, outputVolume,
 				inputEncoding, inputSampleRate, inputSampleSize, inputChannels, endianness, frameSize, inputFormatType);
 	}
-	
+
 	@Override
 	public String toString() {
-		
+
 		Account account = getAccount();
-		
+
 		if (account != null)
 			return "Settings of account " + account.toStringName();
 		return "Settings of account " + getUuid();
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
-		
+
 		if (this == o)
 			return true;
 		if (o == null)
@@ -197,10 +201,10 @@ public class Settings extends UpdateTrackingUuidEntity {
 				.append(inputChannels, other.inputChannels).append(endianness, other.endianness)
 				.append(frameSize, other.frameSize).append(inputFormatType, other.inputFormatType).isEquals();
 	}
-	
+
 	@Override
 	public int hashCode() {
-		
+
 		return new HashCodeBuilder(42, 321).append(getUuid()).append(getLastUpdated()).append(arcMessages)
 				.append(arcContactImage).append(arcProfileImage).append(ownFontName).append(ownFontStyle)
 				.append(ownFontSize).append(colorOwnMessages).append(colorOwnMessageBorder).append(colorOwnMessageFont)
@@ -210,316 +214,326 @@ public class Settings extends UpdateTrackingUuidEntity {
 				.append(inputSampleRate).append(inputSampleSize).append(inputChannels).append(endianness)
 				.append(frameSize).append(inputFormatType).toHashCode();
 	}
-	
+
 	// --------------------------------------------------------------
 	// --------------GETTER AND SETTER-------------------------------
 	// --------------------------------------------------------------
-	
+
 	public AudioFormat getAudioFormat() {
-		
+
 		switch (inputEncoding) {
-			case ENCODING_ALAW:
-				return new AudioFormat(AudioFormat.Encoding.ALAW, inputSampleRate, inputSampleSize, inputChannels,
-						frameSize, inputSampleRate, endianness.getValue());
-			case ENCODING_PCM_FLOAT:
-				return new AudioFormat(AudioFormat.Encoding.PCM_FLOAT, inputSampleRate, inputSampleSize, inputChannels,
-						frameSize, inputSampleRate, endianness.getValue());
-			case ENCODING_PCM_SIGNED:
-				return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, inputSampleRate, inputSampleSize, inputChannels,
-						frameSize, inputSampleRate, endianness.getValue());
-			case ENCODING_PCM_UNSIGNED:
-				return new AudioFormat(AudioFormat.Encoding.PCM_UNSIGNED, inputSampleRate, inputSampleSize, inputChannels,
-						frameSize, inputSampleRate, endianness.getValue());
-			case ENCODING_ULAW:
-				return new AudioFormat(AudioFormat.Encoding.ULAW, inputSampleRate, inputSampleSize, inputChannels,
-						frameSize, inputSampleRate, endianness.getValue());
-			default:
-				return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, inputSampleRate, inputSampleSize, inputChannels,
-						frameSize, inputSampleRate, endianness.getValue());
+		case ENCODING_ALAW:
+			return new AudioFormat(AudioFormat.Encoding.ALAW, inputSampleRate, inputSampleSize, inputChannels,
+					frameSize, inputSampleRate, endianness.getValue());
+		case ENCODING_PCM_FLOAT:
+			return new AudioFormat(AudioFormat.Encoding.PCM_FLOAT, inputSampleRate, inputSampleSize, inputChannels,
+					frameSize, inputSampleRate, endianness.getValue());
+		case ENCODING_PCM_SIGNED:
+			return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, inputSampleRate, inputSampleSize, inputChannels,
+					frameSize, inputSampleRate, endianness.getValue());
+		case ENCODING_PCM_UNSIGNED:
+			return new AudioFormat(AudioFormat.Encoding.PCM_UNSIGNED, inputSampleRate, inputSampleSize, inputChannels,
+					frameSize, inputSampleRate, endianness.getValue());
+		case ENCODING_ULAW:
+			return new AudioFormat(AudioFormat.Encoding.ULAW, inputSampleRate, inputSampleSize, inputChannels,
+					frameSize, inputSampleRate, endianness.getValue());
+		default:
+			return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, inputSampleRate, inputSampleSize, inputChannels,
+					frameSize, inputSampleRate, endianness.getValue());
 		}
 	}
-	
+
 	public String getOwnFontName() {
-		
+
 		return ownFontName;
 	}
-	
+
 	public void setOwnFontName(String ownFontName) {
-		
+
 		this.ownFontName = ownFontName;
 	}
-	
+
 	public int getOwnFontStyle() {
-		
+
 		return ownFontStyle;
 	}
-	
+
 	public void setOwnFontStyle(int ownFontStyle) {
-		
+
 		this.ownFontStyle = ownFontStyle;
 	}
-	
+
 	public int getOwnFontSize() {
-		
+
 		return ownFontSize;
 	}
-	
+
 	public void setOwnFontSize(int ownFontSize) {
-		
+
 		this.ownFontSize = ownFontSize;
 	}
-	
+
 	public int getColorOwnMessages() {
-		
+
 		return colorOwnMessages;
 	}
-	
+
 	public void setColorOwnMessages(int rgb) {
-		
+
 		colorOwnMessages = rgb;
 	}
-	
+
 	public int getColorOwnMessageBorder() {
-		
+
 		return colorOwnMessageBorder;
 	}
-	
+
 	public void setColorOwnMessageBorder(int colorOwnMessageBorder) {
-		
+
 		this.colorOwnMessageBorder = colorOwnMessageBorder;
 	}
-	
+
 	public int getColorOwnMessageFont() {
-		
+
 		return colorOwnMessageFont;
 	}
-	
+
 	public void setColorOwnMessageFont(int colorOwnMessageFont) {
-		
+
 		this.colorOwnMessageFont = colorOwnMessageFont;
 	}
-	
+
 	public String getContactFontName() {
-		
+
 		return contactFontName;
 	}
-	
+
 	public void setContactFontName(String contactFontName) {
-		
+
 		this.contactFontName = contactFontName;
 	}
-	
+
 	public int getContactFontStyle() {
-		
+
 		return contactFontStyle;
 	}
-	
+
 	public void setContactFontStyle(int contactFontStyle) {
-		
+
 		this.contactFontStyle = contactFontStyle;
 	}
-	
+
 	public int getContactFontSize() {
-		
+
 		return contactFontSize;
 	}
-	
+
 	public void setContactFontSize(int contactFontSize) {
-		
+
 		this.contactFontSize = contactFontSize;
 	}
-	
+
 	public int getColorContactMessages() {
-		
+
 		return colorContactMessages;
 	}
-	
+
 	public void setColorContactMessages(int colorContactMessages) {
-		
+
 		this.colorContactMessages = colorContactMessages;
 	}
-	
+
 	public int getColorContactMessageBorder() {
-		
+
 		return colorContactMessageBorder;
 	}
-	
+
 	public void setColorContactMessageBorder(int colorContactMessageBorder) {
-		
+
 		this.colorContactMessageBorder = colorContactMessageBorder;
 	}
-	
+
 	public int getColorContactMessageFont() {
-		
+
 		return colorContactMessageFont;
 	}
-	
+
 	public void setColorContactMessageFont(int colorContactMessageFont) {
-		
+
 		this.colorContactMessageFont = colorContactMessageFont;
 	}
-	
+
 	public String getInputMixerInfoName() {
-		
+
 		return inputMixerInfoName;
 	}
-	
+
 	public void setInputMixerInfo(String inputMixerInfo) {
-		
+
 		inputMixerInfoName = inputMixerInfo;
 	}
-	
+
 	public String getOutputMixerInfoName() {
-		
+
 		return outputMixerInfoName;
 	}
-	
+
 	public void setOutputMixerInfo(String outputMixerInfo) {
-		
+
 		outputMixerInfoName = outputMixerInfo;
 	}
-	
+
 	public float getInputGain() {
-		
+
 		return inputGain;
 	}
-	
+
 	public void setInputGain(float inputGain) {
-		
+
 		this.inputGain = inputGain;
 	}
-	
+
 	public float getOutputVolume() {
-		
+
 		return outputVolume;
 	}
-	
+
 	public void setOutputVolume(float outputVolume) {
-		
+
 		this.outputVolume = outputVolume;
 	}
-	
+
 	public EInputEncodingType getInputEncoding() {
-		
+
 		return inputEncoding;
 	}
-	
+
 	public void setInputEncoding(EInputEncodingType inputEncoding) {
-		
+
 		this.inputEncoding = inputEncoding;
 	}
-	
+
 	public float getInputSampleRate() {
-		
+
 		return inputSampleRate;
 	}
-	
+
 	public void setInputSampleRate(float inputSampleRate) {
-		
+
 		this.inputSampleRate = inputSampleRate;
 	}
-	
+
 	public int getInputSampleSize() {
-		
+
 		return inputSampleSize;
 	}
-	
+
 	public void setInputSampleSize(int inputSampleSize) {
-		
+
 		this.inputSampleSize = inputSampleSize;
 	}
-	
+
 	public int getInputChannels() {
-		
+
 		return inputChannels;
 	}
-	
+
 	public void setInputChannels(int inputChannels) {
-		
+
 		this.inputChannels = inputChannels;
 	}
-	
+
 	public boolean isInputBigEndian() {
-		
+
 		return endianness.getValue();
 	}
-	
+
 	public void setInputBigEndian(EEndianness inputBigEndian) {
-		
+
 		endianness = inputBigEndian;
 	}
-	
+
 	public int getFrameSize() {
-		
+
 		return frameSize;
 	}
-	
+
 	public void setFrameSize(int frameSize) {
-		
+
 		this.frameSize = frameSize;
 	}
-	
+
 	public AudioFileFormat.Type getInputFileFormat() {
-		
+
 		switch (inputFormatType) {
-			case FORMAT_AIFC:
-				return AudioFileFormat.Type.AIFC;
-			case FORMAT_AIFF:
-				return AudioFileFormat.Type.AIFF;
-			case FORMAT_AU:
-				return AudioFileFormat.Type.AU;
-			case FORMAT_SND:
-				return AudioFileFormat.Type.SND;
-			case FORMAT_WAVE:
-				return AudioFileFormat.Type.WAVE;
-			default:
-				return AudioFileFormat.Type.WAVE;
+		case FORMAT_AIFC:
+			return AudioFileFormat.Type.AIFC;
+		case FORMAT_AIFF:
+			return AudioFileFormat.Type.AIFF;
+		case FORMAT_AU:
+			return AudioFileFormat.Type.AU;
+		case FORMAT_SND:
+			return AudioFileFormat.Type.SND;
+		case FORMAT_WAVE:
+			return AudioFileFormat.Type.WAVE;
+		default:
+			return AudioFileFormat.Type.WAVE;
 		}
 	}
-	
+
 	public EFileFormatType getInputFileFormatString() {
-		
+
 		return inputFormatType;
 	}
-	
+
 	public void setInputFileFormat(EFileFormatType inputFileFormat) {
-		
+
 		inputFormatType = inputFileFormat;
 	}
-	
+
 	public int getArcMessages() {
-		
+
 		return arcMessages;
 	}
-	
+
 	public int getArcContactImage() {
-		
+
 		return arcContactImage;
 	}
-	
+
 	public int getArcProfileImage() {
-		
+
 		return arcProfileImage;
 	}
-	
+
 	public int getChatBackground() {
-		
+
 		return chatBackground;
 	}
-	
+
 	public void setChatBackground(int chatBackground) {
-		
+
 		this.chatBackground = chatBackground;
 	}
-	
+
 	public Font getOwnFont() {
-		
+
 		return new Font(ownFontName, ownFontStyle, ownFontSize);
 	}
-	
+
 	public Font getContactFont() {
-		
+
 		return new Font(contactFontName, contactFontStyle, contactFontSize);
 	}
-	
+
+	public int getImageResizeHint() {
+
+		return imageResizeHint;
+	}
+
+	public void setImageResizeHint(int imageResizeHint) {
+
+		this.imageResizeHint = imageResizeHint;
+	}
+
 }

@@ -33,6 +33,7 @@ public class RoundButton extends JButton {
 	private void initGUI(JPanel parentPanel, GUIMain guiMain) {
 
 		setPreferredSize(new Dimension(230, 36));
+		setMinimumSize(getPreferredSize());
 		setMaximumSize(getPreferredSize());
 		setOpaque(true);
 		setBorderPainted(false);
@@ -73,6 +74,7 @@ public class RoundButton extends JButton {
 
 				setPreferredSize(new Dimension(230, 36));
 				setMaximumSize(getPreferredSize());
+				setMinimumSize(getPreferredSize());
 				repaint();
 				parentPanel.revalidate();
 				parentPanel.repaint();
@@ -85,6 +87,7 @@ public class RoundButton extends JButton {
 				if (isEnabled()) {
 					setPreferredSize(new Dimension(230, 50));
 					setMaximumSize(getPreferredSize());
+					setMinimumSize(getPreferredSize());
 					repaint();
 					parentPanel.revalidate();
 					parentPanel.repaint();

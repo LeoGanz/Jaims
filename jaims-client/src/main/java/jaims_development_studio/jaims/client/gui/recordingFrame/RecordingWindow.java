@@ -17,12 +17,21 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.io.File;
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.TargetDataLine;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JWindow;
 import javax.swing.Timer;
 
@@ -32,31 +41,47 @@ import jaims_development_studio.jaims.client.logic.RecordAudio;
 
 public class RecordingWindow extends JWindow {
 
-	private GUIMain		guiMain;
-	private int			translucency	= 255;
-	private boolean		appearing		= false, mouseOnClose = false, clicked = false, paintTime = false,
-			mouseOnSend = false, paintClick = false;;
-	private StopButton	sb;
-	private PauseButton	pb;
-	private String		time			= "";
-	private JPanel		centerpanel;
-	private long		startTime, startPause = 0, endPause = 0;
-	private Timer		timer;
-	private RecordAudio	ra;
-	private Image		sendImg;
+	private GUIMain				guiMain;
+	private int					translucency	= 255, existingAudioFiles = 0;
+	private boolean				appearing		= false, mouseOnClose = false, clicked = false, paintTime = false,
+			mouseOnSend = false, paintClick = false, recording = false, paused = true;
+	private StopButton			sb;
+	private PauseButton			pb;
+	private String				time			= "", fileTime;
+	private JPanel				centerpanel;
+	private long				startTime, startPause = 0, endPause = 0;
+	private Timer				timer;
+	private RecordAudio			ra;
+	private Image				tickMark;
+	private File				directory, recordFile;
+	private AudioInputStream	ais;
+	private TargetDataLine		recordLine;
+	private JSlider				slider;
 
 	public RecordingWindow(GUIMain guiMain, PanelChat panelChat) {
 
 		this.guiMain = guiMain;
-		ra = new RecordAudio(guiMain);
 
 		initGUI(panelChat);
 	}
 
 	private void initGUI(PanelChat panelChat) {
 
-		sendImg = Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Jaims_Send.png"))
-				.getScaledInstance(30, 20, Image.SCALE_SMOOTH);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		fileTime = sdf.format(new Date(System.currentTimeMillis()));
+
+		tickMark = Toolkit.getDefaultToolkit()
+				.getImage(getClass().getClassLoader().getResource("images/tickmark_green.png"))
+				.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+		directory = new File(guiMain.getUserPath() + "audios/");
+		directory.mkdirs();
+		String[] filenames = directory.list();
+		if (filenames.length >= 0) {
+			for (String s : filenames) {
+				if (s.contains(fileTime))
+					existingAudioFiles++;
+			}
+		}
 
 		setBackground(new Color(0, 0, 0, 0));
 		setSize(new Dimension(0, 0));
@@ -92,63 +117,64 @@ public class RecordingWindow extends JWindow {
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-				recordingButton.setPreferredSize(new Dimension(46, 46));
-				recordingButton.setMaximumSize(new Dimension(46, 46));
-				rb.revalidate();
-				centerpanel.revalidate();
-				revalidate();
-				repaint();
+				if (recording == false) {
+					recordingButton.setPreferredSize(new Dimension(46, 46));
+					recordingButton.setMaximumSize(new Dimension(46, 46));
+					rb.revalidate();
+					centerpanel.revalidate();
+					revalidate();
+					repaint();
 
-				Thread t = new Thread(ra);
-				t.start();
+					timer = new Timer(25, new ActionListener() {
 
-				timer = new Timer(25, new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
 
-					@Override
-					public void actionPerformed(ActionEvent e) {
-
-						if (appearing) {
-							if (translucency > 80)
-								translucency -= 5;
-							else {
-								appearing = false;
+							if (appearing) {
+								if (translucency > 80)
+									translucency -= 5;
+								else {
+									appearing = false;
+								}
+							} else {
+								if (translucency < 255)
+									translucency += 5;
+								else
+									appearing = true;
 							}
-						} else {
-							if (translucency < 255)
-								translucency += 5;
-							else
-								appearing = true;
+
+							recordingButton.repaint();
+
 						}
+					});
+					timer.start();
 
-						recordingButton.repaint();
+					Thread thread = new Thread() {
+						@Override
+						public void run() {
 
-					}
-				});
-				timer.start();
+							startTime = System.currentTimeMillis();
+							paintTime = true;
 
-				Thread thread = new Thread() {
-					@Override
-					public void run() {
-
-						startTime = System.currentTimeMillis();
-						paintTime = true;
-
-						SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
-						while (timer.isRunning()) {
-							time = sdf.format(
-									new Date((System.currentTimeMillis() - (endPause - startPause)) - startTime));
-							centerpanel.repaint(0, 0, centerpanel.getWidth(), 30);
-							try {
-								Thread.sleep(1000);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+							SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+							while (timer.isRunning()) {
+								time = sdf.format(
+										new Date((System.currentTimeMillis() - (endPause - startPause)) - startTime));
+								centerpanel.repaint(0, 0, centerpanel.getWidth(), 30);
+								try {
+									Thread.sleep(1000);
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							}
+							paintTime = false;
 						}
-						paintTime = false;
-					}
-				};
-				thread.start();
+					};
+					thread.start();
+
+					record();
+				}
 
 			}
 
@@ -179,11 +205,7 @@ public class RecordingWindow extends JWindow {
 				g2.setColor(Color.WHITE);
 				g2.fillRoundRect(0, 0, 400, 160, 60, 60);
 
-				if (paintClick) {
-					g2.setColor(Color.GRAY);
-					g2.fillRoundRect(getWidth() - 45, getHeight() - 30, 40, 28, 60, 60);
-				}
-				g2.drawImage(sendImg, getWidth() - 40, getHeight() - 25, this);
+				g2.drawImage(tickMark, getWidth() - 40, getHeight() - 38, this);
 
 				if (paintTime) {
 					g2.setColor(Color.BLACK);
@@ -220,7 +242,6 @@ public class RecordingWindow extends JWindow {
 				}
 
 				if (mouseOnSend) {
-					paintClick = true;
 					centerpanel.repaint();
 				}
 
@@ -230,8 +251,17 @@ public class RecordingWindow extends JWindow {
 			public void mouseReleased(MouseEvent e) {
 
 				if (mouseOnSend) {
-					paintClick = false;
-					centerpanel.repaint();
+					try {
+						ais.close();
+						recordLine.close();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					AfterRecordingWindow afr = new AfterRecordingWindow(guiMain, panelChat, recordFile);
+					afr.initGUI();
+
+					dispose();
 				}
 			}
 		});
@@ -252,7 +282,7 @@ public class RecordingWindow extends JWindow {
 					}
 				}
 
-				if (e.getX() >= 360 && e.getX() <= 390 && e.getY() >= 130 && e.getY() <= 160) {
+				if (e.getX() >= 360 && e.getX() <= 390 && e.getY() >= 125 && e.getY() <= 160) {
 					mouseOnSend = true;
 					centerpanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 				} else {
@@ -318,6 +348,47 @@ public class RecordingWindow extends JWindow {
 			}
 		});
 		t.start();
+	}
+
+	private void record() {
+
+		recording = true;
+
+		Thread t = new Thread() {
+			@Override
+			public void run() {
+
+				try {
+					DataLine.Info dlInfo = new DataLine.Info(TargetDataLine.class,
+							guiMain.getSettings().getAudioFormat());
+					recordLine = (TargetDataLine) AudioSystem.getLine(dlInfo);
+					DecimalFormat dm = new DecimalFormat("0000");
+					recordFile = new File(guiMain.getUserPath() + "audios/" + "JAIAUD-" + fileTime + "-"
+							+ dm.format(++existingAudioFiles) + "."
+							+ guiMain.getSettings().getInputFileFormat().getExtension());
+					recordLine.open(guiMain.getSettings().getAudioFormat());
+
+					ais = new AudioInputStream(recordLine);
+					recordLine.start();
+					AudioSystem.write(ais, guiMain.getSettings().getInputFileFormat(), recordFile);
+				} catch (LineUnavailableException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		t.start();
+	}
+
+	private void play() {
+
+	}
+
+	private void pausePlayback() {
+
 	}
 
 }

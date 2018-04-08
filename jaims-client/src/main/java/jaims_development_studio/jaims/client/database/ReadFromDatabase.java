@@ -198,7 +198,6 @@ public class ReadFromDatabase {
 				SimpleContact simpleContact = new SimpleContact((UUID) rs.getObject(1), rs.getString(2),
 						rs.getBoolean(7));
 				getSimpleChatContact.add(simpleContact);
-				System.out.println(simpleContact.getContactNickname());
 			}
 			pStatement.close();
 		} catch (SQLException e) {

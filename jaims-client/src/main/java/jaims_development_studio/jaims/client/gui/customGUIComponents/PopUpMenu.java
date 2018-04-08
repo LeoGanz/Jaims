@@ -156,7 +156,9 @@ public class PopUpMenu extends JWindow {
 			@Override
 			public void componentMoved(ComponentEvent e) {
 
-				setLocation((int) sd.getLocationOnScreen().getX() - 2, (int) sd.getLocationOnScreen().getY() + 40);
+				if (isShowing()) {
+					setLocation((int) sd.getLocationOnScreen().getX() - 2, (int) sd.getLocationOnScreen().getY() + 40);
+				}
 
 			}
 

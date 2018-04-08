@@ -37,6 +37,7 @@ public class PanelContactShowing extends JPanel {
 	public PanelContactShowing(GUIMain guiMain, SimpleContact simpleContact) {
 
 		this.simpleContact = simpleContact;
+		this.guiMain = guiMain;
 
 		img = guiMain.getProfileImage(simpleContact.getContactID()).getScaledInstance(50, 50, Image.SCALE_SMOOTH);
 		setMinimumSize(new Dimension(200, 60));
@@ -48,8 +49,12 @@ public class PanelContactShowing extends JPanel {
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-				if (simpleContact.chatExists() == false)
+				if (simpleContact.chatExists() == false) {
+					simpleContact.setChatExists(true);
+					updateDatabase();
 					guiMain.addChatUser(simpleContact);
+
+				}
 
 				guiMain.showParentPanel(
 						guiMain.getMessagePanelManager().getChatPanelForUser(simpleContact.getContactID()),
@@ -230,6 +235,11 @@ public class PanelContactShowing extends JPanel {
 			g2.drawImage(tickmark, getWidth() - 44, 14, this);
 		}
 
+	}
+
+	private void updateDatabase() {
+
+		guiMain.updateHasChat(true, simpleContact.getContactID());
 	}
 
 }

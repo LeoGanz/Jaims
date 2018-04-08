@@ -79,7 +79,6 @@ public class WriteToDatabase {
 			pStatement.setObject(6, pf.getUuid());
 			pStatement.executeUpdate();
 			con.commit();
-
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -97,6 +96,7 @@ public class WriteToDatabase {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+
 	}
 
 	public void saveTextMessage(Message m) {
@@ -122,6 +122,40 @@ public class WriteToDatabase {
 				pStatement.setTimestamp(7, null);
 			}
 			pStatement.setString(8, ((TextMessage) m).getMessage());
+			pStatement.executeUpdate();
+			con.commit();
+
+		} catch (NullPointerException npe) {
+			npe.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void saveVoiceMessage(Message m, String pathToFile) {
+
+		try {
+			pStatement = con.prepareStatement("INSERT INTO MESSAGES VALUES (?,?,?,?,?,?,?,?)");
+			pStatement.setObject(1, UUID.randomUUID());
+			pStatement.setObject(2, m.getSender());
+			pStatement.setObject(3, m.getRecipient());
+			pStatement.setString(4, m.getMessageType().getValue());
+			pStatement.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
+			if (m.getTimestampRead() != null && m.getTimestampDelivered() != null) {
+				pStatement.setTimestamp(6, new Timestamp(m.getTimestampRead().getTime()));
+				pStatement.setTimestamp(7, new Timestamp(m.getTimestampDelivered().getTime()));
+			} else if (m.getTimestampDelivered() != null && m.getTimestampRead() == null) {
+				pStatement.setTimestamp(6, null);
+				pStatement.setTimestamp(7, new Timestamp(m.getTimestampDelivered().getTime()));
+			} else if (m.getTimestampDelivered() == null && m.getTimestampRead() != null) {
+				pStatement.setTimestamp(6, new Timestamp(m.getTimestampRead().getTime()));
+				pStatement.setTimestamp(7, null);
+			} else {
+				pStatement.setTimestamp(6, null);
+				pStatement.setTimestamp(7, null);
+			}
+			pStatement.setString(8, pathToFile);
 			pStatement.executeUpdate();
 			con.commit();
 

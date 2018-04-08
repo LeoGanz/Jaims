@@ -8,6 +8,7 @@ import javax.swing.SwingWorker;
 
 import jaims_development_studio.jaims.api.message.EMessageType;
 import jaims_development_studio.jaims.api.message.TextMessage;
+import jaims_development_studio.jaims.api.message.VoiceMessage;
 import jaims_development_studio.jaims.api.sendables.ERequestType;
 import jaims_development_studio.jaims.api.sendables.SendableRequest;
 import jaims_development_studio.jaims.client.chatObjects.ChatInformation;
@@ -120,9 +121,10 @@ public class ManageMessagePanels {
 
 		if (m.getMessageType().equals(EMessageType.TEXT)) {
 			TextMessage tm = (TextMessage) m;
-			if (availablePanelChats.containsKey(m.getSender()))
+			if (availablePanelChats.containsKey(m.getSender())) {
 				availableChatPanels.get(tm.getSender()).addNewTextMessage(tm);
-			else {
+				availablePanelChats.get(tm.getSender()).setScrollBarValueToMax();
+			} else {
 				sendEnquiry(m.getSender());
 				while (guiMain.hasEntry(m.getSender()) == false) {
 					try {
@@ -139,7 +141,23 @@ public class ManageMessagePanels {
 		} else if (m.getMessageType().equals(EMessageType.IMAGE)) {
 
 		} else if (m.getMessageType().equals(EMessageType.VOICE)) {
-
+			VoiceMessage vm = (VoiceMessage) m;
+			if (availablePanelChats.containsKey(m.getSender())) {
+				availableChatPanels.get(vm.getSender()).addNewVoiceMessage(vm);
+				availablePanelChats.get(vm.getSender()).setScrollBarValueToMax();
+			} else {
+				sendEnquiry(m.getSender());
+				while (guiMain.hasEntry(m.getSender()) == false) {
+					try {
+						Thread.sleep(300);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				getChatPanelForUser(m.getSender());
+				availableChatPanels.get(vm.getSender()).addNewVoiceMessage(vm);
+			}
 		} else if (m.getMessageType().equals(EMessageType.FILE)) {
 
 		} else if (m.getMessageType().equals(EMessageType.LOCATION)) {
@@ -196,4 +214,12 @@ public class ManageMessagePanels {
 		guiMain.sendSendable(sr);
 	}
 
+	public void updateHasChat() {
+
+		for (SimpleContact sc : list) {
+			if (sc.chatExists() == false) {
+				sc.setChatExists(true);
+			}
+		}
+	}
 }

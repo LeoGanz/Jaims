@@ -31,6 +31,7 @@ import jaims_development_studio.jaims.client.audio.ListAudioDevices;
 import jaims_development_studio.jaims.client.chatObjects.ChatInformation;
 import jaims_development_studio.jaims.client.chatObjects.Message;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.CenterPanel;
+import jaims_development_studio.jaims.client.gui.customGUIComponents.FrameTop;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.ParentPanel;
 import jaims_development_studio.jaims.client.gui.login.PanelProgramStartup;
 import jaims_development_studio.jaims.client.gui.login.ShowGuiBuildingProcess;
@@ -100,6 +101,7 @@ public class GUIMain implements Runnable {
 
 		panelProgramStartup.initGUI();
 		jaimsFrame.repaint();
+
 	}
 
 	public void showLoginPanel() {
@@ -176,7 +178,7 @@ public class GUIMain implements Runnable {
 
 	public void showSettings() {
 
-		jaimsFrame.getContentPane().removeAll();
+		jaimsFrame.getContentPane().remove(centerPanel);
 		if (panelSelectSettings == null)
 			panelSelectSettings = new PanelSelectSettings(this);
 
@@ -252,7 +254,7 @@ public class GUIMain implements Runnable {
 			}
 		};
 		panelLeftSide.setLayout(new BoxLayout(panelLeftSide, BoxLayout.PAGE_AXIS));
-		panelLeftSide.setBorder(new EmptyBorder(15, 8, 8, 16));
+		panelLeftSide.setBorder(new EmptyBorder(0, 8, 8, 16));
 		{
 			panelUserShowing = new PanelUserShowing(this, cm.getUserContact());
 			panelLeftSide.add(panelUserShowing);
@@ -275,6 +277,10 @@ public class GUIMain implements Runnable {
 		jaimsFrame.getContentPane().removeAll();
 		jaimsFrame.getContentPane().add(centerPanel, BorderLayout.CENTER);
 		jaimsFrame.getContentPane().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+
+		FrameTop ft = new FrameTop(this);
+		jaimsFrame.getContentPane().add(ft, BorderLayout.PAGE_START);
+
 		jaimsFrame.initChatGUI();
 		jaimsFrame.getContentPane().repaint();
 	}
@@ -441,6 +447,11 @@ public class GUIMain implements Runnable {
 		cm.saveTextMessage(m);
 	}
 
+	public void saveVoiceMessage(jaims_development_studio.jaims.api.message.VoiceMessage v, String pathToFile) {
+
+		cm.saveVoiceMessage(v, pathToFile);
+	}
+
 	public void addMessageToChat(jaims_development_studio.jaims.api.message.Message m, EMessageType messageType) {
 
 		if (manageMessagePanels != null) {
@@ -524,6 +535,17 @@ public class GUIMain implements Runnable {
 	public String getUsername() {
 
 		return cm.getUsername();
+	}
+
+	public void repaintPanelShowMessages() {
+
+		if (parentPanel != null)
+			parentPanel.repaint();
+	}
+
+	public String getUserPath() {
+
+		return cm.getUserPath();
 	}
 
 }

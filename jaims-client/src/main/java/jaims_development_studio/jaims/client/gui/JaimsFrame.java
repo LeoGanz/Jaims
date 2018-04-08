@@ -2,8 +2,16 @@ package jaims_development_studio.jaims.client.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +36,9 @@ public class JaimsFrame extends JFrame {
 	private static final Logger	LOG					= LoggerFactory.getLogger(JaimsFrame.class);
 	private List<Image>			iconImages;
 	private Image				img					= null;
+	private Rectangle			maxBounds;
+	private boolean				scaleAlongX			= false, scaleAlongY = false;
+	private Point				startPoint;
 
 	private JFrame				frame;
 
@@ -105,8 +116,92 @@ public class JaimsFrame extends JFrame {
 		setSize(900, 600);
 		setMinimumSize(new Dimension(700, 400));
 		setLocationRelativeTo(null);
-		setBackground(Color.DARK_GRAY);
-		setUndecorated(false);
+		setUndecorated(true);
+		setBackground(new Color(0, 0, 0, 0));
+		setDefaultLookAndFeelDecorated(true);
 		setVisible(true);
+
+		getContentPane().addMouseMotionListener(new MouseMotionListener() {
+
+			@Override
+			public void mouseMoved(MouseEvent e) {
+
+				if ((e.getX() >= 0 && e.getX() <= 5) || (e.getX() >= (getWidth() - 5) && e.getX() <= getWidth())) {
+					scaleAlongX = true;
+					getContentPane().setCursor(new Cursor(Cursor.W_RESIZE_CURSOR));
+				} else {
+					if (scaleAlongX) {
+						scaleAlongX = false;
+						getContentPane().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+					}
+				}
+
+				if ((e.getY() >= 0 && e.getY() <= 5) || (e.getY() >= (getHeight() - 5) && e.getY() <= getHeight())) {
+					scaleAlongY = true;
+					getContentPane().setCursor(new Cursor(Cursor.N_RESIZE_CURSOR));
+				} else {
+					if (scaleAlongY) {
+						scaleAlongY = false;
+						getContentPane().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+					}
+				}
+
+				if (scaleAlongY && scaleAlongX) {
+					if ((e.getX() >= 0 && e.getX() <= 5) && (e.getY() >= 0 && e.getY() <= 5))
+						getContentPane().setCursor(new Cursor(Cursor.NW_RESIZE_CURSOR));
+					else if ((e.getX() >= 0 && e.getX() <= 5)
+							&& (e.getY() >= (getHeight() - 5) && e.getY() <= getHeight()))
+						getContentPane().setCursor(new Cursor(Cursor.SW_RESIZE_CURSOR));
+					else if ((e.getX() >= (getWidth() - 5) && e.getX() <= getWidth())
+							&& (e.getY() >= 0 && e.getY() <= 5))
+						getContentPane().setCursor(new Cursor(Cursor.NE_RESIZE_CURSOR));
+					else if ((e.getX() >= (getWidth() - 5) && e.getX() <= getWidth())
+							&& (e.getY() >= (getHeight() - 5) && e.getY() <= getHeight()))
+						getContentPane().setCursor(new Cursor(Cursor.SE_RESIZE_CURSOR));
+				}
+
+			}
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+
+				Point frameLocation = getLocation();
+				if ((startPoint.getX() >= 0) && (startPoint.getX() <= 5)) {
+					int width = getWidth();
+					int addingWidth = (int) Math.abs(e.getX() - startPoint.getX());
+					width += addingWidth;
+					int height = getHeight();
+					int addingHeight = (int) Math.abs(e.getY() - startPoint.getY());
+					height += addingHeight;
+
+					setSize(width, height);
+					setLocation(frameLocation.x - addingWidth, frameLocation.y - addingHeight);
+				}
+			}
+		});
+		getContentPane().addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+				startPoint = e.getPoint();
+
+			}
+		});
+	}
+
+	@Override
+	public synchronized void setExtendedState(int state) {
+
+		if (maxBounds == null && (state & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH) {
+			Insets screenInsets = getToolkit().getScreenInsets(getGraphicsConfiguration());
+			Rectangle screenSize = getGraphicsConfiguration().getBounds();
+			Rectangle maxBounds = new Rectangle(screenInsets.left + screenSize.x, screenInsets.top + screenSize.y,
+					screenSize.x + screenSize.width - screenInsets.right - screenInsets.left,
+					screenSize.y + screenSize.height - screenInsets.bottom - screenInsets.top);
+			super.setMaximizedBounds(maxBounds);
+		}
+
+		super.setExtendedState(state);
 	}
 }

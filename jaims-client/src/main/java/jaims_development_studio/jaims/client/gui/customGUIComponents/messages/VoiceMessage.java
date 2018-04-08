@@ -63,10 +63,10 @@ public class VoiceMessage extends JPanel {
 
 	private void initGUI(UUID uuid) {
 
-		setOpaque(true);
+		setOpaque(false);
 
 		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-		setPreferredSize(new Dimension(330, 50));
+		setPreferredSize(new Dimension(350, 50));
 		setMaximumSize(getPreferredSize());
 		if (own)
 			setBorder(new RoundBorder(330, 50, new Color(guiMain.getSettings().getColorContactMessageBorder())));
@@ -80,7 +80,7 @@ public class VoiceMessage extends JPanel {
 			@Override
 			public void paintComponent(Graphics g) {
 
-				g.setColor(getBackground());
+				g.setColor(new Color(0, 0, 0, 0));
 				g.fillRect(0, 0, getWidth(), getHeight());
 
 				Graphics2D g2d = (Graphics2D) g;
@@ -160,7 +160,7 @@ public class VoiceMessage extends JPanel {
 			p.add(Box.createRigidArea(new Dimension(5, 0)));
 		}
 		add(p);
-
+		add(Box.createRigidArea(new Dimension(8, 0)));
 		add(Box.createHorizontalGlue());
 
 		SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
@@ -209,7 +209,7 @@ public class VoiceMessage extends JPanel {
 			currentTime.setForeground(new Color(guiMain.getSettings().getColorContactMessageFont()));
 		}
 
-		g.setColor(getBackground());
+		g.setColor(new Color(0, 0, 0, 0));
 		g.fillRect(0, 0, getWidth(), getHeight());
 
 		Graphics2D g2d = (Graphics2D) g;
