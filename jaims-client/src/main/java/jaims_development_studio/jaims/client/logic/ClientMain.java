@@ -161,7 +161,6 @@ public class ClientMain {
 	public void loginSuccesful(UUID uuid) {
 
 		setUserContact(uuid);
-		System.out.println(userContact.getContactNickname() + " has uuid: " + uuid);
 		loadSettings();
 		guiMain.loginSuccessful();
 	}
@@ -286,6 +285,11 @@ public class ClientMain {
 		databaseConnection.saveTextMessage(m);
 	}
 
+	public void saveVoiceMessage(jaims_development_studio.jaims.api.message.VoiceMessage v, String pathToFile) {
+
+		databaseConnection.saveVoiceMessage(v, pathToFile);
+	}
+
 	public void addMessageToChat(jaims_development_studio.jaims.api.message.Message m, EMessageType messageType) {
 
 		guiMain.addMessageToChat(m, messageType);
@@ -314,6 +318,14 @@ public class ClientMain {
 	public void showAvailableUsersForAdding(Profile... users) {
 
 		guiMain.showAvailableUsersForAdding(users);
+	}
+
+	public String getUserPath() {
+
+		String userHome = System.getProperty("user.home").replace("\\", "/");
+		String path = userHome + "/Jaims/" + loggedInUsername + "/";
+
+		return path;
 	}
 
 	private void loadSettings() {

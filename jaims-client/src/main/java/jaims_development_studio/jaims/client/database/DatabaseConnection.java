@@ -136,6 +136,11 @@ public class DatabaseConnection {
 		writeToDatabase.saveTextMessage(m);
 	}
 
+	public void saveVoiceMessage(Message m, String pathToFile) {
+
+		writeToDatabase.saveVoiceMessage(m, pathToFile);
+	}
+
 	public void updateHasChat(boolean hasChat, UUID contactID) {
 
 		writeToDatabase.updateHasChat(hasChat, contactID);

@@ -3,8 +3,14 @@ package jaims_development_studio.jaims.client.gui.messagePanels;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.Image;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.swing.Box;
@@ -21,8 +27,12 @@ public class PanelShowMessages extends JPanel {
 
 	private GUIMain					guiMain;
 	private UUID					contactUUID;
-	private ArrayList<TextMessage>	allTextMessages	= new ArrayList<>();
+	private ArrayList<TextMessage>	allTextMessages		= new ArrayList<>();
+	private ArrayList<VoiceMessage>	allVoiceMessages	= new ArrayList<>();
 	private ManageMessagePanels		mmp;
+	private Image					img;
+	private File					directory;
+	private String					fileTime;
 
 	public PanelShowMessages(GUIMain guiMain, ArrayList<Message> mList, UUID contactID, ManageMessagePanels mmp) {
 
@@ -33,6 +43,10 @@ public class PanelShowMessages extends JPanel {
 	}
 
 	private void initGUI(ArrayList<Message> mList, UUID contactID) {
+
+		img = guiMain.getChatBackground();
+
+		setOpaque(false);
 
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		setBorder(new EmptyBorder(0, 5, 0, 5));
@@ -62,7 +76,13 @@ public class PanelShowMessages extends JPanel {
 				} else if (m.getMessageType().equals("VOICE")) {
 					VoiceMessage vm = new VoiceMessage(m.getSender(), m.getMessage(), true, guiMain);
 					vm.setAlignmentX(Component.RIGHT_ALIGNMENT);
-					add(vm);
+					JPanel pvm = new JPanel();
+					pvm.setLayout(new BoxLayout(pvm, BoxLayout.LINE_AXIS));
+					pvm.setBackground(new Color(0, 0, 0, 0));
+					pvm.setOpaque(false);
+					pvm.add(Box.createHorizontalGlue());
+					pvm.add(vm);
+					add(pvm);
 					add(Box.createRigidArea(new Dimension(0, 5)));
 
 					mmp.getContactChatInformation(contactID).addNumberTotalVoiceMessages();
@@ -138,6 +158,7 @@ public class PanelShowMessages extends JPanel {
 		repaint();
 		guiMain.repaintParentPanel();
 		allTextMessages.add(tm);
+		tm.setMaximumSize();
 
 		mmp.getContactChatInformation(contactUUID).addNumberOwnTextMessages();
 		mmp.getContactChatInformation(contactUUID).setNumberWordsUsed(message.split(" ").length);
@@ -159,14 +180,104 @@ public class PanelShowMessages extends JPanel {
 		add(ptm);
 		add(Box.createRigidArea(new Dimension(0, 5)));
 
+		tm.setMaximumSize();
 		revalidate();
 		repaint();
+
 		allTextMessages.add(tm);
 
 		mmp.getContactChatInformation(m.getSender()).addNumberOwnTextMessages();
 		mmp.getContactChatInformation(m.getSender()).setNumberWordsUsed(m.getMessage().split(" ").length);
 		mmp.getContactChatInformation(m.getSender()).setNumberOwnWordsUsed(m.getMessage().split(" ").length);
 
+	}
+
+	public void addNewUserVoiceMessage(VoiceMessage vm) {
+
+		mmp.getContactChatInformation(contactUUID).addTotalNumberMessages();
+		mmp.getContactChatInformation(contactUUID).addNumberOwnMessages();
+
+		JPanel pvm = new JPanel();
+		pvm.setLayout(new BoxLayout(pvm, BoxLayout.LINE_AXIS));
+		pvm.setBackground(new Color(0, 0, 0, 0));
+		pvm.setOpaque(false);
+		pvm.add(Box.createHorizontalGlue());
+		pvm.add(vm);
+		add(pvm);
+		add(Box.createRigidArea(new Dimension(0, 5)));
+
+		revalidate();
+		repaint();
+		guiMain.repaintParentPanel();
+		allVoiceMessages.add(vm);
+
+		mmp.getContactChatInformation(contactUUID).addNumberOwnVoiceMessages();
+	}
+
+	public void addNewVoiceMessage(jaims_development_studio.jaims.api.message.VoiceMessage m) {
+
+		int fileNumber = getFileNumber();
+		DecimalFormat dm = new DecimalFormat("0000");
+		File f = new File(guiMain.getUserPath() + "audios/" + "JAIAUD-" + fileTime + "-" + dm.format(fileNumber) + "."
+				+ guiMain.getSettings().getInputFileFormat().getExtension());
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream(f);
+			fos.write(m.getVoiceMessage());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (fos != null) {
+				try {
+					fos.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		guiMain.saveVoiceMessage(m, f.getAbsolutePath());
+
+		mmp.getContactChatInformation(m.getSender()).addTotalNumberMessages();
+		mmp.getContactChatInformation(m.getSender()).addNumberOwnMessages();
+
+		VoiceMessage vm = new VoiceMessage(m.getSender(), f.getAbsolutePath(), false, guiMain);
+		JPanel pvm = new JPanel();
+		pvm.setLayout(new BoxLayout(pvm, BoxLayout.LINE_AXIS));
+		pvm.setBackground(new Color(0, 0, 0, 0));
+		pvm.setOpaque(false);
+		pvm.add(vm);
+		pvm.add(Box.createHorizontalGlue());
+		add(pvm);
+		add(Box.createRigidArea(new Dimension(0, 5)));
+
+		revalidate();
+		repaint();
+		guiMain.repaintParentPanel();
+		allVoiceMessages.add(vm);
+
+		mmp.getContactChatInformation(m.getSender()).addNumberContactVoiceMessages();
+
+	}
+
+	private int getFileNumber() {
+
+		int existingAudioFiles = 0;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		fileTime = sdf.format(new Date(System.currentTimeMillis()));
+
+		directory = new File(guiMain.getUserPath() + "audios/");
+		directory.mkdirs();
+		String[] filenames = directory.list();
+		if (filenames.length >= 0) {
+			for (String s : filenames) {
+				if (s.contains(fileTime))
+					existingAudioFiles++;
+			}
+		}
+
+		return ++existingAudioFiles;
 	}
 
 	public void updateMessages() {
@@ -185,13 +296,6 @@ public class PanelShowMessages extends JPanel {
 	public UUID getContactID() {
 
 		return contactUUID;
-	}
-
-	@Override
-	public void paintComponent(Graphics g) {
-
-		g.setColor(new Color(0, 0, 0, 0));
-		g.fillRect(0, 0, getWidth(), getHeight());
 	}
 
 }

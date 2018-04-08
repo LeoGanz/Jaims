@@ -54,7 +54,7 @@ public class ServerConnection implements Runnable {
 		try {
 			// opens up a connection to the server
 			server = new Socket();
-			server.connect(is = new InetSocketAddress(/* "188.194.21.33" */ /* "localhost" */ "188.193.157.228", 6000),
+			server.connect(is = new InetSocketAddress(/* "188.194.21.33" */ "localhost" /* "188.193.157.228" */, 6000),
 					500);
 			while (server.isConnected() == false) {
 				try {

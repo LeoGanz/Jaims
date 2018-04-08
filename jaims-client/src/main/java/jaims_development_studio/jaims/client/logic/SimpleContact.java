@@ -46,4 +46,9 @@ public class SimpleContact {
 
 		return chatExists;
 	}
+
+	public void setChatExists(boolean b) {
+
+		chatExists = b;
+	}
 }

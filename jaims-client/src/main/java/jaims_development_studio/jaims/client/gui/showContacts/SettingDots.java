@@ -69,7 +69,6 @@ public class SettingDots extends JPanel {
 				ovalHeight -= 6;
 				repaint();
 
-				System.out.println(pum == null);
 				if (pum == null)
 					pum = new PopUpMenu(guimain, SettingDots.this);
 

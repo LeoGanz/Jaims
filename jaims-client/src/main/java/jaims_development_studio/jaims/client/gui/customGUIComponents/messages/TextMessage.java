@@ -45,6 +45,7 @@ public class TextMessage extends JPanel {
 		jta = new JTextArea(message);
 		jta.setMargin(new Insets(5, 8, 5, 5));
 		jta.setAlignmentY(Component.CENTER_ALIGNMENT);
+		jta.setMinimumSize(new Dimension(10, 40));
 		jta.setLineWrap(true);
 		jta.setWrapStyleWord(true);
 		jta.setEditable(false);
@@ -62,19 +63,31 @@ public class TextMessage extends JPanel {
 		;
 		add(jta);
 
+		addComponentListener(new ComponentAdapter() {
+
+			@Override
+			public void componentShown(ComponentEvent e) {
+
+				setMaximumSize();
+
+			}
+		});
+
 		guiMain.getJaimsFrame().addComponentListener(new ComponentAdapter() {
 
 			@Override
 			public void componentResized(ComponentEvent e) {
 
-				setMaximumSize(jta.getText(), jta);
+				setMaximumSize();
 
 			}
 
 		});
 	}
 
-	private void setMaximumSize(String text, JTextArea jta) {
+	public void setMaximumSize() {
+
+		String text = jta.getText();
 
 		int preferredWidth = computeMaximumWidth();
 
@@ -85,11 +98,13 @@ public class TextMessage extends JPanel {
 				textLength = (int) jta.getMinimumSize().getWidth();
 			jta.setMaximumSize(new Dimension(textLength + 5, textHeight));
 			jta.setPreferredSize(jta.getMaximumSize());
+			jta.setMinimumSize(jta.getMaximumSize());
 
 			super.setMaximumSize(new Dimension((int) jta.getMaximumSize().getWidth() + 25,
 					(int) jta.getMaximumSize().getHeight() + 15));
 			super.setPreferredSize(super.getMaximumSize());
 			super.setMinimumSize(super.getMaximumSize());
+
 		} else if (textLength == preferredWidth) {
 			jta.setMaximumSize(new Dimension(textLength + 5, textHeight));
 			jta.setPreferredSize(jta.getMaximumSize());
@@ -98,8 +113,8 @@ public class TextMessage extends JPanel {
 			super.setPreferredSize(super.getMaximumSize());
 			super.setMinimumSize(super.getMaximumSize());
 		} else {
-			int height = (textLength / textHeight) + 1;
-			jta.setMaximumSize(new Dimension(preferredWidth, (height * textHeight)));
+			double height = ((double) textLength / ((double) preferredWidth - 20)) * (textHeight + 5) + 1;
+			jta.setMaximumSize(new Dimension(preferredWidth, (int) height));
 			jta.setPreferredSize(jta.getMaximumSize());
 			super.setMaximumSize(new Dimension((int) jta.getMaximumSize().getWidth() + 25,
 					(int) jta.getMaximumSize().getHeight() + 15));
@@ -109,6 +124,7 @@ public class TextMessage extends JPanel {
 		}
 
 		jta.revalidate();
+		jta.repaint();
 		super.revalidate();
 		super.repaint();
 
@@ -135,7 +151,7 @@ public class TextMessage extends JPanel {
 			jta.setBackground(new Color(guiMain.getSettings().getColorContactMessages()));
 		}
 
-		setMaximumSize(jta.getText(), jta);
+		setMaximumSize();
 
 		jta.revalidate();
 		jta.repaint();

@@ -163,7 +163,7 @@ public class PanelContactAndChatInformation extends ParentPanel {
 							"<html><b>" + chatInformation.getNumberContactWordsUsed()},
 					{"Insgesamt benutze Wörter: ", "<html><b>" + chatInformation.getNumberWordsUsed()},
 					{"Selbst versandte Sprachnachrichten: ", "<html><b>" + chatInformation.getNumberOwnVoiceMessages()},
-					{"Von " + guiMain.getLoggedInUser().getContactNickname() + " versandte Sprachnachrichten: ",
+					{"Von " + simpleContact.getContactNickname() + " versandte Sprachnachrichten: ",
 							"<html><b>" + chatInformation.getNumberContactVoiceMessages()}};
 			JTable tableStats = new JTable(data, arr);
 			// tableStats.setSelectionModel(new NullSelectionModel());
