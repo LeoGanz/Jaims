@@ -11,6 +11,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import jaims_development_studio.jaims.api.profile.Profile;
+
 /**
  * A SendableRequest can be used for different types of request by the client. The kind of request has to be specified
  * via an enum constant. This type contains some universal fields like a {@link Date}, a {@link UUID} and a
@@ -92,9 +94,9 @@ public class SendableRequest extends Sendable {
 	
 	/**
 	 * This constructs a SendableRequest without any uuid, string or date parameters. It can be used for delete account
-	 * requests and profile/settings requests for the logged-in user's profile/settings. Since no date is provided for
-	 * the profile/settings request the server will sent a profile/settings object regardless of last update times if
-	 * there is one available.
+	 * requests and profile/settings/contacts requests for the logged-in user's profile/settings/contacts. Since no date
+	 * is provided for the profile/settings/contacts request the server will sent a profile/settings object / contact
+	 * list regardless of last update times if there is one available.
 	 *
 	 * @param requestType the type of request
 	 * @see ERequestType
@@ -105,7 +107,7 @@ public class SendableRequest extends Sendable {
 	
 	/**
 	 * This constructs a SendableRequest with a date but without uuid and string parameters. It can be used for
-	 * profile/settings requests that return the profile/settings for the logged-in user. <br>
+	 * profile/settings/contacts requests that return the profile/settings/contacts for the logged-in user. <br>
 	 * </br>
 	 * (This constructor will also work for delete account requests but unnecessary network traffic will be caused as
 	 * the date field is not used for this kind of request. Use {@link #SendableRequest(ERequestType)} instead.)
@@ -237,8 +239,8 @@ public class SendableRequest extends Sendable {
 	/**
 	 * Depending on the type of request the purpose of the universal date field differs:
 	 * <ul>
-	 * <li>For profile/settings requests the date field represents the lastUpdated field of the client's current
-	 * profile.</li>
+	 * <li>For profile/settings/contacts requests the date field represents the lastUpdated field of the client's
+	 * current profile/settings or contact list.</li>
 	 * <li>For delete account requests the date field is not used.</li>
 	 * </ul>
 	 *
@@ -252,11 +254,11 @@ public class SendableRequest extends Sendable {
 	/**
 	 * Depending on the type of request the purpose of the universal date field differs:
 	 * <ul>
-	 * <li>For profile/settings requests the date field can be set to the lastUpdated field of the client's current
-	 * profile/settings. Only if the server can find a newer profile/settings a
-	 * {@link SendableProfile}/{@link SendableSettings} will be sent back to the client. If the client's
-	 * profile/settings is/are up to date nothing will be sent. If no date is set the server will sent a
-	 * profile/settings regardless of last update times.</li>
+	 * <li>For profile/settings/contacts requests the date field can be set to the lastUpdated field of the client's
+	 * current profile/settings/contact list. Only if the server can find (a) newer profile/settings/contacts a
+	 * {@link SendableProfile}/{@link SendableSettings}/{@link SendableSendableGroup} containing {@link Profile}s will
+	 * be sent back to the client. If the client's profile/settings/contacts is/are up to date nothing will be sent. If
+	 * no date is set the server will sent (a) profile/settings/contacts regardless of last update times.</li>
 	 * <li>For delete account requests the date field is not used.</li>
 	 * </ul>
 	 *
@@ -270,7 +272,8 @@ public class SendableRequest extends Sendable {
 	/**
 	 * Depending on the type of request the purpose of the universal uuid field differs:
 	 * <ul>
-	 * <li>For profile/settings requests the uuid field specifies the profile/settings that is/are requested.</li>
+	 * <li>For profile/settings/contacts requests the uuid field specifies the profile/settings/contacts that is/are
+	 * requested.</li>
 	 * <li>For delete account requests the uuid field represents the account that is to be deleted.</li>
 	 * </ul>
 	 *
@@ -284,12 +287,15 @@ public class SendableRequest extends Sendable {
 	/**
 	 * Depending on the type of request the purpose of the universal uuid field differs:
 	 * <ul>
-	 * <li>For profile/settings requests the uuid field specifies the profile/settings that is/are requested. If
-	 * universalUuid is set to or left as null AND the universalString field is null as well the logged-in user's uuid
-	 * will be inserted automatically.</li>
+	 * <li>For profile requests the uuid field specifies the profile that is requested. If universalUuid is set to or
+	 * left as null AND the universalString field is null as well the logged-in user's uuid will be inserted
+	 * automatically.</li>
 	 * <li>For delete account requests the uuid field represents the account that is to be deleted. There is no need to
 	 * set universalUuid as the server overwrites the uuid field with the logged-in user's uuid for security reasons
 	 * anyways.</li>
+	 * <li>For contacts/settings requests the uuid field represents the account whose contacts/settings are requested..
+	 * There is no need to set universalUuid as the server overwrites the uuid field with the logged-in user's uuid for
+	 * security reasons anyways.</li>
 	 * </ul>
 	 *
 	 * @param universalUuid the uuid that will be stored. For usage details see description above.
@@ -302,10 +308,9 @@ public class SendableRequest extends Sendable {
 	/**
 	 * Depending on the type of request the purpose of the universal string field differs:
 	 * <ul>
-	 * <li>For profile/settings requests the string field specifies the profile/settings that is/are requested. It
-	 * resembles a whole username or any substring of a username. It is only taken into account if the uuid field is
-	 * null!</li>
-	 * <li>For delete account requests the string field is not used.</li>
+	 * <li>For profile requests the string field specifies the profile that is/are requested. It resembles a whole
+	 * username or any substring of a username. It is only taken into account if the uuid field is null!</li>
+	 * <li>For delete account and contacts/settings requests the string field is not used.</li>
 	 * </ul>
 	 *
 	 * @return the request's universalString field. For usage details see description above.
@@ -318,10 +323,9 @@ public class SendableRequest extends Sendable {
 	/**
 	 * Depending on the type of request the purpose of the universal string field differs:
 	 * <ul>
-	 * <li>For profile/settings requests the string field specifies the profile/settings that is/are requested. It
-	 * resembles a whole username or any substring of a username. It is only taken into account if the uuid field is
-	 * null!</li>
-	 * <li>For delete account requests the string field is not used.</li>
+	 * <li>For profile requests the string field specifies the profile that is requested. It resembles a whole username
+	 * or any substring of a username. It is only taken into account if the uuid field is null!</li>
+	 * <li>For delete account and contacts/settings requests the string field is not used.</li>
 	 * </ul>
 	 *
 	 * @param universalString the string to be stored. For usage details see description above.

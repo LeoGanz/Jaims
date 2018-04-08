@@ -16,6 +16,7 @@
   <mapping class="jaims_development_studio.jaims.api.user.User"/>
   <mapping class="jaims_development_studio.jaims.api.profile.Profile"/>
   <mapping class="jaims_development_studio.jaims.api.settings.Settings"/>
+  <mapping class="jaims_development_studio.jaims.api.contacts.Contacts"/>
   <mapping class="jaims_development_studio.jaims.api.message.Message"/>
   <mapping class="jaims_development_studio.jaims.api.message.TextMessage"/>
   <mapping class="jaims_development_studio.jaims.api.message.ImageMessage"/>

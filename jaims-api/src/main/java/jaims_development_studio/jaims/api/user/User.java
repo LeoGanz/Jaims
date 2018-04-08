@@ -46,6 +46,9 @@ public class User extends AccountUuidEntity implements ICommandSender {
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user", fetch = FetchType.EAGER)
 	private final List<Sendable>	sendables			= new LinkedList<>();
+	
+	//	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "account")
+	//	private final Contacts				contacts;
 
 	public User() {
 		this(null);
@@ -58,6 +61,8 @@ public class User extends AccountUuidEntity implements ICommandSender {
 	public User(IServer server, Account account) {
 		super(account);
 		this.server = server;
+		//		contacts = new Contacts();
+		//		contacts.setAccount(account);
 	}
 
 	public synchronized void enqueueSendable(Sendable sendable) {
@@ -123,6 +128,17 @@ public class User extends AccountUuidEntity implements ICommandSender {
 	public synchronized boolean noSendableQueued() {
 		return sendables.isEmpty();
 	}
+
+	//	/**
+	//	 * @return the contacts
+	//	 */
+	//	public Contacts getContacts() {
+	//		return contacts;
+	//	}
+	//
+	//	public void addContacts(UUID... uuids) {
+	//		contacts.addContacts(uuids);
+	//	}
 
 	@Override
 	public String getName() {

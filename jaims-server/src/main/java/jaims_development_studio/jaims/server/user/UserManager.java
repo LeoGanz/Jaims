@@ -23,6 +23,7 @@ import jaims_development_studio.jaims.api.util.NoEntityAvailableException;
 import jaims_development_studio.jaims.api.util.ObservableList;
 import jaims_development_studio.jaims.server.Server;
 import jaims_development_studio.jaims.server.account.AccountManager;
+import jaims_development_studio.jaims.server.contacts.ContactsManager;
 import jaims_development_studio.jaims.server.message.MessageManager;
 import jaims_development_studio.jaims.server.profile.ProfileManager;
 import jaims_development_studio.jaims.server.settings.SettingsManager;
@@ -37,6 +38,7 @@ public class UserManager extends EntityManager<User> {
 	private final AccountManager	accountManager;
 	private final ProfileManager	profileManager;
 	private final SettingsManager	settingsManager;
+	private final ContactsManager	contactsManager;
 	private final MessageManager	messageManager;
 	private final Server			server;
 	private final List<User>		onlineUsers;
@@ -46,8 +48,9 @@ public class UserManager extends EntityManager<User> {
 		this.server = server;
 		profileManager = new ProfileManager(this);
 		settingsManager = new SettingsManager(this);
+		contactsManager = new ContactsManager(this);
 		messageManager = new MessageManager(this);
-		accountManager = new AccountManager(this, profileManager, settingsManager);
+		accountManager = new AccountManager(this, profileManager, settingsManager, contactsManager);
 		onlineUsers = new ObservableList<>(new LinkedList<>());
 	}
 
@@ -133,38 +136,64 @@ public class UserManager extends EntityManager<User> {
 	}
 
 	public void manageRequest(SendableRequest request, UUID requester)
-			throws InvalidSendableException, NoEntityAvailableException {
+			throws NoEntityAvailableException, InvalidSendableException {
 
-		switch (request.getRequestType()) {
-			case DELETE_ACCOUNT:
-				deleteUserAndAccount(request.getUniversalUuid());
-				break;
-			case PROFILE:
-				try {
+		try {
+			switch (request.getRequestType()) {
+				case DELETE_ACCOUNT:
+					deleteUserAndAccount(request.getUniversalUuid());
+					break;
+				case PROFILE:
 					profileManager.manageRequest(request, requester);
-				} catch (InvalidSendableException e) {
-					LOG.error("No InvalidSendableException should have occured in this environment!", e);
-				} catch (NoEntityAvailableException e) {
-					throw e;
-				}
-				break;
-			case SETTINGS:
-				try {
+					break;
+				case SETTINGS:
 					settingsManager.manageRequest(request, requester);
-				} catch (InvalidSendableException e) {
-					LOG.error("No InvalidSendableException should have occured in this environment!", e);
-				} catch (NoEntityAvailableException e) {
-					throw e;
-				}
-				break;
-			default:
-				throw new InvalidSendableException("Cannot process SendableRequest of type " + request.getRequestType(), request);
+					break;
+				case CONTACTS:
+					contactsManager.manageRequest(request, requester);
+					break;
+				default:
+					throw new InvalidSendableException("Cannot process SendableRequest of type " + request.getRequestType(), request);
+			}
+		} catch (InvalidSendableException e) {
+			LOG.error("No InvalidSendableException should have occured in this environment!", e);
+			throw e;
+		} catch (NoEntityAvailableException e) {
+			throw e;
 		}
 
 	}
 	
 	public void manageReceiveProfile(SendableProfile sendableProfile) {
 		profileManager.saveOrUpdateEntity(sendableProfile.getProfile());
+	}
+	
+	/**
+	 * @return the profileManager
+	 */
+	public ProfileManager getProfileManager() {
+		return profileManager;
+	}
+	
+	/**
+	 * @return the settingsManager
+	 */
+	public SettingsManager getSettingsManager() {
+		return settingsManager;
+	}
+	
+	/**
+	 * @return the contactsManager
+	 */
+	public ContactsManager getContactsManager() {
+		return contactsManager;
+	}
+	
+	/**
+	 * @return the messageManager
+	 */
+	public MessageManager getMessageManager() {
+		return messageManager;
 	}
 	
 }
