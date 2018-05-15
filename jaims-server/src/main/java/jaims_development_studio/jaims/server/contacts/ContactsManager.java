@@ -10,7 +10,6 @@ import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.api.sendables.SendableProfile;
 import jaims_development_studio.jaims.server.profile.ProfileManager;
 import jaims_development_studio.jaims.server.user.UserManager;
-import jaims_development_studio.jaims.server.util.DAO;
 import jaims_development_studio.jaims.server.util.UpdateTrackingUuidEntityManager;
 
 
@@ -19,7 +18,7 @@ public class ContactsManager extends UpdateTrackingUuidEntityManager<Contacts> {
 	private final ProfileManager profileManager;
 
 	public ContactsManager(UserManager userManager) {
-		super(new DAO<>(Contacts.class), userManager, EEntityType.CONTACTS);
+		super(new ContactsDAO(), userManager, EEntityType.CONTACTS);
 		profileManager = userManager.getProfileManager();
 	}
 	

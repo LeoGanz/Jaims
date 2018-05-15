@@ -33,7 +33,7 @@ public class Settings extends UpdateTrackingUuidEntity {
 	private static final long	serialVersionUID			= 1176941652188927120L;
 	public static final int		RESIZE_ALONG_WIDTH			= 0;
 	public static final int		RESIZE_ALONG_HEIGHT			= 1;
-	public static final int		RESIZE_FILL_SCREEN			= 2;;
+	public static final int		RESIZE_FILL_SCREEN			= 2;
 	@Column(name = "ARC_MESSAGE", columnDefinition = "INTEGER")
 	private int					arcMessages					= 20;
 	@Column(name = "ARC_CONTACT_IMAGE", columnDefinition = "INTEGER")
@@ -121,7 +121,7 @@ public class Settings extends UpdateTrackingUuidEntity {
 			int contactFontSize, int colorContactMessages, int colorContactMessageBorder, int colorContactMessageFont,
 			String inputMixerInfoName, String outputMixerInfoName, float inputGain, float outputVolume,
 			EInputEncodingType inputEncoding, float inputSampleRate, int inputSampleSize, int inputChannels,
-			EEndianness endianness, int frameSize, EFileFormatType inputFormatType) {
+			EEndianness endianness, int frameSize, EFileFormatType inputFormatType, int imageResizeHint) {
 
 		super(lastUpdated, account);
 		setUuid(uuid);
@@ -151,6 +151,7 @@ public class Settings extends UpdateTrackingUuidEntity {
 		this.endianness = endianness;
 		this.frameSize = frameSize;
 		this.inputFormatType = inputFormatType;
+		this.imageResizeHint = imageResizeHint;
 	}
 
 	@Override
@@ -160,7 +161,7 @@ public class Settings extends UpdateTrackingUuidEntity {
 				ownFontName, ownFontStyle, ownFontSize, colorOwnMessages, colorOwnMessageBorder, colorOwnMessageFont,
 				contactFontName, contactFontStyle, contactFontSize, colorContactMessages, colorContactMessageBorder,
 				colorContactMessageFont, inputMixerInfoName, outputMixerInfoName, inputGain, outputVolume,
-				inputEncoding, inputSampleRate, inputSampleSize, inputChannels, endianness, frameSize, inputFormatType);
+				inputEncoding, inputSampleRate, inputSampleSize, inputChannels, endianness, frameSize, inputFormatType, imageResizeHint);
 	}
 
 	@Override
@@ -183,36 +184,73 @@ public class Settings extends UpdateTrackingUuidEntity {
 		if (getClass() != o.getClass())
 			return false;
 		Settings other = (Settings) o;
-		return new EqualsBuilder().append(getUuid(), other.getUuid()).append(getLastUpdated(), other.getLastUpdated())
-				.append(arcMessages, other.arcMessages).append(arcContactImage, other.arcContactImage)
-				.append(arcProfileImage, other.arcProfileImage).append(ownFontName, other.ownFontName)
-				.append(ownFontStyle, other.ownFontStyle).append(ownFontSize, other.ownFontSize)
+		return new EqualsBuilder()
+				.append(getUuid(), other.getUuid())
+				.append(getLastUpdated(), other.getLastUpdated())
+				.append(arcMessages, other.arcMessages)
+				.append(arcContactImage, other.arcContactImage)
+				.append(arcProfileImage, other.arcProfileImage)
+				.append(ownFontName, other.ownFontName)
+				.append(ownFontStyle, other.ownFontStyle)
+				.append(ownFontSize, other.ownFontSize)
 				.append(colorOwnMessages, other.colorOwnMessages)
 				.append(colorOwnMessageBorder, other.colorOwnMessageBorder)
-				.append(colorOwnMessageFont, other.colorOwnMessageFont).append(contactFontName, other.contactFontName)
-				.append(contactFontStyle, other.contactFontStyle).append(contactFontSize, other.contactFontSize)
+				.append(colorOwnMessageFont, other.colorOwnMessageFont)
+				.append(contactFontName, other.contactFontName)
+				.append(contactFontStyle, other.contactFontStyle)
+				.append(contactFontSize, other.contactFontSize)
 				.append(colorContactMessages, other.colorContactMessages)
 				.append(colorContactMessageBorder, other.colorContactMessageBorder)
 				.append(colorContactMessageFont, other.colorContactMessageFont)
 				.append(inputMixerInfoName, other.inputMixerInfoName)
-				.append(outputMixerInfoName, other.outputMixerInfoName).append(inputGain, other.inputGain)
-				.append(outputVolume, other.outputVolume).append(inputEncoding, other.inputEncoding)
-				.append(inputSampleRate, other.inputSampleRate).append(inputSampleSize, other.inputSampleSize)
-				.append(inputChannels, other.inputChannels).append(endianness, other.endianness)
-				.append(frameSize, other.frameSize).append(inputFormatType, other.inputFormatType).isEquals();
+				.append(outputMixerInfoName, other.outputMixerInfoName)
+				.append(inputGain, other.inputGain)
+				.append(outputVolume, other.outputVolume)
+				.append(inputEncoding, other.inputEncoding)
+				.append(inputSampleRate, other.inputSampleRate)
+				.append(inputSampleSize, other.inputSampleSize)
+				.append(inputChannels, other.inputChannels)
+				.append(endianness, other.endianness)
+				.append(frameSize, other.frameSize)
+				.append(inputFormatType, other.inputFormatType)
+				.append(imageResizeHint, other.imageResizeHint)
+				.isEquals();
 	}
 
 	@Override
 	public int hashCode() {
 
-		return new HashCodeBuilder(42, 321).append(getUuid()).append(getLastUpdated()).append(arcMessages)
-				.append(arcContactImage).append(arcProfileImage).append(ownFontName).append(ownFontStyle)
-				.append(ownFontSize).append(colorOwnMessages).append(colorOwnMessageBorder).append(colorOwnMessageFont)
-				.append(contactFontName).append(contactFontStyle).append(contactFontSize).append(colorContactMessages)
-				.append(colorContactMessageBorder).append(colorContactMessageFont).append(inputMixerInfoName)
-				.append(outputMixerInfoName).append(inputGain).append(outputVolume).append(inputEncoding)
-				.append(inputSampleRate).append(inputSampleSize).append(inputChannels).append(endianness)
-				.append(frameSize).append(inputFormatType).toHashCode();
+		return new HashCodeBuilder(42, 321)
+				.append(getUuid())
+				.append(getLastUpdated())
+				.append(arcMessages)
+				.append(arcContactImage)
+				.append(arcProfileImage)
+				.append(ownFontName)
+				.append(ownFontStyle)
+				.append(ownFontSize)
+				.append(colorOwnMessages)
+				.append(colorOwnMessageBorder)
+				.append(colorOwnMessageFont)
+				.append(contactFontName)
+				.append(contactFontStyle)
+				.append(contactFontSize)
+				.append(colorContactMessages)
+				.append(colorContactMessageBorder)
+				.append(colorContactMessageFont)
+				.append(inputMixerInfoName)
+				.append(outputMixerInfoName)
+				.append(inputGain)
+				.append(outputVolume)
+				.append(inputEncoding)
+				.append(inputSampleRate)
+				.append(inputSampleSize)
+				.append(inputChannels)
+				.append(endianness)
+				.append(frameSize)
+				.append(inputFormatType)
+				.append(imageResizeHint)
+				.toHashCode();
 	}
 
 	// --------------------------------------------------------------

@@ -1,6 +1,7 @@
 package jaims_development_studio.jaims.api.account;
 
 import java.util.Date;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -97,7 +98,10 @@ public class Account extends UuidEntity {
 	}
 
 	public String toStringUuid() {
-		return getUuid().toString();
+		UUID uuid = getUuid();
+		if (uuid != null)
+			return uuid.toString();
+		return "UNKNOWN";
 	}
 
 	@Override

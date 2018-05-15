@@ -1,7 +1,7 @@
 package jaims_development_studio.jaims.server.profile;
 
 import jaims_development_studio.jaims.api.profile.Profile;
-import jaims_development_studio.jaims.server.util.DAO;
+import jaims_development_studio.jaims.server.util.UpdateTrackingUUIDEntityDAO;
 
 /**
  * This is the DAO (Data Access Object) for Profiles. It provides utility methods for accessing profiles in the
@@ -9,10 +9,10 @@ import jaims_development_studio.jaims.server.util.DAO;
  *
  * @author WilliGross
  */
-public class ProfileDAO extends DAO<Profile> {
-	
+public class ProfileDAO extends UpdateTrackingUUIDEntityDAO<Profile> {
+
 	public ProfileDAO() {
 		super(Profile.class);
 	}
-	
+
 }

@@ -39,8 +39,8 @@ public class DAO<E extends UuidEntity> {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-			CriteriaDelete<E> criteriaDelete = criteriaBuilder.createCriteriaDelete(clazz);
-			Root<E> root = criteriaDelete.from(clazz);
+			CriteriaDelete<E> criteriaDelete = criteriaBuilder.createCriteriaDelete(getClazz());
+			Root<E> root = criteriaDelete.from(getClazz());
 			Predicate condition = criteriaBuilder.equal(root.get("uuid"), uuid);
 			criteriaDelete.where(condition);
 			TypedQuery<E> query = session.createQuery(criteriaDelete);
@@ -51,8 +51,8 @@ public class DAO<E extends UuidEntity> {
 	public E get(UUID uuid) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-			CriteriaQuery<E> criteriaQuery = criteriaBuilder.createQuery(clazz);
-			Root<E> root = criteriaQuery.from(clazz);
+			CriteriaQuery<E> criteriaQuery = criteriaBuilder.createQuery(getClazz());
+			Root<E> root = criteriaQuery.from(getClazz());
 			Predicate condition = criteriaBuilder.equal(root.get("uuid"), uuid);
 			criteriaQuery.where(condition);
 			TypedQuery<E> query = session.createQuery(criteriaQuery);
@@ -63,8 +63,8 @@ public class DAO<E extends UuidEntity> {
 	
 	public List<E> getAll() {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			CriteriaQuery<E> criteriaQuery = session.getCriteriaBuilder().createQuery(clazz);
-			criteriaQuery.from(clazz);
+			CriteriaQuery<E> criteriaQuery = session.getCriteriaBuilder().createQuery(getClazz());
+			criteriaQuery.from(getClazz());
 			List<E> entities = session.createQuery(criteriaQuery).getResultList();
 			return entities;
 		}
@@ -76,7 +76,7 @@ public class DAO<E extends UuidEntity> {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
 			CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-			Root<E> root = criteriaQuery.from(clazz);
+			Root<E> root = criteriaQuery.from(getClazz());
 			Expression<Long> countExpression = criteriaBuilder.count(root);
 			criteriaQuery.select(countExpression);
 			Predicate condition = criteriaBuilder.equal(root.get("uuid"), uuid);
@@ -85,6 +85,10 @@ public class DAO<E extends UuidEntity> {
 			Long count = query.getSingleResult();
 			return count == 0 ? false : true;
 		}
+	}
+	
+	public Class<E> getClazz() {
+		return clazz;
 	}
 	
 }
