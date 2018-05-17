@@ -19,7 +19,6 @@ import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 import java.util.Vector;
 
-import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -30,17 +29,26 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.apache.commons.io.IOUtils;
 
+/**
+ * This class was copied from the Internet but doesn't really work as wanted.
+ * Therefore this class will be removed in the near future and an own class will
+ * be written. That's also the reason none of the methods is commented on.
+ * 
+ * 
+ * @author unknown
+ * 
+ * @since v0.1.0
+ *
+ * @deprecated
+ */
 public class AudioWaveformCreator {
-	AudioInputStream		audioInputStream;
-	Vector<Line2D.Double>	lines					= new Vector<Line2D.Double>();
-	String					errStr;
-	Capture					captur;
-	double					duration, seconds;
-	File					file;
-	String					fileName;
-	SamplingGraph			samplingGraph;
-	String					waveformFilename;
-	Color					imageBackgroundColor	= new Color(20, 20, 20);
+	private AudioInputStream		audioInputStream;
+	private Vector<Line2D.Double>	lines	= new Vector<Line2D.Double>();
+	private String					errStr;
+	private double					duration, seconds;
+	private File					file;
+	private SamplingGraph			samplingGraph;
+	private String					waveformFilename;
 
 	public AudioWaveformCreator(File recordFile, String waveformFilename)
 			throws UnsupportedAudioFileException, IOException {
@@ -55,7 +63,6 @@ public class AudioWaveformCreator {
 			try {
 				errStr = null;
 				audioInputStream = AudioSystem.getAudioInputStream(file);
-				fileName = file.getName();
 				long milliseconds = (long) ((audioInputStream.getFrameLength() * 1000)
 						/ audioInputStream.getFormat().getFrameRate());
 				duration = milliseconds / 1000.0;
@@ -77,10 +84,9 @@ public class AudioWaveformCreator {
 	class SamplingGraph implements Runnable {
 
 		private Thread	thread;
-		private Font	font10	= new Font("serif", Font.PLAIN, 10);
 		private Font	font12	= new Font("serif", Font.PLAIN, 12);
-		Color			jfcBlue	= new Color(000, 000, 255);
-		Color			pink	= new Color(255, 175, 175);
+		private Color	jfcBlue	= new Color(000, 000, 255);
+		private Color	pink	= new Color(255, 175, 175);
 
 		public SamplingGraph() {
 
@@ -151,16 +157,6 @@ public class AudioWaveformCreator {
 				double y_new = (double) (h * (128 - my_byte) / 256);
 				lines.add(new Line2D.Double(x, y_last, x, y_new));
 				y_last = y_new;
-				/*
-				 * if ((y_new - y_last) > 0) { y_new += 8; lines.add(new Line2D.Double(x,
-				 * y_last, x, y_new)); y_last = y_new - 8; } else if ((y_new - y_last) < 0) {
-				 * y_new -= 8; lines.add(new Line2D.Double(x, y_last, x, y_new)); y_last = y_new
-				 * + 8; } else { lines.add(new Line2D.Double(x, y_last, x, y_new)); y_last =
-				 * y_new; } System.out.println("yLast: " + y_last); System.out.println("yNew: "
-				 * + y_new); System.out.println("Diff: " + (y_new - y_last));
-				 * System.out.println("DiffInv: " + (y_last - y_new));
-				 * System.out.println("--------");
-				 */
 			}
 			return saveToFile(waveformFilename);
 		}
@@ -183,7 +179,6 @@ public class AudioWaveformCreator {
 
 		private double getAudioFileLengthInSeconds() {
 
-			AudioFileFormat format;
 			double durationInSeconds = 0;
 			try {
 
@@ -268,15 +263,6 @@ public class AudioWaveformCreator {
 
 		public void run() {
 
-			seconds = 0;
-			/*
-			 * while (thread != null) { if ((capture.line != null) &&
-			 * (capture.line.isActive())) { long milliseconds = (long)
-			 * (capture.line.getMicrosecondPosition() / 1000); seconds = milliseconds /
-			 * 1000.0; } try { thread.sleep(100); } catch (Exception e) { break; } while
-			 * ((capture.line != null && !capture.line.isActive())) { try {
-			 * thread.sleep(10); } catch (Exception e) { break; } } }
-			 */
 			seconds = 0;
 		}
 	} // End class SamplingGraph

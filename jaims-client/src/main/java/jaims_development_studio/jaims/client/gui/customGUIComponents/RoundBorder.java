@@ -11,6 +11,19 @@ import java.awt.geom.RoundRectangle2D;
 
 import javax.swing.border.Border;
 
+/**
+ * This class implements a rounded border by extending the <code>Border</code>
+ * class and painting the border as a <code>RoundRectangle</code> with a given
+ * width and height.
+ * 
+ * @author Bu88le
+ * 
+ * @since v0.1.0
+ * 
+ * @see Border
+ * @see RoundRectangle2D
+ *
+ */
 public class RoundBorder implements Border {
 	private int	width, height;
 	Color		c;

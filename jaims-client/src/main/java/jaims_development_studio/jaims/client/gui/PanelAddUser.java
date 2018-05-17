@@ -32,14 +32,19 @@ import javax.swing.border.MatteBorder;
 import jaims_development_studio.jaims.api.profile.Profile;
 import jaims_development_studio.jaims.api.sendables.ERequestType;
 import jaims_development_studio.jaims.api.sendables.SendableRequest;
+import jaims_development_studio.jaims.client.gui.customGUIComponents.PanelSelectNewContact;
 import jaims_development_studio.jaims.client.gui.messagePanels.PanelTextField;
-import jaims_development_studio.jaims.client.gui.showContacts.PanelContactShowing;
 
 public class PanelAddUser extends JPanel {
-	private GUIMain		guiMain;
-	private JTextField	jta;
-	private JPanel		panelShowUser, panelUsers;
-	private JScrollPane	jsp;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
+
+	private GUIMain				guiMain;
+	private JTextField			jta;
+	private JPanel				panelShowUser, panelUsers;
+	private JScrollPane			jsp;
 
 	public PanelAddUser(GUIMain guiMain) {
 
@@ -58,6 +63,11 @@ public class PanelAddUser extends JPanel {
 		panelTop.setBorder(new CompoundBorder(new EmptyBorder(3, 0, 0, 0), new MatteBorder(0, 0, 2, 0, Color.WHITE)));
 		{
 			JPanel back = new JPanel() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void paintComponent(Graphics g) {
 
@@ -123,6 +133,11 @@ public class PanelAddUser extends JPanel {
 				panelTop.add(Box.createHorizontalGlue());
 
 				JPanel magnifyingGlass = new JPanel() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void paintComponent(Graphics g) {
 
@@ -198,11 +213,11 @@ public class PanelAddUser extends JPanel {
 
 		for (Profile user : users) {
 			if (guiMain.hasEntry(user.getUuid())) {
-				PanelContactShowing pcs = new PanelContactShowing(guiMain, user, true);
+				PanelSelectNewContact pcs = new PanelSelectNewContact(guiMain, user, true, false);
 				panelUsers.add(pcs);
 			} else {
 				;
-				PanelContactShowing pcs = new PanelContactShowing(guiMain, user, false);
+				PanelSelectNewContact pcs = new PanelSelectNewContact(guiMain, user, false, false);
 				panelUsers.add(pcs);
 			}
 

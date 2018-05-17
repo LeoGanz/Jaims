@@ -11,17 +11,34 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import jaims_development_studio.jaims.client.gui.GUIMain;
 
+/**
+ * This class represents a <code>JButton</code> which is used as the login
+ * button on the startup frame. On entering the mouse to the button it increases
+ * its size in order to show some animation. Furthermore when there is no
+ * connection to the server the button gets deactivated and activated again when
+ * the connections is built.
+ * 
+ * @author Bu88le
+ * 
+ * @since v0.1.0
+ *
+ */
 public class LoginButton extends JButton {
 
-	private GUIMain	guiMain;
-	private String	text;
-	private JPanel	parentPanel;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
+	private GUIMain				guiMain;
+	private String				text;
+	private JPanel				parentPanel;
 
 	public LoginButton(GUIMain guiMain, String text, JPanel parentPanel) {
 
@@ -31,6 +48,13 @@ public class LoginButton extends JButton {
 		initGUI();
 	}
 
+	/**
+	 * This method initialises the button with its attributes and adds a mouse
+	 * listener which increases and decreases the buttons size respectively on
+	 * entering and exiting the mouse.
+	 * 
+	 * @see MouseListener
+	 */
 	private void initGUI() {
 
 		setPreferredSize(new Dimension(125, 36));

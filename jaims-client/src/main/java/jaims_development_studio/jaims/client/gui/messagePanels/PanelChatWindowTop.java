@@ -22,12 +22,33 @@ import javax.swing.border.LineBorder;
 import jaims_development_studio.jaims.client.gui.GUIMain;
 import jaims_development_studio.jaims.client.logic.SimpleContact;
 
+/**
+ * This class represents a
+ * <code>JPanel</cod> that shows a contact's profile picture and username and is added to the top of the <code>PanelChat</code>.
+ * 
+ * @author Bu88le
+ * 
+ * @since v0.1.0
+ *
+ */
 public class PanelChatWindowTop extends JPanel {
+
+	/**
+	 * 
+	 */
+	private static final long				serialVersionUID	= 1L;
 
 	private Image							profileImage;
 	private GUIMain							guiMain;
 	private PanelContactAndChatInformation	pcaci;
 
+	/**
+	 * Constructor of this class. Initialises fields and calls
+	 * {@link #initGUI(SimpleContact)}
+	 * 
+	 * @param contactProfile
+	 * @param guiMain
+	 */
 	public PanelChatWindowTop(SimpleContact contactProfile, GUIMain guiMain) {
 
 		this.guiMain = guiMain;
@@ -35,6 +56,11 @@ public class PanelChatWindowTop extends JPanel {
 
 	}
 
+	/**
+	 * This method builds the GUI of the parent <code>JPanel</code>.
+	 * 
+	 * @param contactProfile
+	 */
 	private void initGUI(SimpleContact contactProfile) {
 
 		setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -44,6 +70,11 @@ public class PanelChatWindowTop extends JPanel {
 		profileImage = scaleMaintainAspectRatio(guiMain.getProfileImage(contactProfile.getContactID()));
 
 		JPanel p = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -66,7 +97,6 @@ public class PanelChatWindowTop extends JPanel {
 		};
 		p.setPreferredSize(new Dimension(57, 52));
 		add(p);
-		// add(Box.createRigidArea(new Dimension(0, 15)));
 
 		JLabel lblUsername = new JLabel(contactProfile.getContactNickname(), JLabel.LEFT);
 		lblUsername.setFont(new Font("Calibri", Font.BOLD, 15));

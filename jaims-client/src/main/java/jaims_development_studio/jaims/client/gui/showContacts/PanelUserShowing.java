@@ -1,6 +1,6 @@
 package jaims_development_studio.jaims.client.gui.showContacts;
 
-import java.awt.BasicStroke;
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -11,6 +11,8 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -20,9 +22,14 @@ import jaims_development_studio.jaims.client.gui.GUIMain;
 import jaims_development_studio.jaims.client.logic.SimpleContact;
 
 public class PanelUserShowing extends JPanel {
-	private GUIMain			guiMain;
-	private SimpleContact	simpleContact;
-	private Image			img;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
+
+	private SimpleContact		simpleContact;
+	private Image				img;
+	private BufferedImage		output				= new BufferedImage(50, 50, BufferedImage.TYPE_INT_ARGB);
 
 	public PanelUserShowing(GUIMain guiMain, SimpleContact simpleContact) {
 
@@ -47,6 +54,7 @@ public class PanelUserShowing extends JPanel {
 
 			}
 		});
+
 	}
 
 	@Override
@@ -57,21 +65,24 @@ public class PanelUserShowing extends JPanel {
 
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setColor(Color.WHITE);
-		g2.fillRoundRect(0, 0, getWidth(), getHeight(), 60, 60);
 
-		g2.setFont(new Font("Sans Serif", Font.BOLD, 15));
-		int y = getHeight() / 2 + g2.getFontMetrics(g2.getFont()).getHeight() / 4;
+		g2.setColor(new Color(170, 170, 170));
+		g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
+
+		Graphics2D g2d = output.createGraphics();
+		g2d.setComposite(AlphaComposite.Src);
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setColor(Color.WHITE);
+		g2d.fill(new RoundRectangle2D.Float(0, 0, 50, 50, 15, 15));
+
+		g2d.setComposite(AlphaComposite.SrcAtop);
+		g2d.drawImage(img, 0, 0, this);
+
+		g2.drawImage(output, 13, 5, this);
+		g2.setFont(new Font("Sans Serif", Font.BOLD, 16));
 		g2.setColor(Color.BLACK);
-		g2.drawString(simpleContact.getContactNickname(), 75, y);
-
-		g2.setClip(new java.awt.geom.RoundRectangle2D.Double(18, 5, 50, 50, 15, 15));
-		g2.drawImage(img, 18, 5, this);
-
-		g2.setColor(Color.BLACK);
-		g2.setStroke(new BasicStroke(2F));
-		g2.setClip(0, 0, getWidth(), getHeight());
-		g2.drawRoundRect(17, 4, 50, 51, 15, 15);
+		int y = getHeight() / 2 + g2.getFontMetrics(g2.getFont()).getHeight() / 3;
+		g2.drawString(simpleContact.getContactNickname(), 70, y);
 
 	}
 }

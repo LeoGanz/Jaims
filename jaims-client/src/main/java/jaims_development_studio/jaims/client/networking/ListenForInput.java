@@ -13,6 +13,7 @@ import jaims_development_studio.jaims.api.account.IncorrectPasswordException;
 import jaims_development_studio.jaims.api.account.UserNameNotAvailableException;
 import jaims_development_studio.jaims.api.message.EMessageType;
 import jaims_development_studio.jaims.api.message.TextMessage;
+import jaims_development_studio.jaims.api.sendables.ESendableType;
 import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.api.sendables.SendableConfirmation;
 import jaims_development_studio.jaims.api.sendables.SendableException;
@@ -22,17 +23,27 @@ import jaims_development_studio.jaims.api.sendables.SendableProfile;
 import jaims_development_studio.jaims.api.sendables.SendableUUID;
 import jaims_development_studio.jaims.client.logic.ClientMain;
 
+/**
+ * This class handles all incoming {@link Sendable}s from the server and decides
+ * based on the {@link ESendableType} what to do. Outside instances of this
+ * class can do nothing more than close the socket in order to simplify the
+ * handling of <code>Sendable</code>s.
+ * 
+ * @author Bu88le
+ * 
+ * @since v0.1.0
+ */
 public class ListenForInput implements Runnable {
 
 	private static final Logger	LOG				= LoggerFactory.getLogger(ListenForInput.class);
 
-	Socket						so;
-	ObjectInputStream			ois;
-	ClientMain					cm;
+	private Socket				so;
+	private ObjectInputStream	ois;
+	private ClientMain			cm;
 	boolean						firstSendable	= true;
 
 	/**
-	 * Constructor of this class. Initialises only the files, reading the socket
+	 * Constructor of this class. Initialises only the files; reading the socket
 	 * input has to be started by running a thread.
 	 *
 	 * @param so
@@ -51,6 +62,9 @@ public class ListenForInput implements Runnable {
 	 * tries to read a new <code>Sendable</code> Object from the input stream. When
 	 * a sendable is successfully read the method {@link #handleSendable()
 	 * handleSendable}.
+	 * 
+	 * @see ObjectInputStream
+	 * @see Sendable
 	 */
 	private void readConnection() {
 
@@ -58,13 +72,16 @@ public class ListenForInput implements Runnable {
 			ois = new ObjectInputStream(so.getInputStream());
 			while (so.isConnected()) {
 				try {
+					/*
+					 * Cannot receive new sendable until current sendable was completely dealt with!
+					 */
 					handleSendable((Sendable) ois.readObject());
 				} catch (ClassNotFoundException e) {
 					LOG.error("Class was not found", e);
 				} catch (NullPointerException npe) {
 					LOG.error("Socket isn't initialised", npe);
 				} catch (SocketException se) {
-					if (so.isClosed())
+					if (so.isClosed() == false)
 						break;
 					else {
 						cm.getServerConnection().initConnection();
@@ -95,7 +112,10 @@ public class ListenForInput implements Runnable {
 	}
 
 	/**
-	 * Gets the Type of the {@link Sendable} and casts it to the explicit sendable.
+	 * Gets the Type of the {@link Sendable} and casts it to the explicit
+	 * <code>Sendable</code>. After the casting through various if/if-else
+	 * statements the program decides, based on the {@link ESendableType} what to do
+	 * with the new <code>Sendable</code>.
 	 */
 	private void handleSendable(Sendable s) {
 
@@ -104,10 +124,12 @@ public class ListenForInput implements Runnable {
 			case "MESSAGE":
 				SendableMessage sm = (SendableMessage) s;
 				LOG.info("Recieved sendable of type " + sm.getType());
+
 				if (sm.getMessageType().equals(EMessageType.TEXT)) {
 					TextMessage tm = (TextMessage) sm.getMessage();
-					tm.setTimestampDelivered();
 					LOG.info("Cast to " + tm.getMessageType());
+					tm.setTimestampDelivered();
+
 					cm.saveTextMessage(tm);
 				} else if (sm.getMessageType().equals(EMessageType.IMAGE)) {
 
@@ -164,7 +186,7 @@ public class ListenForInput implements Runnable {
 				if (sc.getConfirmationType().getValue().equals("REGISTRATION_SUCCESSFUL")) {
 					cm.succesfullRegistration(sc.getStoredUuid());
 				} else if (sc.getConfirmationType().getValue().equals("LOGIN_SUCCESSFUL")) {
-					cm.loginSuccesful(sc.getStoredUuid());
+					cm.loginSuccessful(sc.getStoredUuid());
 				}
 				break;
 			case "OTHER":
@@ -179,6 +201,9 @@ public class ListenForInput implements Runnable {
 
 	}
 
+	/**
+	 * Closes this class' socket.
+	 */
 	public void closeSocket() {
 
 		try {
@@ -189,6 +214,14 @@ public class ListenForInput implements Runnable {
 		}
 	}
 
+	/**
+	 * This method, called when starting a thread with <code>ListenForInput</code>
+	 * as the runnable argument, starts reading new <code>Sendable</code>s from the
+	 * connection to the server by calling {@link #readConnection()}
+	 * 
+	 * @see Thread
+	 * @see Runnable
+	 */
 	@Override
 	public void run() {
 

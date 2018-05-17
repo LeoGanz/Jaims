@@ -16,10 +16,14 @@ import javax.swing.Timer;
 
 public class StopButton extends JPanel {
 
-	private boolean	drawAnimation	= false;
-	private int		x				= 19, y = 19, width = 0, height = 0, xOval = 1, yOval = 1, ovalWidth = 34,
-			ovalHeight = 34;
-	private Timer	timer;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
+	private boolean				drawAnimation		= false;
+	private int					x					= 19, y = 19, width = 0, height = 0, xOval = 1, yOval = 1,
+			ovalWidth = 34, ovalHeight = 34;
+	private Timer				timer;
 
 	public StopButton() {
 

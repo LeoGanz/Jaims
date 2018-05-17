@@ -5,17 +5,13 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.RoundRectangle2D;
 
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.Timer;
 
 import jaims_development_studio.jaims.client.gui.GUIMain;
@@ -23,13 +19,14 @@ import jaims_development_studio.jaims.client.gui.customGUIComponents.PopUpMenu;
 
 public class SettingDots extends JPanel {
 
-	private JPopupMenu	jpm;
-	private JMenuItem	item;
-	private boolean		drawAnimation	= false;
-	private int			x				= 19, y = 19, width = 0, height = 0, xOval = 1, yOval = 1, ovalWidth = 34,
-			ovalHeight = 34;
-	private Timer		timer;
-	private PopUpMenu	pum;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
+	private boolean				drawAnimation		= false;
+	private int					x					= 19, y = 19, width = 0, height = 0;
+	private Timer				timer;
+	private PopUpMenu			pum;
 
 	public SettingDots(GUIMain guimain) {
 
@@ -47,10 +44,6 @@ public class SettingDots extends JPanel {
 				y = 1;
 				width = width + 6;
 				height = height + 6;
-				xOval = 1;
-				yOval = 1;
-				ovalWidth += 6;
-				ovalHeight += 6;
 				repaint();
 				drawAnimation = false;
 
@@ -63,10 +56,6 @@ public class SettingDots extends JPanel {
 				y = 4;
 				width = width - 6;
 				height = height - 6;
-				yOval = 4;
-				xOval = 4;
-				ovalWidth -= 6;
-				ovalHeight -= 6;
 				repaint();
 
 				if (pum == null)
@@ -147,27 +136,13 @@ public class SettingDots extends JPanel {
 
 			}
 		});
-		guimain.getJaimsFrame().addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-
-				if (pum != null) {
-					if (pum.contains(e.getPoint()) == false) {
-						pum.dispose();
-						pum = null;
-					}
-				}
-
-			}
-		});
 
 	}
 
 	@Override
 	public void paintComponent(Graphics g) {
 
-		g.setColor(Color.WHITE);
+		g.setColor(new Color(170, 170, 170));
 		g.fillRect(0, 0, getWidth(), getHeight());
 
 		Graphics2D g2d = (Graphics2D) g;
@@ -175,8 +150,10 @@ public class SettingDots extends JPanel {
 		g2d.setColor(new Color(200, 200, 200));
 		g2d.drawOval(1, 1, 34, 34);
 
-		if (drawAnimation)
+		if (drawAnimation) {
+			g2d.setColor(new Color(200, 200, 200));
 			g2d.fillOval(x, y, width, height);
+		}
 
 		g2d.setColor(Color.BLACK);
 		g2d.fillOval(5, 15, 8, 8);
@@ -189,30 +166,7 @@ public class SettingDots extends JPanel {
 	public void setDrawAnimation(boolean animation) {
 
 		drawAnimation = animation;
-	}
-
-	private class Icon extends JPanel {
-
-		private Image img;
-
-		public Icon(Image img) {
-
-			this.img = img.getScaledInstance(34, 34, Image.SCALE_SMOOTH);
-			setPreferredSize(new Dimension(34, 34));
-			setMaximumSize(new Dimension(34, 34));
-		}
-
-		@Override
-		public void paintComponent(Graphics g) {
-
-			Graphics2D g2d = (Graphics2D) g;
-			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-			g2d.setClip(new RoundRectangle2D.Double(0, 0, 34, 34, 34, 34));
-			g2d.drawImage(img, 0, 0, this);
-
-			g2d.dispose();
-		}
+		pum = null;
 	}
 
 }

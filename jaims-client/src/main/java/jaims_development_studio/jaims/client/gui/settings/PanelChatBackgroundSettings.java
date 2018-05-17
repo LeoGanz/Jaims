@@ -33,10 +33,13 @@ import jaims_development_studio.jaims.client.gui.customGUIComponents.messages.Te
 
 public class PanelChatBackgroundSettings extends SettingPanelsParent {
 
-	private GUIMain	guiMain;
-	private Image	img;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
 
-	private boolean	needsRepainting	= true;
+	private GUIMain				guiMain;
+	private Image				img;
 
 	public PanelChatBackgroundSettings(GUIMain guiMain) {
 
@@ -50,6 +53,11 @@ public class PanelChatBackgroundSettings extends SettingPanelsParent {
 		setLayout(new BorderLayout());
 		setBackground(new Color(guiMain.getSettings().getChatBackground()));
 		JPanel pBack = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -233,6 +241,11 @@ public class PanelChatBackgroundSettings extends SettingPanelsParent {
 			pBC.setBorder(new EmptyBorder(5, 10, 5, 5));
 			{
 				JPanel p = new JPanel() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void paintComponent(Graphics g) {
 

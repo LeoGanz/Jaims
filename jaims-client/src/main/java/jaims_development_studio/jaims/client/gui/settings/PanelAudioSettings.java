@@ -39,10 +39,15 @@ import jaims_development_studio.jaims.api.settings.EInputEncodingType;
 import jaims_development_studio.jaims.client.gui.GUIMain;
 
 public class PanelAudioSettings extends SettingPanelsParent {
-	private static final Logger	LOG		= LoggerFactory.getLogger(PanelAudioSettings.class);
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
+
+	private static final Logger	LOG					= LoggerFactory.getLogger(PanelAudioSettings.class);
 
 	private GUIMain				guiMain;
-	private String				input	= "Aufnahme-Einstellungen", output = "Ausgabe-Einstellungen";
+	private String				input				= "Aufnahme-Einstellungen", output = "Ausgabe-Einstellungen";
 	private JPanel				panelInputDevice, panelInputVolume, panelInputFormat, panelSupported, panelOutputDevice,
 			panelOutputVolume;
 	private String[]			inputMixerNames, outputMixerNames,

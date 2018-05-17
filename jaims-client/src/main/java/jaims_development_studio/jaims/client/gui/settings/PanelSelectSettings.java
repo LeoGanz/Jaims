@@ -21,10 +21,14 @@ import jaims_development_studio.jaims.client.gui.GUIMain;
 
 public class PanelSelectSettings extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
 	private GUIMain				guiMain;
 	private JPanel				panelLineStart;
 	private PanelShowIcons		panelIconsLineStart;
-	private JScrollPane			jspIcons, jspCenterPanel;
+	private JScrollPane			jspIcons;
 	private SettingPanelsParent	spp;
 
 	public PanelSelectSettings(GUIMain guiMain) {
@@ -61,6 +65,11 @@ public class PanelSelectSettings extends JPanel {
 			panelLineStart.add(panelIconsLineStart, BorderLayout.CENTER);
 
 			JPanel panelBack = new JPanel() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void paintComponent(Graphics g) {
 

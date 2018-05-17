@@ -21,10 +21,14 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 public class PanelTextField extends JPanel {
-	private JTextArea	jta;
-	private JScrollPane	jsp	= null;
-	private JTextField	jtf;
-	private PanelChat	pc;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
+	private JTextArea			jta;
+	private JScrollPane			jsp					= null;
+	private JTextField			jtf;
+	private PanelChat			pc;
 
 	public PanelTextField(JTextArea jta, PanelChat pc) {
 

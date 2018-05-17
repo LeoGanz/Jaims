@@ -22,7 +22,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -35,7 +34,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
 import javax.swing.JWindow;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
@@ -45,21 +43,24 @@ import org.apache.commons.io.IOUtils;
 import jaims_development_studio.jaims.api.message.VoiceMessage;
 import jaims_development_studio.jaims.api.sendables.SendableMessage;
 import jaims_development_studio.jaims.client.gui.GUIMain;
-import jaims_development_studio.jaims.client.gui.audio.AudioWaveformCreator;
+import jaims_development_studio.jaims.client.gui.audio.AudioWaveFormSampler;
 import jaims_development_studio.jaims.client.gui.messagePanels.PanelChat;
 
 public class AfterRecordingWindow extends JWindow {
 
-	private GUIMain			guiMain;
-	private PanelChat		panelChat;
-	private File			recordFile;
-	private boolean			paused		= true, waveFormSet = false;
-	private JSlider			slider;
-	private BufferedImage	bim;
-	private JPanel			waveForm;
-	private Clip			audioClip;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
+	private GUIMain				guiMain;
+	private PanelChat			panelChat;
+	private File				recordFile;
+	private boolean				paused				= true, waveFormSet = false;
+	private BufferedImage		bim;
+	private JPanel				waveForm;
+	private Clip				audioClip;
 
-	private int				waveFormX	= -1, waveFormSetX = -1, currentPosition = 0;
+	private int					waveFormX			= -1, waveFormSetX = -1, currentPosition = 0;
 
 	public AfterRecordingWindow(GUIMain guiMain, PanelChat panelChat, File recordFile) {
 
@@ -78,6 +79,11 @@ public class AfterRecordingWindow extends JWindow {
 		setAlwaysOnTop(true);
 
 		JPanel center = new JPanel() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void paintComponent(Graphics g) {
@@ -103,6 +109,11 @@ public class AfterRecordingWindow extends JWindow {
 		c.setBackground(Color.WHITE);
 		c.setLayout(new BoxLayout(c, BoxLayout.LINE_AXIS));
 		JPanel startButton = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -151,21 +162,15 @@ public class AfterRecordingWindow extends JWindow {
 		c.add(startButton);
 		c.add(Box.createRigidArea(new Dimension(10, 0)));
 
-		try {
-			AudioWaveformCreator awc = new AudioWaveformCreator(recordFile, "waveFile2");
-			bim = awc.createAudioInputStream();
-		} catch (UnsupportedAudioFileException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		AudioWaveFormSampler awfs = new AudioWaveFormSampler();
+		bim = awfs.createWaveFile(recordFile);
 
 		waveForm = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -300,22 +305,6 @@ public class AfterRecordingWindow extends JWindow {
 
 		add(center, BorderLayout.CENTER);
 		setVisible(true);
-
-	}
-
-	private long getAudioFileLength() {
-
-		AudioFileFormat format;
-		float duration = 0;
-		try {
-			format = AudioSystem.getAudioFileFormat(recordFile);
-			duration = format.getFrameLength() / format.getFormat().getFrameRate();
-		} catch (UnsupportedAudioFileException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return (long) (duration * 1000);
 
 	}
 

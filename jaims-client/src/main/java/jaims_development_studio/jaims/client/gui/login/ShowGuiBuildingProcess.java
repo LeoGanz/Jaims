@@ -15,23 +15,39 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.border.LineBorder;
 
-import jaims_development_studio.jaims.client.gui.GUIMain;
-
+/**
+ * This class represents a <code>JPanel</code> that holds a
+ * <code>JProgressBar</code> which indicates the program's progress during the
+ * startup.
+ * 
+ * @author Bu88le
+ * 
+ * @since v0.1.0
+ *
+ */
 public class ShowGuiBuildingProcess extends JPanel {
 
-	private GUIMain			guiMain;
-	private Image			img;
-	private JProgressBar	jpb;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
+	private Image				img;
+	private JProgressBar		jpb;
 
-	public ShowGuiBuildingProcess(GUIMain guiMain) {
+	/**
+	 * Constructor of this class. Only initialises the background image.
+	 */
+	public ShowGuiBuildingProcess() {
 
-		this.guiMain = guiMain;
 		img = Toolkit.getDefaultToolkit()
 				.getImage(getClass().getClassLoader().getResource("images/LoginBackground.png"))
 				.getScaledInstance(900, 600, Image.SCALE_FAST);
 
 	}
 
+	/**
+	 * Initialises the <code>JPanel</code> and the <code>JProgressBar</code>.
+	 */
 	public void initGUI() {
 
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -48,6 +64,13 @@ public class ShowGuiBuildingProcess extends JPanel {
 
 	}
 
+	/**
+	 * Receives an integer which indicated how much the loading has progressed, sets
+	 * the progress bar's value to the given int and repaints it.
+	 * 
+	 * @param progress
+	 *            percentage of how much of the loading process is done
+	 */
 	public void setProgress(int progress) {
 
 		jpb.setValue(progress);

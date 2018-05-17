@@ -1,5 +1,16 @@
 package jaims_development_studio.jaims.client.chatObjects;
 
+/**
+ * This class contains all information concerning e.g. the number of messages or
+ * words used. There is an extra <code>ChatInformation</code> object for every
+ * chat. On further notice this class contains only getter and setter methods
+ * for all the variables. Additionally methods which raise the variables value
+ * by one were added.
+ * 
+ * @author Bu88le
+ *
+ * @since v0.1.0
+ */
 public class ChatInformation {
 
 	private int totalNumberMessages = 0, numberOwnMessages = 0, numberContactMessages = 0, numberTotalTextMessages = 0,
@@ -8,54 +19,67 @@ public class ChatInformation {
 			numberContactVoiceMessages = 0;
 
 	public void addTotalNumberMessages() {
+
 		totalNumberMessages++;
 	}
 
 	public void addNumberTotalVoiceMessages() {
+
 		numberTotalVoiceMessages++;
 	}
 
 	public void addNumberOwnMessages() {
+
 		numberOwnMessages++;
 	}
 
 	public void addNumberContactMessages() {
+
 		numberContactMessages++;
 	}
 
 	public void addNumberTotalTextMessages() {
+
 		numberTotalTextMessages++;
 	}
 
 	public void addNumberOwnTextMessages() {
+
 		numberOwnTextMessages++;
 	}
 
 	public void addNumberContactTextMessages() {
+
 		numberContactMessages++;
 	}
 
 	public void addNumberWordsUsed() {
+
 		numberWordsUsed++;
 	}
 
 	public void addNumberOwnWordsUsed() {
+
 		numberOwnWordsUsed++;
 	}
 
 	public void addNumberContactsWordsUsed() {
+
 		numberContactWordsUsed++;
 	}
 
 	public void addNumerTotalVoiceMessages() {
+
 		numberTotalVoiceMessages++;
 	}
 
 	public void addNumberOwnVoiceMessages() {
+
 		numberOwnVoiceMessages++;
 	}
 
 	public void addNumberContactVoiceMessages() {
+
 		numberContactVoiceMessages++;
 	}
 

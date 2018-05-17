@@ -3,7 +3,6 @@ package jaims_development_studio.jaims.client.gui.messagePanels;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Image;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,23 +17,27 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import jaims_development_studio.jaims.client.chatObjects.Message;
+import jaims_development_studio.jaims.client.chatObjects.ClientInternMessage;
 import jaims_development_studio.jaims.client.gui.GUIMain;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.messages.TextMessage;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.messages.VoiceMessage;
 
 public class PanelShowMessages extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long		serialVersionUID	= 1L;
 	private GUIMain					guiMain;
 	private UUID					contactUUID;
 	private ArrayList<TextMessage>	allTextMessages		= new ArrayList<>();
 	private ArrayList<VoiceMessage>	allVoiceMessages	= new ArrayList<>();
 	private ManageMessagePanels		mmp;
-	private Image					img;
 	private File					directory;
 	private String					fileTime;
 
-	public PanelShowMessages(GUIMain guiMain, ArrayList<Message> mList, UUID contactID, ManageMessagePanels mmp) {
+	public PanelShowMessages(GUIMain guiMain, ArrayList<ClientInternMessage> mList, UUID contactID,
+			ManageMessagePanels mmp) {
 
 		this.guiMain = guiMain;
 		this.mmp = mmp;
@@ -42,9 +45,7 @@ public class PanelShowMessages extends JPanel {
 		initGUI(mList, contactID);
 	}
 
-	private void initGUI(ArrayList<Message> mList, UUID contactID) {
-
-		img = guiMain.getChatBackground();
+	private void initGUI(ArrayList<ClientInternMessage> mList, UUID contactID) {
 
 		setOpaque(false);
 
@@ -52,7 +53,7 @@ public class PanelShowMessages extends JPanel {
 		setBorder(new EmptyBorder(0, 5, 0, 5));
 		add(Box.createRigidArea(new Dimension(0, 5)));
 
-		for (Message m : mList) {
+		for (ClientInternMessage m : mList) {
 			mmp.getContactChatInformation(contactID).addTotalNumberMessages();
 			if (m.getSender().equals(guiMain.getUserUUID())) {
 				mmp.getContactChatInformation(contactID).addNumberOwnMessages();
