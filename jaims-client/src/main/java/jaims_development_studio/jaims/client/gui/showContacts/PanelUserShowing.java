@@ -16,6 +16,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import jaims_development_studio.jaims.client.gui.GUIMain;
@@ -40,6 +41,10 @@ public class PanelUserShowing extends JPanel {
 		setMaximumSize(new Dimension(350, 60));
 		setAlignmentX(Component.CENTER_ALIGNMENT);
 		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+		add(Box.createRigidArea(new Dimension(70, 0)));
+		JLabel lbl = new JLabel(simpleContact.getContactNickname(), JLabel.LEFT);
+		lbl.setFont(new Font("Sans Serif", Font.BOLD, 16));
+		add(lbl);
 		add(Box.createHorizontalGlue());
 		add(new AddSign(guiMain, this));
 		add(Box.createRigidArea(new Dimension(2, 0)));

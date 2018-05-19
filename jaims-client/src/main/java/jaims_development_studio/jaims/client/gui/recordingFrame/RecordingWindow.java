@@ -26,6 +26,7 @@ import java.util.Date;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 import javax.swing.Box;
@@ -371,6 +372,7 @@ public class RecordingWindow extends JWindow {
 					DataLine.Info dlInfo = new DataLine.Info(TargetDataLine.class,
 							guiMain.getSettings().getAudioFormat());
 					recordLine = (TargetDataLine) AudioSystem.getLine(dlInfo);
+
 					DecimalFormat dm = new DecimalFormat("0000");
 					recordFile = new File(guiMain.getUserPath() + "audios/" + "JAIAUD-" + fileTime + "-"
 							+ dm.format(++existingAudioFiles) + "."

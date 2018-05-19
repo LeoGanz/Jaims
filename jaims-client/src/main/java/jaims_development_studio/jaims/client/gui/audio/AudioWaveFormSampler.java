@@ -45,15 +45,20 @@ public class AudioWaveFormSampler {
 
 	private static final Logger	LOG				= LoggerFactory.getLogger(AudioWaveFormSampler.class);
 
-	final int					IMAGE_HEIGHT	= 200;
+	final int					IMAGE_HEIGHT	= 100;
 	final int					Y_CENTERING		= IMAGE_HEIGHT / 2;
 	final int					STRETCH_FACTOR	= IMAGE_HEIGHT - Y_CENTERING - 35;
+	private float				SAMPLE_FREQUENCY;
+	private float				FRAME_SIZE;
+	private double				pixelspersecond;
 
 	public BufferedImage createWaveFile(File f) {
 
 		try {
 			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(f);
 			final float SAMPLE_SIZE_IN_BITS = audioInputStream.getFormat().getSampleSizeInBits();
+			SAMPLE_FREQUENCY = audioInputStream.getFormat().getSampleRate();
+			FRAME_SIZE = audioInputStream.getFormat().getFrameSize();
 
 			BufferedImage bim;
 			if (SAMPLE_SIZE_IN_BITS == 8.0)
@@ -147,6 +152,8 @@ public class AudioWaveFormSampler {
 
 		byte[] fileInBytes = IOUtils.toByteArray(new FileInputStream(f));
 		fileInBytes = Arrays.copyOfRange(fileInBytes, 45, fileInBytes.length - 1);
+		float floatsPerSecondPerChannel = (SAMPLE_FREQUENCY * FRAME_SIZE) / 4;
+
 		short[] bytesTo16Bit = new short[(fileInBytes.length - 44) / 2];
 
 		DataInputStream d = new DataInputStream(new ByteArrayInputStream(fileInBytes));
@@ -184,6 +191,7 @@ public class AudioWaveFormSampler {
 
 		double xStep = imageWidth / (double) left.length;
 		final int INCREASE_STEP = (left.length / imageWidth) * 2;
+		pixelspersecond = floatsPerSecondPerChannel * xStep;
 
 		BufferedImage bim = new BufferedImage(imageWidth, IMAGE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2 = (Graphics2D) bim.getGraphics();
@@ -354,6 +362,11 @@ public class AudioWaveFormSampler {
 	private int bytesToSInt(byte one, byte two, byte three) {
 
 		return (three) << 16 | (two & 0xFF) << 8 | (one & 0xFF);
+	}
+
+	public double getPixelsPerSecond() {
+
+		return pixelspersecond;
 	}
 
 }

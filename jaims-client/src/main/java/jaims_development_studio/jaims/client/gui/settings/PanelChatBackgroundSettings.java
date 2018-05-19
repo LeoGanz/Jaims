@@ -40,6 +40,7 @@ public class PanelChatBackgroundSettings extends SettingPanelsParent {
 
 	private GUIMain				guiMain;
 	private Image				img;
+	private JPanel				pShowMessages;
 
 	public PanelChatBackgroundSettings(GUIMain guiMain) {
 
@@ -72,7 +73,7 @@ public class PanelChatBackgroundSettings extends SettingPanelsParent {
 		pBack.setLayout(new BoxLayout(pBack, BoxLayout.PAGE_AXIS));
 		pBack.setBorder(new EmptyBorder(5, 30, 5, 30));
 		{
-			JPanel pShowMessages = new JPanel();
+			pShowMessages = new JPanel();
 			pShowMessages.setBackground(new Color(0, 0, 0, 0));
 			pShowMessages.setOpaque(false);
 			pShowMessages.setLayout(new BoxLayout(pShowMessages, BoxLayout.PAGE_AXIS));
@@ -97,7 +98,7 @@ public class PanelChatBackgroundSettings extends SettingPanelsParent {
 				ptm2.add(Box.createHorizontalGlue());
 				ptm2.add(tm2);
 				pShowMessages.add(ptm2);
-				pShowMessages.add(Box.createHorizontalGlue());
+				pShowMessages.add(Box.createVerticalGlue());
 			}
 
 			JScrollPane jsp = new JScrollPane(pShowMessages, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
@@ -115,6 +116,8 @@ public class PanelChatBackgroundSettings extends SettingPanelsParent {
 
 				img = scaleMaintainRatio();
 				pBack.repaint();
+				pShowMessages.revalidate();
+				pShowMessages.repaint();
 
 			}
 		});
