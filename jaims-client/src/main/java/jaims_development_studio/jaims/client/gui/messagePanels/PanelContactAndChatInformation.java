@@ -96,8 +96,8 @@ public class PanelContactAndChatInformation extends ParentPanel {
 			}
 		};
 		panelImage.setMinimumSize(new Dimension(110, 110));
-		panelImage.setPreferredSize(getMinimumSize());
-		panelImage.setMaximumSize(getMinimumSize());
+		panelImage.setPreferredSize(panelImage.getMinimumSize());
+		panelImage.setMaximumSize(panelImage.getMinimumSize());
 		panelImage.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panelImage.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		centerPanel.add(Box.createRigidArea(new Dimension(0, 15)));
@@ -175,6 +175,7 @@ public class PanelContactAndChatInformation extends ParentPanel {
 					{"Von " + simpleContact.getContactNickname() + " versandte Sprachnachrichten: ",
 							"<html><b>" + chatInformation.getNumberContactVoiceMessages()}};
 			JTable tableStats = new JTable(data, arr);
+			tableStats.setForeground(Color.LIGHT_GRAY);
 			tableStats.setFont(new Font("SansSerif", Font.PLAIN, 13));
 			tableStats.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 			tableStats.getColumnModel().getColumn(1).setMaxWidth(100);

@@ -15,6 +15,9 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.UUID;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import jaims_development_studio.jaims.client.gui.GUIMain;
@@ -26,7 +29,6 @@ public class PanelContactShowing extends JPanel {
 	 * 
 	 */
 	private static final long	serialVersionUID	= 1L;
-	private GUIMain				guiMain;
 	private SimpleContact		simpleContact;
 	private Image				img;
 	private BufferedImage		output				= new BufferedImage(50, 50, BufferedImage.TYPE_INT_ARGB);
@@ -34,24 +36,23 @@ public class PanelContactShowing extends JPanel {
 	public PanelContactShowing(GUIMain guiMain, SimpleContact simpleContact) {
 
 		this.simpleContact = simpleContact;
-		this.guiMain = guiMain;
 
 		img = guiMain.getProfileImage(simpleContact.getContactID()).getScaledInstance(50, 50, Image.SCALE_SMOOTH);
 		setMinimumSize(new Dimension(200, 60));
 		setPreferredSize(new Dimension(200, 60));
 		setMaximumSize(new Dimension(200, 60));
 		setCursor(new Cursor(Cursor.HAND_CURSOR));
+		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+		add(Box.createRigidArea(new Dimension(70, 0)));
+		JLabel lbl = new JLabel(simpleContact.getContactNickname());
+		lbl.setFont(new Font("Sans Serif", Font.BOLD, 16));
+		add(lbl);
 		addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-				if (simpleContact.chatExists() == false) {
-					simpleContact.setChatExists(true);
-					updateDatabase();
-					guiMain.addChatUser(simpleContact);
-
-				}
+				guiMain.addChatUser(simpleContact);
 
 				guiMain.showParentPanel(
 						guiMain.getMessagePanelManager().getChatPanelForUser(simpleContact.getContactID()),
@@ -86,15 +87,6 @@ public class PanelContactShowing extends JPanel {
 		g2d.drawImage(img, 0, 0, this);
 
 		g2.drawImage(output, 13, 5, this);
-		g2.setFont(new Font("Sans Serif", Font.BOLD, 16));
-		g2.setColor(Color.BLACK);
-		int y = getHeight() / 2 + g2.getFontMetrics(g2.getFont()).getHeight() / 3;
-		g2.drawString(simpleContact.getContactNickname(), 70, y);
-	}
-
-	private void updateDatabase() {
-
-		guiMain.updateHasChat(true, simpleContact.getContactID());
 	}
 
 }

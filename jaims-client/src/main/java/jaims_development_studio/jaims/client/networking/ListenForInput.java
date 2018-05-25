@@ -123,6 +123,7 @@ public class ListenForInput implements Runnable {
 			switch (s.getType().getValue()) {
 			case "MESSAGE":
 				SendableMessage sm = (SendableMessage) s;
+				sm.setTimestampDelivered();
 				LOG.info("Recieved sendable of type " + sm.getType());
 
 				if (sm.getMessageType().equals(EMessageType.TEXT)) {

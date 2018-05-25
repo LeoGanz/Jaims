@@ -84,10 +84,6 @@ public class PanelUserShowing extends JPanel {
 		g2d.drawImage(img, 0, 0, this);
 
 		g2.drawImage(output, 13, 5, this);
-		g2.setFont(new Font("Sans Serif", Font.BOLD, 16));
-		g2.setColor(Color.BLACK);
-		int y = getHeight() / 2 + g2.getFontMetrics(g2.getFont()).getHeight() / 3;
-		g2.drawString(simpleContact.getContactNickname(), 70, y);
 
 	}
 }

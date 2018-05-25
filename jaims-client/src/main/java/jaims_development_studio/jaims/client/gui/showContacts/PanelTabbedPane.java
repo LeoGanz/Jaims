@@ -280,15 +280,37 @@ public class PanelTabbedPane extends JPanel {
 
 		if (containsChat == false) {
 			PanelContactShowing pcs = new PanelContactShowing(guiMain, simpleContact);
-			panelChats.add(pcs, 0);
-			panelChats.add(Box.createRigidArea(new Dimension(0, 5)), 1);
+			panelChats.add(Box.createRigidArea(new Dimension(0, 5)));
+			panelChats.add(pcs, 1);
+			panelChats.add(Box.createRigidArea(new Dimension(0, 5)), 2);
 			panelChats.revalidate();
 			panelChats.repaint();
 			jspChats.revalidate();
+			jspChats.repaint();
 			revalidate();
 			repaint();
 			sortedList.add(simpleContact);
 		}
+	}
+
+	public void setUserOnTop(UUID uuid) {
+
+		if (panelChats.getComponent(1) instanceof PanelContactShowing
+				&& ((PanelContactShowing) panelChats.getComponent(1)).getPanelID().equals(uuid))
+			return;
+
+		for (Component c : panelChats.getComponents()) {
+			if (c instanceof PanelContactShowing) {
+				if (((PanelContactShowing) c).getPanelID().equals(uuid)) {
+					panelChats.remove(c);
+					panelChats.add(c, 1);
+					panelChats.add(Box.createRigidArea(new Dimension(0, 5)), 2);
+				}
+			}
+		}
+
+		panelChats.revalidate();
+		repaint();
 	}
 
 	public void addContact() {

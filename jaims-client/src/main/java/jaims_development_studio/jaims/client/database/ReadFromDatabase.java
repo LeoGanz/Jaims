@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import jaims_development_studio.jaims.api.profile.Profile;
 import jaims_development_studio.jaims.client.chatObjects.ClientInternMessage;
 import jaims_development_studio.jaims.client.logic.ClientMain;
+import jaims_development_studio.jaims.client.logic.DFEObject;
+import jaims_development_studio.jaims.client.logic.EFileType;
 import jaims_development_studio.jaims.client.logic.SimpleContact;
 
 /**
@@ -39,7 +41,7 @@ public class ReadFromDatabase {
 	private Statement			statement;
 	private PreparedStatement	pStatement;
 	private boolean				messagesExist	= false, contactsExist = false, userExists = false, imageExists = false,
-			informationsExists = false;
+			informationsExists = false, largeFilesExists = false;
 
 	public ReadFromDatabase(Connection con) {
 
@@ -68,6 +70,8 @@ public class ReadFromDatabase {
 					imageExists = true;
 				else if (tName != null && tName.equals("INFORMATIONS"))
 					informationsExists = true;
+				else if (tName != null && tName.equals("LARGE_FILES"))
+					largeFilesExists = true;
 			}
 			if (messagesExist && contactsExist && userExists && imageExists && informationsExists)
 				return true;
@@ -111,6 +115,11 @@ public class ReadFromDatabase {
 			if (informationsExists == false) {
 				s.execute(
 						"CREATE TABLE INFORMATIONS (USER_ID UUID PRIMARY KEY NOT NULL, TOTAL_NUMBER_MESSAGES INTEGER NOT NULL, NUMBER_OWN_MESSAGES INTEGER NOT NULL, NUMBER_CONTACT_MESSAGES INTEGER NOT NULL, NUMBER_TOTAL_TEXT_MESSAGES INTEGER NOT NULL, NUMBER_OWN_TEXT_MESSAGES INTEGER NOT NULL, NUMBER_CONTACT_TEXT_MESSAGES INTEGER NOT NULL, NUMBER_WORDS_USED INTEGER NOT NULL, NUMBER_OWN_WORDS_USED INTEGER NOT NULL, NUMBER_CONTACTS_WORDS_USED INTEGER NOT NULL, NUMBER_TOTAL_VOICE_MESSAGES INTEGER NOT NULL, NUMBER_OWN_VOICE_MESSAGES INTEGER NOT NULL, NUMBER_CONTACT_VOICE_MESSAGES INTEGER NOT NULL, NUMBER_TOTAL_IMAGE_MESSAGES INTEGER NOT NULL, NUMBER_OWN_IMAGE_MESSAGES INTEGER NOT NULL, NUMBER_CONTACT_IMAGE_MESSAGES INTEGER NOT NULL, NUMBER_TOTAL_FILES_SENT INTEGER NOT NULL, NUMBER_OWN_FILES_SENT INTEGER NOT NULL, NUMBER_CONTACT_FILES_SENT INTEGER NOT NULL, NUMBER_TOTAL_LOCATIONS_SENT INTEGER NOT NULL, NUMBER_OWN_LOCATIONS_SENT INTEGER NOT NULL, NUMBER_CONTACT_LOCATIONS_SENT INTEGER NOT NULL, NUMBER_TOTAL_CONTACTS_SENT INTEGER NOT NULL, NUMBER_OWN_CONTACTS_SENT INTEGER NOT NULL, NUMBER_CONTACT_CONTACTS_SENT INTEGER NOT NULL, NUMBER_TOTAL_CALENDERES_SENT INTEGER NOT NULL, NUMBER_OWN_CALENDERES_SENT INTEGER NOT NULL, NUMBER_CONTACT_CALENDERES_SENT INTEGER NOT NULL);");
+				con.commit();
+			}
+			if (largeFilesExists == false) {
+				s.execute(
+						"CREATE TABLE LARGE_FILES (FILE_ID UUID NOT NULL PRIMARY KEY, SENDER UUID NOT NULL, RECIPIENT UUID NOT NULL, FILENAME VARCHAR(256) NOT NULL, PATH VARCHAR(512) NOT NULL, EXTENSION VARCHAR(32) NOT NULL, FILE_TYPE VARCHAR(64) NOT NULL, DATE_SENT TIMESTAMP NOT NULL)");
 				con.commit();
 			}
 		} catch (SQLException e) {
@@ -388,7 +397,7 @@ public class ReadFromDatabase {
 						.createImage(getClass().getClassLoader().getResource("images/Jaims_USER.png"));
 			}
 		} catch (SQLException e) {
-			LOG.error("Couldn't load image from database", e);
+			LOG.error("Couldn't load image from database");
 			return Toolkit.getDefaultToolkit()
 					.createImage(getClass().getClassLoader().getResource("images/Jaims_USER.png"));
 		}
@@ -422,7 +431,7 @@ public class ReadFromDatabase {
 						.createImage(getClass().getClassLoader().getResource("images/Jaims_USER.png"));
 			}
 		} catch (SQLException e) {
-			LOG.error("Couldn't load profile picture from database", e);
+			LOG.error("Couldn't load profile picture from database");
 			return Toolkit.getDefaultToolkit()
 					.createImage(getClass().getClassLoader().getResource("images/Jaims_USER.png"));
 		}
@@ -452,7 +461,7 @@ public class ReadFromDatabase {
 						.createImage(getClass().getClassLoader().getResource("images/LoginBackground.png"));
 			}
 		} catch (SQLException e) {
-			LOG.error("Couldn't load the chat background image", e);
+			LOG.error("Couldn't load the chat background image");
 			return Toolkit.getDefaultToolkit()
 					.createImage(getClass().getClassLoader().getResource("images/LoginBackground.png"));
 		} catch (NullPointerException npe) {
@@ -542,6 +551,31 @@ public class ReadFromDatabase {
 		} catch (SQLException e) {
 			LOG.error("Failed to create statement or resultSet!", e);
 			return false;
+		}
+	}
+
+	public ArrayList<DFEObject> getDFEObjects(UUID user) {
+
+		ArrayList<DFEObject> list = new ArrayList<>();
+		try {
+			pStatement = con.prepareStatement("SELECT * FROM LARGE_FILES WHERE (CONTACT_ID=? OR USER_ID=?)");
+			pStatement.setObject(1, user);
+			pStatement.setObject(2, user);
+			rs = pStatement.executeQuery();
+			con.commit();
+
+			while (rs.next()) {
+				DFEObject dfeo = new DFEObject((UUID) rs.getObject(1), (UUID) rs.getObject(2), (UUID) rs.getObject(3),
+						rs.getString(4), rs.getString(5), rs.getString(6), EFileType.valueOf(rs.getString(7)),
+						convertToDate(rs.getTimestamp(8)));
+				list.add(dfeo);
+			}
+
+			return list;
+
+		} catch (SQLException e) {
+			LOG.error("SQL Exception", e);
+			return list;
 		}
 	}
 

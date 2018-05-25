@@ -14,6 +14,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.UUID;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -184,6 +185,11 @@ public class PanelChatWindowBottom extends JPanel {
 							sendSendable(jta.getText().trim());
 							jta.setText("");
 							showRecordIcon();
+
+							if (panelChat.getSimpleContact().chatExists() == false) {
+								panelChat.getSimpleContact().setChatExists(true);
+								updateDatabase();
+							}
 						}
 					}
 				}
@@ -379,6 +385,11 @@ public class PanelChatWindowBottom extends JPanel {
 		}
 	}
 
+	private void updateDatabase() {
+
+		guiMain.updateHasChat(true, panelChat.getSimpleContact().getContactID());
+	}
+
 	/**
 	 * Builds a <code>TextMessage</code> with a given string, sends it and adds it
 	 * to the chat.
@@ -393,10 +404,12 @@ public class PanelChatWindowBottom extends JPanel {
 	private void sendSendable(String message) {
 
 		TextMessage tm = new TextMessage(guiMain.getUserUUID(), panelChat.getContactID(), message);
+		tm.setUuid(UUID.randomUUID());
 		tm.setTimestampSent();
 		SendableMessage sm = new SendableMessage(tm);
 		guiMain.sendSendable(sm);
 		panelChat.addNewUserMessage(message, tm);
+		guiMain.setUserOnTop(panelChat.getPanelUUID());
 	}
 
 }

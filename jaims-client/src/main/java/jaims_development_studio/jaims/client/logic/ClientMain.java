@@ -149,13 +149,13 @@ public class ClientMain {
 	 * Delegate method which only calls <code>DatabaseConnection</code>'s method
 	 * <code>getMessageList()</code> passing on the {@link UUID} argument. <br>
 	 * Immediately returns an <code>ArrayList</code> filled with all
-	 * {@link ClientInternMessage}s that have the given <code>UUID</code> as either recipient or
-	 * sender.
+	 * {@link ClientInternMessage}s that have the given <code>UUID</code> as either
+	 * recipient or sender.
 	 * 
 	 * @param uuid
 	 *            specifies the contact for whose messages the client is looking
-	 * @return an ArrayList filled with <code>ClientInternMessage</code>s to or from this
-	 *         contact
+	 * @return an ArrayList filled with <code>ClientInternMessage</code>s to or from
+	 *         this contact
 	 * 
 	 * @see DatabaseConnection#getContactMessages(UUID)
 	 * @see ArrayList
@@ -553,8 +553,8 @@ public class ClientMain {
 	}
 
 	/**
-	 * Adds a {@link jaims_development_studio.jaims.api.message.Message ClientInternMessage}
-	 * which was sent from the server to a chat.
+	 * Adds a {@link jaims_development_studio.jaims.api.message.Message
+	 * ClientInternMessage} which was sent from the server to a chat.
 	 * 
 	 * @param m
 	 *            The message to be added
@@ -761,6 +761,11 @@ public class ClientMain {
 		File settings = new File(path + "/settings");
 		if (!settings.exists())
 			settings.mkdirs();
+	}
+
+	public ArrayList<DFEObject> getDFEObjectsForUser(UUID user) {
+
+		return databaseConnection.getDFEObjects(user);
 	}
 
 	/**

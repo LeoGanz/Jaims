@@ -181,7 +181,6 @@ public class ManageMessagePanels {
 		if (availablePanelChats.containsKey(uuid))
 			return availablePanelChats.get(uuid);
 		else {
-			guiMain.updateHasChat(true, uuid);
 			availableChats.put(uuid, new ArrayList<ClientInternMessage>());
 			contactChatInformation.put(uuid, new ChatInformation());
 			PanelShowMessages ps = new PanelShowMessages(guiMain, availableChats.get(uuid), uuid, this);

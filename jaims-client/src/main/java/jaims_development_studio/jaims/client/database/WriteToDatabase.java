@@ -156,19 +156,14 @@ public class WriteToDatabase {
 			pStatement.setObject(3, m.getRecipient());
 			pStatement.setString(4, m.getMessageType().getValue());
 			pStatement.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
-			if (m.getTimestampRead() != null && m.getTimestampDelivered() != null) {
-				pStatement.setTimestamp(6, new Timestamp(m.getTimestampRead().getTime()));
-				pStatement.setTimestamp(7, new Timestamp(m.getTimestampDelivered().getTime()));
-			} else if (m.getTimestampDelivered() != null && m.getTimestampRead() == null) {
+			if (m.getTimestampRead() == null)
 				pStatement.setTimestamp(6, null);
-				pStatement.setTimestamp(7, new Timestamp(m.getTimestampDelivered().getTime()));
-			} else if (m.getTimestampDelivered() == null && m.getTimestampRead() != null) {
+			else
 				pStatement.setTimestamp(6, new Timestamp(m.getTimestampRead().getTime()));
+			if (m.getTimestampDelivered() == null)
 				pStatement.setTimestamp(7, new Timestamp(System.currentTimeMillis()));
-			} else {
-				pStatement.setTimestamp(6, null);
-				pStatement.setTimestamp(7, null);
-			}
+			else
+				pStatement.setTimestamp(7, new Timestamp(m.getTimestampDelivered().getTime()));
 			pStatement.setString(8, ((TextMessage) m).getMessage());
 			pStatement.executeUpdate();
 			con.commit();

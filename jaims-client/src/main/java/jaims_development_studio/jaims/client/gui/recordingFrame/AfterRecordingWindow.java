@@ -26,6 +26,8 @@ import java.io.IOException;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -284,6 +286,11 @@ public class AfterRecordingWindow extends JWindow {
 				sendVoiceMessage();
 				dispose();
 
+				if (panelChat.getSimpleContact().chatExists() == false) {
+					panelChat.getSimpleContact().setChatExists(true);
+					updateDatabase();
+				}
+
 			}
 		});
 
@@ -328,7 +335,18 @@ public class AfterRecordingWindow extends JWindow {
 			AudioInputStream ais = AudioSystem.getAudioInputStream(recordFile);
 			audioClip.open(ais);
 			audioClip.start();
+			audioClip.addLineListener(new LineListener() {
 
+				@Override
+				public void update(LineEvent event) {
+
+					if (event.getType() == LineEvent.Type.STOP) {
+						paused = true;
+						t.stop();
+					}
+
+				}
+			});
 			jsp.getHorizontalScrollBar().setValue(0);
 			jsp.revalidate();
 			jsp.repaint();
@@ -339,7 +357,7 @@ public class AfterRecordingWindow extends JWindow {
 				public void actionPerformed(ActionEvent e) {
 
 					currentPosition += awfs.getPixelsPerSecond() / 50;
-					System.out.println(jsp.getHorizontalScrollBar().getValue());
+					System.out.println("Running...");
 					waveForm.repaint();
 
 					if (currentPosition % jsp.getViewport().getWidth() == 0) {
@@ -373,6 +391,11 @@ public class AfterRecordingWindow extends JWindow {
 
 	private void pausePlayback() {
 
+	}
+
+	private void updateDatabase() {
+
+		guiMain.updateHasChat(true, panelChat.getSimpleContact().getContactID());
 	}
 
 	private void sendVoiceMessage() {

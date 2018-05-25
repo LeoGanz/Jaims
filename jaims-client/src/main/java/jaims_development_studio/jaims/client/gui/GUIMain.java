@@ -43,6 +43,7 @@ import jaims_development_studio.jaims.client.gui.showContacts.PanelContactShowin
 import jaims_development_studio.jaims.client.gui.showContacts.PanelTabbedPane;
 import jaims_development_studio.jaims.client.gui.showContacts.PanelUserShowing;
 import jaims_development_studio.jaims.client.logic.ClientMain;
+import jaims_development_studio.jaims.client.logic.DFEObject;
 import jaims_development_studio.jaims.client.logic.SimpleContact;
 
 public class GUIMain implements Runnable {
@@ -311,7 +312,15 @@ public class GUIMain implements Runnable {
 	public void addChatUser(SimpleContact simpleContact) {
 
 		panelTabbedPane.addChatUser(simpleContact);
+		panelTabbedPane.revalidate();
+		panelTabbedPane.repaint();
 		centerPanel.revalidate();
+		centerPanel.repaint();
+	}
+
+	public void setUserOnTop(UUID uuid) {
+
+		panelTabbedPane.setUserOnTop(uuid);
 		centerPanel.repaint();
 	}
 
@@ -441,6 +450,11 @@ public class GUIMain implements Runnable {
 	public ListAudioDevices getListAudioDevices() {
 
 		return listAudioDevices;
+	}
+
+	public ArrayList<DFEObject> getDFEObjectsForUser(UUID user) {
+
+		return cm.getDFEObjectsForUser(user);
 	}
 
 	public void saveTextMessage(TextMessage m) {

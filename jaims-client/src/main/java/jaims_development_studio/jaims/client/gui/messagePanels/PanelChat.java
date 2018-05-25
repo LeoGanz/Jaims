@@ -28,6 +28,8 @@ import jaims_development_studio.jaims.api.settings.Settings;
 import jaims_development_studio.jaims.client.gui.GUIMain;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.ParentPanel;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.messages.VoiceMessage;
+import jaims_development_studio.jaims.client.gui.dfe.PanelStoreDFEs;
+import jaims_development_studio.jaims.client.logic.SimpleContact;
 
 /**
  * This class represents a JPanel that shows a chat with a user, meaning it
@@ -57,7 +59,7 @@ public class PanelChat extends ParentPanel {
 	private PanelChatWindowTop	panelChatWindowTop;
 	private PanelShowMessages	panelShowMessages;
 	private Image				img;
-	private JScrollPane			jsp;
+	private JScrollPane			jsp, jspDFE;
 
 	/**
 	 * Constructor of this class. Initialises the fields and starts building the GUI
@@ -241,6 +243,16 @@ public class PanelChat extends ParentPanel {
 		}
 	}
 
+	public void addDFEPanel() {
+
+		PanelStoreDFEs psDFE = new PanelStoreDFEs(contactID, guiMain);
+		jspDFE = new JScrollPane(psDFE, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		add(jspDFE, BorderLayout.LINE_END);
+		revalidate();
+		repaint();
+	}
+
 	/**
 	 * 
 	 * @return the UUID of the contact this PanelChat is associated with
@@ -248,6 +260,11 @@ public class PanelChat extends ParentPanel {
 	public UUID getContactID() {
 
 		return contactID;
+	}
+
+	public SimpleContact getSimpleContact() {
+
+		return guiMain.getSimpleContact(contactID);
 	}
 
 	@Override

@@ -17,6 +17,7 @@ import jaims_development_studio.jaims.api.message.Message;
 import jaims_development_studio.jaims.api.profile.Profile;
 import jaims_development_studio.jaims.client.chatObjects.ClientInternMessage;
 import jaims_development_studio.jaims.client.logic.ClientMain;
+import jaims_development_studio.jaims.client.logic.DFEObject;
 import jaims_development_studio.jaims.client.logic.SimpleContact;
 
 /**
@@ -359,5 +360,10 @@ public class DatabaseConnection {
 	public static Connection getConnection() {
 
 		return con;
+	}
+
+	public ArrayList<DFEObject> getDFEObjects(UUID user) {
+
+		return readFromDatabase.getDFEObjects(user);
 	}
 }

@@ -297,7 +297,7 @@ public class PanelChatBackgroundSettings extends SettingPanelsParent {
 					@Override
 					public void mousePressed(MouseEvent e) {
 
-						guiMain.getSettings().setChatBackground(new Color(191, 225, 14).getRGB());
+						guiMain.getSettings().setChatBackground(Color.DARK_GRAY.getRGB());
 						p.setBackground(new Color(guiMain.getSettings().getChatBackground()));
 						p.repaint();
 						setBackground(new Color(guiMain.getSettings().getChatBackground()));

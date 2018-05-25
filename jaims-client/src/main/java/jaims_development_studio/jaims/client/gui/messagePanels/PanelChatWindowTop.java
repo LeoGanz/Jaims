@@ -9,12 +9,14 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
@@ -106,6 +108,26 @@ public class PanelChatWindowTop extends JPanel {
 		lblUsername.setMaximumSize(lblUsername.getPreferredSize());
 		add(lblUsername);
 		add(Box.createHorizontalGlue());
+
+		Image i = Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/mic.png"));
+		i = i.getScaledInstance(48, 48, Image.SCALE_SMOOTH);
+		JLabel lblExtras = new JLabel(new ImageIcon(i));
+		lblExtras.setMinimumSize(new Dimension(48, 48));
+		lblExtras.setPreferredSize(lblExtras.getMinimumSize());
+		lblExtras.setMaximumSize(lblExtras.getMinimumSize());
+		lblExtras.setOpaque(false);
+		lblExtras.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		lblExtras.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+
+				// TODO Auto-generated method stub
+
+			}
+		});
+		add(lblExtras);
+		add(Box.createRigidArea(new Dimension(5, 0)));
 
 		pcaci = new PanelContactAndChatInformation(guiMain, contactProfile,
 				guiMain.getChatInformation(contactProfile.getContactID()));
