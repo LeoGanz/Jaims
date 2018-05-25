@@ -20,6 +20,8 @@ import javax.swing.JSlider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.client.gui.customGUIComponents.messages.VoiceMessage;
+
 /**
  * This class is responsible for playing an AudioFile, more importantly a voice
  * message. By creating a new instance of this class only the fields will be
@@ -43,6 +45,7 @@ public class PlayAudio implements Runnable {
 	private Date				d;
 	private JSlider				slider;
 	private JPanel				p;
+	private VoiceMessage		vm;
 
 	/**
 	 * The constructor of this class. Initialises only the fields, playback has to
@@ -59,12 +62,13 @@ public class PlayAudio implements Runnable {
 	 * @param vm
 	 *            JPanel containing the <code>VoiceMessage</code> Panel.
 	 */
-	public PlayAudio(String file, JLabel actualTime, JSlider slider, JPanel p) {
+	public PlayAudio(String file, JLabel actualTime, JSlider slider, JPanel p, VoiceMessage vm) {
 
 		this.file = file;
 		this.actualTime = actualTime;
 		this.slider = slider;
 		this.p = p;
+		this.vm = vm;
 	}
 
 	/**
@@ -127,13 +131,14 @@ public class PlayAudio implements Runnable {
 																								// seconds
 							slider.revalidate();
 							p.repaint(); // vm.repaint();
+
 							try {
 								Thread.sleep(300);
 							} catch (InterruptedException e) {
 								LOG.error("Interrupted Sleep", e);
 							}
 						}
-
+						vm.setPaused(true);
 					}
 				};
 				thread.start();

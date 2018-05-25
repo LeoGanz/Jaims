@@ -142,7 +142,7 @@ public class VoiceMessage extends JPanel {
 		addTimeLabel();
 
 		img = scaleMaintainAspectRatio(guiMain.getProfileImage(uuid));
-		pa = new PlayAudio(path, currentTime, slider, backgroundPanel);
+		pa = new PlayAudio(path, currentTime, slider, backgroundPanel, this);
 
 	}
 
