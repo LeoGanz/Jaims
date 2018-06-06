@@ -109,10 +109,21 @@ public class ClientMain {
 	 * 
 	 * @see DatabaseConnection
 	 */
-	public void connectToDatabase() {
+	private void connectToDatabase() {
 
 		if (databaseConnection == null)
 			databaseConnection = new DatabaseConnection(loggedInUsername);
+	}
+
+	public String[] getLogin() {
+
+		// return databaseConnection.getLogin();
+		return new String[] {};
+	}
+
+	public void setRememberMe(boolean remember, String username, String password) {
+
+		databaseConnection.setRememberMe(remember, username, password);
 	}
 
 	/**

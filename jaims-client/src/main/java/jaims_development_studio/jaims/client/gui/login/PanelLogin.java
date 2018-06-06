@@ -11,6 +11,8 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -54,7 +56,20 @@ public class PanelLogin extends JPanel {
 	public PanelLogin(GUIMain guiMain) {
 
 		this.guiMain = guiMain;
+
 		initGUI();
+		checkLogin();
+	}
+
+	private void checkLogin() {
+
+		String[] arr = guiMain.getLogin();
+		if (arr.length > 0) {
+			guiMain.sendLogin(arr[0], arr[1]);
+			tfUsername.setText(arr[0]);
+			pfPassword.setText(arr[1]);
+		}
+
 	}
 
 	/**
@@ -339,6 +354,21 @@ public class PanelLogin extends JPanel {
 		jcb.setBorder(new LineBorder(new Color(0, 0, 0, 0)));
 		jcb.setAlignmentX(Component.CENTER_ALIGNMENT);
 		jcb.setFont(new Font("Sans Serif", Font.PLAIN, 13));
+		jcb.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+
+				if (jcb.isSelected()) {
+					char[] c = pfPassword.getPassword();
+					String password = String.valueOf(c);
+					guiMain.setRememberMe(true, tfUsername.getText(), password);
+				} else {
+					guiMain.setRememberMe(false, "", "");
+				}
+
+			}
+		});
 	}
 
 	/**
@@ -365,6 +395,9 @@ public class PanelLogin extends JPanel {
 					&& password.equals("Password") == false) {
 				guiMain.sendLogin(tfUsername.getText(), password);
 			}
+
+			if (jcb.isSelected())
+				guiMain.setRememberMe(true, tfUsername.getText(), password);
 
 		});
 		loginBtPanel.add(Box.createVerticalGlue());

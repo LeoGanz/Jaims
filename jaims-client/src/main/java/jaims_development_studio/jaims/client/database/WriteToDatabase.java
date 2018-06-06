@@ -35,6 +35,26 @@ public class WriteToDatabase {
 		this.con = con;
 	}
 
+	public void setRememberMe(boolean remember, String username, String password) {
+
+		// try {
+		// pStatement = con.prepareStatement("TRUNCATE TABLE REMEMBER_ME");
+		// pStatement.executeUpdate();
+		// con.commit();
+		//
+		// if (remember) {
+		// pStatement = con.prepareStatement("INSERT INTO REMEMBER_ME VALUES (?,?,?)");
+		// pStatement.setBoolean(1, remember);
+		// pStatement.setString(2, username);
+		// pStatement.setString(3, password);
+		// }
+		// } catch (SQLException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+
+	}
+
 	/**
 	 * Saved a given profile to the database and decides based on the given boolean
 	 * whether to save it as a contact or an user. If the saving fails the method

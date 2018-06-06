@@ -192,6 +192,7 @@ public class PanelContactAndChatInformation extends ParentPanel {
 
 		JScrollPane jsp = new JScrollPane(centerPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		jsp.getVerticalScrollBar().setUnitIncrement(16);
 		add(jsp, BorderLayout.CENTER);
 
 	}
