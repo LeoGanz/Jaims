@@ -7,6 +7,8 @@ import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jaims_development_studio.jaims.api.account.Account;
 import jaims_development_studio.jaims.api.account.UserNameNotAvailableException;
@@ -14,9 +16,14 @@ import jaims_development_studio.jaims.server.account.AccountManager;
 import jaims_development_studio.jaims.server.profile.ProfileManager;
 import jaims_development_studio.jaims.server.user.UserManager;
 
+/**
+ * @author WilliGross
+ */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AccountManagerTest {
 
+	private final Logger	LOG			= LoggerFactory.getLogger(AccountManagerTest.class);
+	
 	private AccountManager	accountManager;
 	private UserManager		userManager;
 	private ProfileManager	profileManager;
@@ -52,7 +59,7 @@ public class AccountManagerTest {
 		Assert.assertEquals("Saved and fetched accounts should be equal!", account, accountTestUser);
 		
 		Assert.assertNotNull("gettUuidForUsername() returned null", accountManager.getUuidForUsername(username));
-		System.out.println(accountManager.getUuidForUsername(username));
+		//		System.out.println(accountManager.getUuidForUsername(username));
 	}
 
 	@Test
@@ -62,7 +69,7 @@ public class AccountManagerTest {
 		for (String s : usernames)
 			stringBuilder.append(s + "\n");
 
-		System.out.println(stringBuilder);
+		LOG.info(stringBuilder.toString());
 	}
 
 }

@@ -13,15 +13,18 @@ import jaims_development_studio.jaims.api.user.User;
 import jaims_development_studio.jaims.server.contacts.ContactsManager;
 import jaims_development_studio.jaims.server.user.UserManager;
 
+/**
+ * @author WilliGross
+ */
 public class ContactsTest {
-	
+
 	private UserManager		userManager;
 	private final String	username	= "Contacter";
-
+	
 	@Before
 	public void setUp() {
 		userManager = new UserManager(null);
-		
+
 		Account account = userManager.getAccountManager().get(username);
 		if (account == null) {
 			account = new Account(username, "123456", username + "@test.com");
@@ -32,17 +35,17 @@ public class ContactsTest {
 				Assert.fail("Couldn't create account, even though nothing was fetched for the same username!");
 			}
 		}
-
+		
 		Assert.assertEquals("Fetched account object should match original!", account,
 				userManager.getAccountManager().get(username));
-
+		
 		User user = userManager.get(account.getUuid());
 		if (user == null) {
 			user = new User(account);
 			userManager.save(user);
 		}
 	}
-	
+
 	@Test
 	public void test() {
 		UUID accUUID = userManager.getUuidForUsername(username);
@@ -54,16 +57,16 @@ public class ContactsTest {
 			contacts.setAccount(userManager.getAccountManager().get(accUUID));
 			contactsManager.saveOrUpdateEntity(contacts);
 		}
-
-
+		
+		
 		//		UUID[] uuids = { UUID.randomUUID(), UUID.randomUUID() };
 		Assert.assertNotNull("Contacts shouldn't be null as it should have been stored just before", contacts);
 		//		contacts.addContacts(uuids);
 		contacts.updateLastUpdated();
 		contactsManager.saveOrUpdateEntity(contacts);
-		
+
 		//		Assert.assertArrayEquals(uuids,
 		//				contactsManager.get(userManager.getUuidForUsername(username)).getContacts().toArray());
 	}
-	
+
 }

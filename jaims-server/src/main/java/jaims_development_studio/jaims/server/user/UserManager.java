@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import jaims_development_studio.jaims.api.account.Account;
 import jaims_development_studio.jaims.api.account.IncorrectPasswordException;
 import jaims_development_studio.jaims.api.account.UserNameNotAvailableException;
+import jaims_development_studio.jaims.api.message.MessageAlreadyExistsException;
 import jaims_development_studio.jaims.api.profile.Profile;
 import jaims_development_studio.jaims.api.sendables.InvalidSendableException;
 import jaims_development_studio.jaims.api.sendables.SendableLogin;
@@ -33,7 +34,7 @@ import jaims_development_studio.jaims.server.util.EntityManager;
  * @author WilliGross
  */
 public class UserManager extends EntityManager<User> {
-	
+
 	private final Logger			LOG					= LoggerFactory.getLogger(UserManager.class);
 	private final AccountManager	accountManager;
 	private final ProfileManager	profileManager;
@@ -42,7 +43,7 @@ public class UserManager extends EntityManager<User> {
 	private final MessageManager	messageManager;
 	private final Server			server;
 	private final List<User>		onlineUsers;
-	
+
 	public UserManager(Server server) {
 		super(new UserDAO());
 		this.server = server;
@@ -53,44 +54,44 @@ public class UserManager extends EntityManager<User> {
 		accountManager = new AccountManager(this, profileManager, settingsManager, contactsManager);
 		onlineUsers = new ObservableList<>(new LinkedList<>());
 	}
-
+	
 	public User registerNewUser(SendableRegistration registration) throws UserNameNotAvailableException {
 		String username = registration.getUsername();
 		String password = registration.getPassword();
 		String email = registration.getEmail();
-		
+
 		Account account = accountManager.createNewAccount(username, password, email);
 		User user = new User(server, account);
-		
+
 		save(user);
-		
+
 		return user;
 	}
-
+	
 	public User loginUser(SendableLogin login) throws UserNotFoundException, IncorrectPasswordException {
 		UUID uuid = getUuidForUsername(login.getUsername());
-		
+
 		User user = get(uuid);
 		if (user == null)
 			throw new UserNotFoundException("User with UUID " + uuid + " could not be found!");
 		user.setServer(server);
-		
-		Account account = user.getAccount();
 
+		Account account = user.getAccount();
+		
 		boolean correctPassword = account.validatePassword(login.getPassword());
 		if (!correctPassword)
 			throw new IncorrectPasswordException("Invalid password for account " + account);
-		
+
 		onlineUsers.add(user);
-		
+
 		return user;
 	}
-	
+
 	public void logoutUser(User user) {
 		if (user != null)
 			onlineUsers.remove(user);
 	}
-
+	
 	public void deleteUserAndAccount(UUID uuid) {
 		LOG.info("Deleting User " + uuid);
 		User user = get(uuid);
@@ -98,11 +99,11 @@ public class UserManager extends EntityManager<User> {
 		user = null;
 		accountManager.delete(uuid); //AccountManager will delete both user and account objects
 	}
-
-	public void deliverMessage(SendableMessage message) throws UserNotFoundException, InvalidSendableException {
+	
+	public void deliverMessage(SendableMessage message) throws UserNotFoundException, InvalidSendableException, MessageAlreadyExistsException {
 		messageManager.deliverMessage(message, server);
 	}
-
+	
 	@Override
 	public void save(User user) {
 		if (user != null) {
@@ -110,34 +111,34 @@ public class UserManager extends EntityManager<User> {
 			super.save(user);
 		}
 	}
-	
+
 	public UUID getUuidForUsername(String username) {
 		return accountManager.getUuidForUsername(username);
 	}
-
+	
 	public List<UUID> getUuidsForUsername(String username) {
 		return accountManager.getUuidsForUsername(username);
 	}
-	
+
 	public String getUsernameForUuid(UUID uuid) {
 		return accountManager.getUsernameForUuid(uuid);
 	}
-	
+
 	public List<User> getOnlineUsers() {
 		return onlineUsers;
 	}
-	
+
 	public AccountManager getAccountManager() {
 		return accountManager;
 	}
-	
+
 	public Profile getProfile(UUID uuid) {
 		return profileManager.get(uuid);
 	}
-
+	
 	public void manageRequest(SendableRequest request, UUID requester)
 			throws NoEntityAvailableException, InvalidSendableException {
-
+		
 		try {
 			switch (request.getRequestType()) {
 				case DELETE_ACCOUNT:
@@ -161,39 +162,39 @@ public class UserManager extends EntityManager<User> {
 		} catch (NoEntityAvailableException e) {
 			throw e;
 		}
-
+		
 	}
-	
+
 	public void manageReceiveProfile(SendableProfile sendableProfile) {
 		profileManager.saveOrUpdateEntity(sendableProfile.getProfile());
 	}
-	
+
 	/**
 	 * @return the profileManager
 	 */
 	public ProfileManager getProfileManager() {
 		return profileManager;
 	}
-	
+
 	/**
 	 * @return the settingsManager
 	 */
 	public SettingsManager getSettingsManager() {
 		return settingsManager;
 	}
-	
+
 	/**
 	 * @return the contactsManager
 	 */
 	public ContactsManager getContactsManager() {
 		return contactsManager;
 	}
-	
+
 	/**
 	 * @return the messageManager
 	 */
 	public MessageManager getMessageManager() {
 		return messageManager;
 	}
-	
+
 }
