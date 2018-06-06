@@ -20,16 +20,32 @@ import javax.swing.JSlider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jaims_development_studio.jaims.client.gui.customGUIComponents.messages.VoiceMessage;
+
+/**
+ * This class is responsible for playing an AudioFile, more importantly a voice
+ * message. By creating a new instance of this class only the fields will be
+ * initialised but the playback has to be started by running a {@link Thread}
+ * with this {@link Runnable}.
+ * 
+ * @since v0.1.0
+ * 
+ * 
+ * @author Bu88le
+ *
+ */
+@Deprecated
 public class PlayAudio implements Runnable {
 
 	private static final Logger	LOG	= LoggerFactory.getLogger(PlayAudio.class);
-	String						file;
-	Clip						clip;
-	JLabel						actualTime;
-	SimpleDateFormat			sdf;
-	Date						d;
-	JSlider						slider;
-	JPanel						p;
+	private String				file;
+	private Clip				clip;
+	private JLabel				actualTime;
+	private SimpleDateFormat	sdf;
+	private Date				d;
+	private JSlider				slider;
+	private JPanel				p;
+	private VoiceMessage		vm;
 
 	/**
 	 * The constructor of this class. Initialises only the fields, playback has to
@@ -46,17 +62,22 @@ public class PlayAudio implements Runnable {
 	 * @param vm
 	 *            JPanel containing the <code>VoiceMessage</code> Panel.
 	 */
-	public PlayAudio(String file, JLabel actualTime, JSlider slider, JPanel p) {
+	public PlayAudio(String file, JLabel actualTime, JSlider slider, JPanel p, VoiceMessage vm) {
 
 		this.file = file;
 		this.actualTime = actualTime;
 		this.slider = slider;
 		this.p = p;
+		this.vm = vm;
 	}
 
 	/**
 	 * Starts the playback of the given audio file 'file' and runs a thread in which
 	 * the sliders value is set to the clip's current audio position
+	 * 
+	 * @see SimpleDateFormat
+	 * @see Date
+	 * @see Clip
 	 */
 	private void initPlayback() {
 
@@ -92,6 +113,10 @@ public class PlayAudio implements Runnable {
 				});
 				clip.start();
 
+				/*
+				 * This thread is started at the same time as the clip and is responsible for
+				 * counting the elapsed time and displaying it on the voice message's label.
+				 */
 				Thread thread = new Thread() {
 					@Override
 					public void run() {
@@ -106,13 +131,14 @@ public class PlayAudio implements Runnable {
 																								// seconds
 							slider.revalidate();
 							p.repaint(); // vm.repaint();
+
 							try {
 								Thread.sleep(300);
 							} catch (InterruptedException e) {
 								LOG.error("Interrupted Sleep", e);
 							}
 						}
-
+						vm.setPaused(true);
 					}
 				};
 				thread.start();
@@ -121,7 +147,7 @@ public class PlayAudio implements Runnable {
 			} catch (UnsupportedAudioFileException e) {
 				LOG.error("Audio file is unsupported - propbably unsupported audio format", e);
 			} catch (IOException e) {
-				LOG.error("Error when reading file", e);
+				LOG.error("Error while reading file", e);
 			}
 		}
 
@@ -142,5 +168,4 @@ public class PlayAudio implements Runnable {
 
 		initPlayback();
 	}
-
 }

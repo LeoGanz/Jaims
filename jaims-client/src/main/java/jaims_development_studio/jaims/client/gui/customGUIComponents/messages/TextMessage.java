@@ -11,7 +11,7 @@ import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.ArrayList;
+import java.awt.event.ComponentListener;
 
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -19,24 +19,64 @@ import javax.swing.border.EmptyBorder;
 
 import jaims_development_studio.jaims.client.gui.GUIMain;
 
+/**
+ * This class visualises a text message. This happens by adding the text to a
+ * JTextPane and adding that to a custom painted JPanel. Furthermore custom
+ * calculations are done in order to fit the message to the perfect size.
+ * 
+ * @author Bu88le
+ * 
+ * @since v0.1.0
+ * 
+ * @see TextMessage#TextMessage(String, GUIMain, boolean)
+ *
+ */
 public class TextMessage extends JPanel {
+
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
 
 	private GUIMain				guiMain;
 	private JTextArea			jta;
-	private boolean				own, multipleLines;
-	private int					height, width;
-	private ArrayList<String>	lineStrings	= new ArrayList<>();
-	private String				longestLine, message;
-	private Color				border;
+	private boolean				own;
+	private String				message;
 
+	/**
+	 * Constructor initialises the fields and calls {@link #initGUI()}.
+	 * 
+	 * @param message
+	 *            the message to be displayed as a string
+	 * @param guiMain
+	 *            a reference to the guiMain class
+	 * @param own
+	 *            own message or contact's message
+	 * 
+	 * @see GUIMain
+	 */
 	public TextMessage(String message, GUIMain guiMain, boolean own) {
 
 		this.guiMain = guiMain;
 		this.own = own;
 		this.message = message;
 		initGUI();
+		addResizeListeners();
 	}
 
+	/**
+	 * Initialises the GUI by:
+	 * <ul>
+	 * <li>setting the panel's layout</li>
+	 * <li>creating a new JTextArea and adding the message's text onto it</li>
+	 * <li>setting the panel's fore- and background colour according to the boolean
+	 * </li>
+	 * </ul>
+	 * 
+	 * @see JTextArea
+	 * @see BorderLayout
+	 * @see EmptyBorder
+	 */
 	private void initGUI() {
 
 		setLayout(new BorderLayout(0, 0));
@@ -63,6 +103,17 @@ public class TextMessage extends JPanel {
 		;
 		add(jta);
 
+	}
+
+	/**
+	 * Adds listeners to the panel and the frame respectively in order resize the
+	 * message accordingly to the frame's size.
+	 * 
+	 * @see ComponentAdapter
+	 * @see ComponentListener
+	 */
+	private void addResizeListeners() {
+
 		addComponentListener(new ComponentAdapter() {
 
 			@Override
@@ -85,6 +136,10 @@ public class TextMessage extends JPanel {
 		});
 	}
 
+	/**
+	 * When called this method calculates the preferred size for the JTextArea and
+	 * changes its and the panel's size accordingly.
+	 */
 	public void setMaximumSize() {
 
 		String text = jta.getText();
@@ -93,9 +148,14 @@ public class TextMessage extends JPanel {
 
 		int textLength = jta.getFontMetrics(jta.getFont()).stringWidth(text);
 		int textHeight = jta.getFontMetrics(jta.getFont()).getHeight();
+		// True, if the message's string length is shorter than the program's calculated
+		// preferred width
 		if (textLength < preferredWidth) {
 			if (textLength < jta.getMinimumSize().getWidth())
 				textLength = (int) jta.getMinimumSize().getWidth();
+
+			// Curiously need to set both the panel's and the JTextArea's sizes again in
+			// order to properly resize both.
 			jta.setMaximumSize(new Dimension(textLength + 5, textHeight));
 			jta.setPreferredSize(jta.getMaximumSize());
 			jta.setMinimumSize(jta.getMaximumSize());
@@ -130,6 +190,11 @@ public class TextMessage extends JPanel {
 
 	}
 
+	/**
+	 * Computes the maximum width messages are allowed to take on.
+	 * 
+	 * @return the message's maximum width
+	 */
 	private int computeMaximumWidth() {
 
 		double ratio = -0.000000000031829 * Math.pow(guiMain.getJaimsFrame().getWidth(), 3)
@@ -139,6 +204,11 @@ public class TextMessage extends JPanel {
 		return (int) ((guiMain.getJaimsFrame().getWidth() - 260) * ratio);
 	}
 
+	/**
+	 * Updates the message's visualisation by resetting its back-,foreground and
+	 * font colour and again setting the message to its preferred size by calling
+	 * {@link #setMaximumSize()}.
+	 */
 	public void updateMessage() {
 
 		if (own) {

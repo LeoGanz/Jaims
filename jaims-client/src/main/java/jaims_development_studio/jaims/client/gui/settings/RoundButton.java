@@ -19,9 +19,13 @@ import jaims_development_studio.jaims.client.gui.GUIMain;
 
 public class RoundButton extends JButton {
 
-	private Color	backgroundColor;
-	private String	text;
-	private Font	font;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
+	private Color				backgroundColor;
+	private String				text;
+	private Font				font;
 
 	public RoundButton(Color bc, String text, JPanel parentPanel, GUIMain guiMain) {
 

@@ -2,9 +2,7 @@ package jaims_development_studio.jaims.client.database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.UUID;
 
@@ -15,21 +13,41 @@ import jaims_development_studio.jaims.api.message.Message;
 import jaims_development_studio.jaims.api.message.TextMessage;
 import jaims_development_studio.jaims.api.profile.Profile;
 
+/**
+ * This class handles every request concerning writing something to the
+ * database. Every request issued somewhere in the program is forwarded to this
+ * class and dealt with in the appropriate method.
+ * 
+ * @author Bu88le
+ *
+ * @since v0.1.0
+ *
+ */
 public class WriteToDatabase {
 
 	private static final Logger	LOG	= LoggerFactory.getLogger(WriteToDatabase.class);
 
-	private String				tablename;
 	private Connection			con;
-	private Statement			s;
 	private PreparedStatement	pStatement;
-	private ResultSet			rs;
 
 	public WriteToDatabase(Connection con) {
 
 		this.con = con;
 	}
 
+	/**
+	 * Saved a given profile to the database and decides based on the given boolean
+	 * whether to save it as a contact or an user. If the saving fails the method
+	 * return false.
+	 * 
+	 * @param pf
+	 *            the profile to be saved
+	 * @param contact
+	 *            save it as a contact or an user
+	 * @return true if successfully saved otherwise false
+	 * 
+	 * @see Profile
+	 */
 	public boolean saveProfile(Profile pf, boolean contact) {
 
 		String sql;
@@ -50,17 +68,28 @@ public class WriteToDatabase {
 				pStatement.setBoolean(7, false);
 			pStatement.executeUpdate();
 			con.commit();
-			System.out.println("Saved");
 			return true;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("Exception while saving profile", e);
 
 			return false;
 		}
 
 	}
 
+	/**
+	 * Updates the given profile's entry in the database. The boolean 'contact'
+	 * indicates whether it is a contact's profile or the user's profile that need
+	 * to be updated.
+	 * 
+	 * @param pf
+	 *            the updated profile to be written to the database
+	 * @param contact
+	 *            indicated whether a contact's profile or the user's profile needs
+	 *            to be updated
+	 * 
+	 * @see Profile
+	 */
 	public void updateProfile(Profile pf, boolean contact) {
 
 		String sql;
@@ -80,11 +109,22 @@ public class WriteToDatabase {
 			pStatement.executeUpdate();
 			con.commit();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("Couldn't update profile", e);
 		}
 	}
 
+	/**
+	 * Updated a contact's 'hasChat'-field in the database. The boolean indicates,
+	 * as the name suggests, whether the contact has an existing chat history with
+	 * the user.
+	 * 
+	 * @param hasChat
+	 *            indicated whether the contact has an existing chat
+	 * @param contactID
+	 *            the contact's UUID
+	 * 
+	 * @see UUID
+	 */
 	public void updateHasChat(boolean hasChat, UUID contactID) {
 
 		try {
@@ -94,45 +134,58 @@ public class WriteToDatabase {
 			pStatement.executeUpdate();
 			con.commit();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOG.error("Couldn't update 'hasChat'", e);
 		}
 
 	}
 
+	/**
+	 * This method saves a given text message to the database.
+	 * 
+	 * @param m
+	 *            the message to be saved
+	 * 
+	 * @see Message
+	 */
 	public void saveTextMessage(Message m) {
 
 		try {
 			pStatement = con.prepareStatement("INSERT INTO MESSAGES VALUES (?,?,?,?,?,?,?,?)");
-			pStatement.setObject(1, UUID.randomUUID());
+			pStatement.setObject(1, m.getUuid());
 			pStatement.setObject(2, m.getSender());
 			pStatement.setObject(3, m.getRecipient());
 			pStatement.setString(4, m.getMessageType().getValue());
 			pStatement.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
-			if (m.getTimestampRead() != null && m.getTimestampDelivered() != null) {
-				pStatement.setTimestamp(6, new Timestamp(m.getTimestampRead().getTime()));
-				pStatement.setTimestamp(7, new Timestamp(m.getTimestampDelivered().getTime()));
-			} else if (m.getTimestampDelivered() != null && m.getTimestampRead() == null) {
+			if (m.getTimestampRead() == null)
 				pStatement.setTimestamp(6, null);
-				pStatement.setTimestamp(7, new Timestamp(m.getTimestampDelivered().getTime()));
-			} else if (m.getTimestampDelivered() == null && m.getTimestampRead() != null) {
+			else
 				pStatement.setTimestamp(6, new Timestamp(m.getTimestampRead().getTime()));
-				pStatement.setTimestamp(7, null);
-			} else {
-				pStatement.setTimestamp(6, null);
-				pStatement.setTimestamp(7, null);
-			}
+			if (m.getTimestampDelivered() == null)
+				pStatement.setTimestamp(7, new Timestamp(System.currentTimeMillis()));
+			else
+				pStatement.setTimestamp(7, new Timestamp(m.getTimestampDelivered().getTime()));
 			pStatement.setString(8, ((TextMessage) m).getMessage());
 			pStatement.executeUpdate();
 			con.commit();
 
 		} catch (NullPointerException npe) {
-			npe.printStackTrace();
+			LOG.error("NullPointerException", npe);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("Failed to save message", e);
 		}
 	}
 
+	/**
+	 * Saves the given voice message to the database where the message field is set
+	 * to the audio's path on the hard drive.
+	 * 
+	 * @param m
+	 *            the message to be saved
+	 * @param pathToFile
+	 *            the path to the audio
+	 * 
+	 * @see Message
+	 */
 	public void saveVoiceMessage(Message m, String pathToFile) {
 
 		try {
@@ -150,7 +203,7 @@ public class WriteToDatabase {
 				pStatement.setTimestamp(7, new Timestamp(m.getTimestampDelivered().getTime()));
 			} else if (m.getTimestampDelivered() == null && m.getTimestampRead() != null) {
 				pStatement.setTimestamp(6, new Timestamp(m.getTimestampRead().getTime()));
-				pStatement.setTimestamp(7, null);
+				pStatement.setTimestamp(7, new Timestamp(System.currentTimeMillis()));
 			} else {
 				pStatement.setTimestamp(6, null);
 				pStatement.setTimestamp(7, null);
@@ -160,13 +213,21 @@ public class WriteToDatabase {
 			con.commit();
 
 		} catch (NullPointerException npe) {
-			npe.printStackTrace();
+			LOG.error("NullPointerException", npe);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("Failed to save Message", e);
 		}
 	}
 
+	/**
+	 * Deletes an existing contact from the database.
+	 * 
+	 * @param uuid
+	 *            the conact's UUID
+	 * @return true if successfully deleted
+	 * 
+	 * @see UUID
+	 */
 	public boolean deleteContact(UUID uuid) {
 
 		try {
@@ -178,8 +239,7 @@ public class WriteToDatabase {
 
 			return true;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("Failed to delete contact", e);
 			return false;
 		}
 

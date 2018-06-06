@@ -29,12 +29,15 @@ import jaims_development_studio.jaims.client.logic.SimpleContact;
 
 public class PanelTabbedPane extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long			serialVersionUID	= 1L;
 	private GUIMain						guiMain;
 	private boolean						chatsSelected		= true, paintChats = true, paintContacts = false;
 	private JScrollPane					jspChats, jspContacts;
-	private JPanel						panelChats, panelContacts, panelCenter, panelTabs;
-	private int							xChats				= 10, yChats = 30, xContacts = -130, yContacts = 30,
-			xJspChats = 0, xJspContacts = 260;
+	private JPanel						panelChats, panelContacts, panelTabs;
+	private int							xChats				= 10, xContacts = -130, yContacts = 30;
 	private int							paintChatWidth		= 130, paintChatHeight = 35, paintContactWidth = 0,
 			paintContactHeight = 0;
 	private boolean						animationRunning	= false;
@@ -58,6 +61,11 @@ public class PanelTabbedPane extends JPanel {
 		panelTabs.setLayout(new BoxLayout(panelTabs, BoxLayout.LINE_AXIS));
 		{
 			btChats = new JButton() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void paintComponent(Graphics g) {
 
@@ -91,6 +99,11 @@ public class PanelTabbedPane extends JPanel {
 			panelTabs.add(btChats);
 
 			btContacts = new JButton() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void paintComponent(Graphics g) {
 
@@ -144,6 +157,11 @@ public class PanelTabbedPane extends JPanel {
 			});
 
 			panelContacts = new JPanel() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void paintComponent(Graphics g) {
 
@@ -155,7 +173,7 @@ public class PanelTabbedPane extends JPanel {
 			panelContacts.setOpaque(false);
 			panelContacts.setBorder(new EmptyBorder(0, 3, 0, 3));
 			JLabel lbl = new JLabel(list.get(0).getContactNickname().substring(0, 1).toUpperCase());
-			lbl.setForeground(Color.CYAN);
+			lbl.setForeground(Color.white);
 			lbl.setFont(new Font("Sans Serif", Font.BOLD, 32));
 			lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
 			panelContacts.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -173,12 +191,12 @@ public class PanelTabbedPane extends JPanel {
 						panelContacts.add(Box.createRigidArea(new Dimension(0, 5)));
 					} else {
 						panelContacts.add(Box.createRigidArea(new Dimension(0, 15)));
-						JLabel label = new JLabel(list.get(i + 1).getContactNickname().substring(0, 1).toUpperCase(),
-								JLabel.LEFT);
-						label.setForeground(Color.CYAN);
+						JLabel label = new JLabel(list.get(i + 1).getContactNickname().substring(0, 1).toUpperCase());
+						label.setForeground(Color.WHITE);
 						label.setBackground(new Color(0, 0, 0, 0));
 						label.setOpaque(false);
 						label.setFont(new Font("Sans Serif", Font.BOLD, 32));
+						label.setAlignmentX(Component.CENTER_ALIGNMENT);
 						panelContacts.add(label);
 						panelContacts.add(Box.createRigidArea(new Dimension(0, 3)));
 					}
@@ -189,6 +207,11 @@ public class PanelTabbedPane extends JPanel {
 			}
 		} else {
 			panelContacts = new JPanel() {
+
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
 
 				@Override
 				public void paintComponent(Graphics g) {
@@ -213,6 +236,11 @@ public class PanelTabbedPane extends JPanel {
 
 		sortedList = guiMain.getMessagePanelManager().sortChatPanels(list);
 		panelChats = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -241,26 +269,45 @@ public class PanelTabbedPane extends JPanel {
 
 	public void addChatUser(SimpleContact simpleContact) {
 
-		boolean containsChat = false;
-
 		for (SimpleContact sc : sortedList) {
 			if (simpleContact.getContactID().equals(sc.getContactID())) {
-				containsChat = true;
-				break;
+				return;
 			}
 		}
 
-		if (containsChat == false) {
-			PanelContactShowing pcs = new PanelContactShowing(guiMain, simpleContact);
-			panelChats.add(pcs, 0);
-			panelChats.add(Box.createRigidArea(new Dimension(0, 5)), 1);
-			panelChats.revalidate();
-			panelChats.repaint();
-			jspChats.revalidate();
-			revalidate();
-			repaint();
-			sortedList.add(simpleContact);
+		System.out.println("Adding user");
+
+		PanelContactShowing pcs = new PanelContactShowing(guiMain, simpleContact);
+		panelChats.add(Box.createRigidArea(new Dimension(0, 5)), 0);
+		panelChats.add(pcs, 1);
+		panelChats.add(Box.createRigidArea(new Dimension(0, 5)), 2);
+		panelChats.revalidate();
+		panelChats.repaint();
+		jspChats.revalidate();
+		jspChats.repaint();
+		revalidate();
+		repaint();
+		sortedList.add(simpleContact);
+	}
+
+	public void setUserOnTop(UUID uuid) {
+
+		if (panelChats.getComponent(1) instanceof PanelContactShowing
+				&& ((PanelContactShowing) panelChats.getComponent(1)).getPanelID().equals(uuid))
+			return;
+
+		for (Component c : panelChats.getComponents()) {
+			if (c instanceof PanelContactShowing) {
+				if (((PanelContactShowing) c).getPanelID().equals(uuid)) {
+					panelChats.remove(c);
+					panelChats.add(c, 1);
+					panelChats.add(Box.createRigidArea(new Dimension(0, 5)), 2);
+				}
+			}
 		}
+
+		panelChats.revalidate();
+		repaint();
 	}
 
 	public void addContact() {
@@ -320,7 +367,6 @@ public class PanelTabbedPane extends JPanel {
 
 				if (xChats < 130) {
 					xChats += 10;
-					yChats = btChats.getHeight() - 5;
 					btChats.repaint();
 				}
 
@@ -384,7 +430,6 @@ public class PanelTabbedPane extends JPanel {
 
 				if (xChats > 10) {
 					xChats -= 10;
-					yChats = btChats.getHeight() - 5;
 					btChats.repaint();
 				}
 

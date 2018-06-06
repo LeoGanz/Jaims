@@ -26,37 +26,38 @@ import java.util.Date;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
 import javax.swing.JWindow;
 import javax.swing.Timer;
 
 import jaims_development_studio.jaims.client.gui.GUIMain;
 import jaims_development_studio.jaims.client.gui.messagePanels.PanelChat;
-import jaims_development_studio.jaims.client.logic.RecordAudio;
 
 public class RecordingWindow extends JWindow {
 
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
 	private GUIMain				guiMain;
-	private int					translucency	= 255, existingAudioFiles = 0;
-	private boolean				appearing		= false, mouseOnClose = false, clicked = false, paintTime = false,
-			mouseOnSend = false, paintClick = false, recording = false, paused = true;
+	private int					translucency		= 255, existingAudioFiles = 0;
+	private boolean				appearing			= false, mouseOnClose = false, paintTime = false,
+			mouseOnSend = false, recording = false;
 	private StopButton			sb;
 	private PauseButton			pb;
-	private String				time			= "", fileTime;
+	private String				time				= "", fileTime;
 	private JPanel				centerpanel;
 	private long				startTime, startPause = 0, endPause = 0;
 	private Timer				timer;
-	private RecordAudio			ra;
 	private Image				tickMark;
 	private File				directory, recordFile;
 	private AudioInputStream	ais;
 	private TargetDataLine		recordLine;
-	private JSlider				slider;
 
 	public RecordingWindow(GUIMain guiMain, PanelChat panelChat) {
 
@@ -93,6 +94,11 @@ public class RecordingWindow extends JWindow {
 		rb.setLayout(new BoxLayout(rb, BoxLayout.LINE_AXIS));
 
 		JPanel recordingButton = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -194,6 +200,11 @@ public class RecordingWindow extends JWindow {
 		rb.add(Box.createHorizontalGlue());
 
 		centerpanel = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -252,9 +263,10 @@ public class RecordingWindow extends JWindow {
 
 				if (mouseOnSend) {
 					try {
+						Thread.sleep(200);
 						ais.close();
 						recordLine.close();
-					} catch (IOException e1) {
+					} catch (IOException | InterruptedException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
@@ -310,8 +322,6 @@ public class RecordingWindow extends JWindow {
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-				ra.stopRecording();
-
 				time = "";
 				paintTime = false;
 				if (timer != null)
@@ -362,6 +372,7 @@ public class RecordingWindow extends JWindow {
 					DataLine.Info dlInfo = new DataLine.Info(TargetDataLine.class,
 							guiMain.getSettings().getAudioFormat());
 					recordLine = (TargetDataLine) AudioSystem.getLine(dlInfo);
+
 					DecimalFormat dm = new DecimalFormat("0000");
 					recordFile = new File(guiMain.getUserPath() + "audios/" + "JAIAUD-" + fileTime + "-"
 							+ dm.format(++existingAudioFiles) + "."
@@ -381,14 +392,6 @@ public class RecordingWindow extends JWindow {
 			}
 		};
 		t.start();
-	}
-
-	private void play() {
-
-	}
-
-	private void pausePlayback() {
-
 	}
 
 }

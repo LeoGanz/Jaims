@@ -34,9 +34,13 @@ import jaims_development_studio.jaims.client.gui.customGUIComponents.messages.Te
 
 public class PanelMessageSettings extends SettingPanelsParent {
 
-	private GUIMain		guiMain;
-	private JPanel		panelTop, pTM, pTM2;
-	private TextMessage	tm, tm2;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
+	private GUIMain				guiMain;
+	private JPanel				panelTop, pTM, pTM2;
+	private TextMessage			tm, tm2;
 
 	public PanelMessageSettings(GUIMain guiMain) {
 
@@ -49,6 +53,11 @@ public class PanelMessageSettings extends SettingPanelsParent {
 		setLayout(new BorderLayout());
 
 		panelTop = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -109,13 +118,14 @@ public class PanelMessageSettings extends SettingPanelsParent {
 					g2.setFont(new Font("Arial", Font.BOLD, 17));
 					g2.setStroke(new BasicStroke(2.3F));
 
-					int xStart = getWidth() / 2 - g2.getFontMetrics(g2.getFont()).stringWidth("Message settings") / 2;
+					int xStart = getWidth() / 2
+							- g2.getFontMetrics(g2.getFont()).stringWidth("ClientInternMessage settings") / 2;
 					int yFontStart = getHeight() / 2 + g2.getFontMetrics(g2.getFont()).getHeight() / 2;
 					int xEnd = getWidth() / 2 + (getWidth() / 2 - xStart);
 					int stringHeight = g2.getFontMetrics(g2.getFont()).getHeight();
 
 					g2.setColor(Color.WHITE);
-					g2.drawString("Message settings", xStart, yFontStart);
+					g2.drawString("ClientInternMessage settings", xStart, yFontStart);
 
 					g2.setColor(new Color(55, 102, 255));
 					g2.setStroke(new BasicStroke(3));
@@ -176,6 +186,11 @@ public class PanelMessageSettings extends SettingPanelsParent {
 			pBC.setBorder(new EmptyBorder(5, 10, 5, 5));
 			{
 				JPanel p = new JPanel() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void paintComponent(Graphics g) {
 
@@ -273,6 +288,11 @@ public class PanelMessageSettings extends SettingPanelsParent {
 			pOMFC.setBorder(new EmptyBorder(5, 10, 5, 5));
 			{
 				JPanel p = new JPanel() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void paintComponent(Graphics g) {
 
@@ -371,6 +391,11 @@ public class PanelMessageSettings extends SettingPanelsParent {
 			pOMB.setBorder(new EmptyBorder(5, 10, 5, 5));
 			{
 				JPanel panel = new JPanel() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void paintComponent(Graphics g) {
 
@@ -575,6 +600,11 @@ public class PanelMessageSettings extends SettingPanelsParent {
 			// -------------------------------------------------------------
 
 			JPanel panelSeperator = new JPanel() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void paintComponent(Graphics g) {
 
@@ -637,6 +667,11 @@ public class PanelMessageSettings extends SettingPanelsParent {
 			pCBC.setBorder(new EmptyBorder(5, 10, 5, 5));
 			{
 				JPanel p = new JPanel() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void paintComponent(Graphics g) {
 
@@ -734,6 +769,11 @@ public class PanelMessageSettings extends SettingPanelsParent {
 			pCMFC.setBorder(new EmptyBorder(5, 10, 5, 5));
 			{
 				JPanel p = new JPanel() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void paintComponent(Graphics g) {
 
@@ -832,6 +872,11 @@ public class PanelMessageSettings extends SettingPanelsParent {
 			pCMB.setBorder(new EmptyBorder(5, 10, 5, 5));
 			{
 				JPanel panel = new JPanel() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void paintComponent(Graphics g) {
 

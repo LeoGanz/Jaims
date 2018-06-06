@@ -33,10 +33,14 @@ import jaims_development_studio.jaims.client.logic.SimpleContact;
 
 public class PanelContactAndChatInformation extends ParentPanel {
 
-	private GUIMain			guiMain;
-	private SimpleContact	simpleContact;
-	private ChatInformation	chatInformation;
-	private Image			profilePicture;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
+	private GUIMain				guiMain;
+	private SimpleContact		simpleContact;
+	private ChatInformation		chatInformation;
+	private Image				profilePicture;
 
 	public PanelContactAndChatInformation(GUIMain guiMain, SimpleContact simpleContact,
 			ChatInformation chatInformation) {
@@ -69,6 +73,11 @@ public class PanelContactAndChatInformation extends ParentPanel {
 		centerPanel.setBorder(new EmptyBorder(5, 10, 5, 10));
 
 		JPanel panelImage = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -87,8 +96,8 @@ public class PanelContactAndChatInformation extends ParentPanel {
 			}
 		};
 		panelImage.setMinimumSize(new Dimension(110, 110));
-		panelImage.setPreferredSize(getMinimumSize());
-		panelImage.setMaximumSize(getMinimumSize());
+		panelImage.setPreferredSize(panelImage.getMinimumSize());
+		panelImage.setMaximumSize(panelImage.getMinimumSize());
 		panelImage.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panelImage.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		centerPanel.add(Box.createRigidArea(new Dimension(0, 15)));
@@ -166,7 +175,7 @@ public class PanelContactAndChatInformation extends ParentPanel {
 					{"Von " + simpleContact.getContactNickname() + " versandte Sprachnachrichten: ",
 							"<html><b>" + chatInformation.getNumberContactVoiceMessages()}};
 			JTable tableStats = new JTable(data, arr);
-			// tableStats.setSelectionModel(new NullSelectionModel());
+			tableStats.setForeground(Color.LIGHT_GRAY);
 			tableStats.setFont(new Font("SansSerif", Font.PLAIN, 13));
 			tableStats.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 			tableStats.getColumnModel().getColumn(1).setMaxWidth(100);

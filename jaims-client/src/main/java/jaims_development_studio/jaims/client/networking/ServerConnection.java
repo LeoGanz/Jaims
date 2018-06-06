@@ -12,6 +12,17 @@ import org.slf4j.LoggerFactory;
 import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.client.logic.ClientMain;
 
+/**
+ * This class handles the connection to the server. That means connecting on the
+ * program's startup, reconnecting to the server if the connection was closed
+ * and notifying the client if the connection throws an exception.
+ * 
+ * 
+ * @author Bu88le
+ * 
+ * @since v0.1.0
+ *
+ */
 public class ServerConnection implements Runnable {
 
 	private static final Logger			LOG			= LoggerFactory.getLogger(ServerConnection.class);
@@ -54,7 +65,7 @@ public class ServerConnection implements Runnable {
 		try {
 			// opens up a connection to the server
 			server = new Socket();
-			server.connect(is = new InetSocketAddress(/* "188.194.21.33" */ "localhost" /* "188.193.157.228" */, 6000),
+			server.connect(is = new InetSocketAddress(/* "188.192.194.35" */ "localhost" /* "188.193.157.228" */, 6000),
 					500);
 			while (server.isConnected() == false) {
 				try {
@@ -65,13 +76,19 @@ public class ServerConnection implements Runnable {
 			}
 			connected = true;
 			oos = new ObjectOutputStream(server.getOutputStream());
-			Thread thread2 = new Thread(lfi = new ListenForInput(server, cm));
+			Thread thread2 = new Thread(lfi = new ListenForInput(server, cm), "Thread-ListenForInput");
 			thread2.start();
 		} catch (IOException e) {
+			/**
+			 * IOException occurs when there is no open connection to the server. If that
+			 * happens a new thread is started which will check after increasing time
+			 * periods have passed (shortest: 500ms, longest: 60s) if a connection is
+			 * available and when there is one a new connection will be created.
+			 */
 			LOG.error("Couldn't connect to server. Will keep on trying!");
 			connected = false;
 			cm.setLoginEnabled(false);
-			Thread thread = new Thread() {
+			Thread thread = new Thread("Thread-CheckForServerConnection") {
 				@Override
 				public void run() {
 
@@ -87,7 +104,7 @@ public class ServerConnection implements Runnable {
 						oos = new ObjectOutputStream(server.getOutputStream());
 
 						LOG.info("Connected");
-						Thread thread2 = new Thread(lfi = new ListenForInput(server, cm));
+						Thread thread2 = new Thread(lfi = new ListenForInput(server, cm), "Thread-ListenForInput");
 						thread2.start();
 						cm.setLoginEnabled(true);
 					} catch (UnknownHostException e) {
@@ -105,7 +122,8 @@ public class ServerConnection implements Runnable {
 	}
 
 	/**
-	 * Closes the connection to the server
+	 * Closes the connection to the server. If a IOError occurs method is called
+	 * again.
 	 */
 	public void disconnect() {
 
@@ -140,7 +158,9 @@ public class ServerConnection implements Runnable {
 	}
 
 	/**
-	 * @return returns the socket
+	 * @return returns the socket which holds the connection to the server.
+	 * 
+	 * @see Socket
 	 */
 	public Socket getSocket() {
 
@@ -152,6 +172,8 @@ public class ServerConnection implements Runnable {
 	 *
 	 * @param s
 	 *            new socket which is connected
+	 * 
+	 * @see Socket
 	 */
 	public void setSocket(Socket s) {
 
@@ -168,6 +190,11 @@ public class ServerConnection implements Runnable {
 		return connected;
 	}
 
+	/**
+	 * Checks if a connection to the server is available and returns the result.
+	 * 
+	 * @return boolean whether a connection is available
+	 */
 	private boolean checkIfServerIsAvailable() {
 
 		server = new Socket();

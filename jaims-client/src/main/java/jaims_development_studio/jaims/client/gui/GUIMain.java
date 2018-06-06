@@ -24,12 +24,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jaims_development_studio.jaims.api.message.EMessageType;
+import jaims_development_studio.jaims.api.message.TextMessage;
 import jaims_development_studio.jaims.api.profile.Profile;
 import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.api.settings.Settings;
 import jaims_development_studio.jaims.client.audio.ListAudioDevices;
 import jaims_development_studio.jaims.client.chatObjects.ChatInformation;
-import jaims_development_studio.jaims.client.chatObjects.Message;
+import jaims_development_studio.jaims.client.chatObjects.ClientInternMessage;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.CenterPanel;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.FrameTop;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.ParentPanel;
@@ -42,6 +43,7 @@ import jaims_development_studio.jaims.client.gui.showContacts.PanelContactShowin
 import jaims_development_studio.jaims.client.gui.showContacts.PanelTabbedPane;
 import jaims_development_studio.jaims.client.gui.showContacts.PanelUserShowing;
 import jaims_development_studio.jaims.client.logic.ClientMain;
+import jaims_development_studio.jaims.client.logic.DFEObject;
 import jaims_development_studio.jaims.client.logic.SimpleContact;
 
 public class GUIMain implements Runnable {
@@ -63,7 +65,6 @@ public class GUIMain implements Runnable {
 	private PanelSelectSettings				panelSelectSettings;
 	private ListAudioDevices				listAudioDevices;
 	private boolean							showSplashScreen;
-	private PanelContactShowing				caller;
 
 	public GUIMain(ClientMain cm, boolean showSplashScreen) {
 
@@ -99,9 +100,6 @@ public class GUIMain implements Runnable {
 		jaimsFrame.getContentPane().add(panelProgramStartup, BorderLayout.CENTER);
 		jaimsFrame.setVisible(true);
 
-		panelProgramStartup.initGUI();
-		jaimsFrame.repaint();
-
 	}
 
 	public void showLoginPanel() {
@@ -135,12 +133,6 @@ public class GUIMain implements Runnable {
 
 	public void showParentPanel(ParentPanel pp, PanelContactShowing caller) {
 
-		if (this.caller != null)
-			this.caller.removeAnimation();
-
-		this.caller = caller;
-		caller.paintAnimation();
-
 		if (parentPanel != null) {
 			if (parentPanel.getPanelUUID().equals(pp.getPanelUUID()) == false && parentPanel instanceof PanelChat) {
 				manageMessagePanels.updateChatPanel(parentPanel);
@@ -173,7 +165,12 @@ public class GUIMain implements Runnable {
 
 	public void repaintParentPanel() {
 
-		parentPanel.repaint();
+		try {
+			parentPanel.repaint();
+		} catch (NullPointerException npe) {
+			LOG.error("Parent panel doesn't exist!", npe);
+		}
+
 	}
 
 	public void showSettings() {
@@ -199,7 +196,7 @@ public class GUIMain implements Runnable {
 
 		jaimsFrame.getContentPane().remove(panelProgramStartup);
 		jaimsFrame.getContentPane().setCursor(new Cursor(Cursor.WAIT_CURSOR));
-		showGuiBuildingProcess = new ShowGuiBuildingProcess(this);
+		showGuiBuildingProcess = new ShowGuiBuildingProcess();
 		jaimsFrame.getContentPane().add(showGuiBuildingProcess);
 		jaimsFrame.initGUI();
 		jaimsFrame.repaint();
@@ -233,7 +230,6 @@ public class GUIMain implements Runnable {
 		}
 
 		listAudioDevices = new ListAudioDevices(this);
-		cm.setOutputMixer(listAudioDevices.getSystemOutputMixer());
 
 		buildChatStart();
 	}
@@ -241,6 +237,11 @@ public class GUIMain implements Runnable {
 	private void buildChatStart() {
 
 		JPanel panelLeftSide = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -311,7 +312,15 @@ public class GUIMain implements Runnable {
 	public void addChatUser(SimpleContact simpleContact) {
 
 		panelTabbedPane.addChatUser(simpleContact);
+		panelTabbedPane.revalidate();
+		panelTabbedPane.repaint();
 		centerPanel.revalidate();
+		centerPanel.repaint();
+	}
+
+	public void setUserOnTop(UUID uuid) {
+
+		panelTabbedPane.setUserOnTop(uuid);
 		centerPanel.repaint();
 	}
 
@@ -360,7 +369,7 @@ public class GUIMain implements Runnable {
 		return cm.getSimpleContacts();
 	}
 
-	public ArrayList<Message> getMessageList(UUID uuid) {
+	public ArrayList<ClientInternMessage> getMessageList(UUID uuid) {
 
 		return cm.getMessageList(uuid);
 	}
@@ -425,6 +434,7 @@ public class GUIMain implements Runnable {
 		cm.registerNewUser(username, password, email);
 	}
 
+	@SuppressWarnings("deprecation")
 	public void succesfulRegistration() {
 
 		String username = panelProgramStartup.getRegisteredUsername();
@@ -442,7 +452,12 @@ public class GUIMain implements Runnable {
 		return listAudioDevices;
 	}
 
-	public void saveTextMessage(jaims_development_studio.jaims.api.message.TextMessage m) {
+	public ArrayList<DFEObject> getDFEObjectsForUser(UUID user) {
+
+		return cm.getDFEObjectsForUser(user);
+	}
+
+	public void saveTextMessage(TextMessage m) {
 
 		cm.saveTextMessage(m);
 	}
@@ -546,6 +561,10 @@ public class GUIMain implements Runnable {
 	public String getUserPath() {
 
 		return cm.getUserPath();
+	}
+
+	public void askForNewPassword() {
+
 	}
 
 }

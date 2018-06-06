@@ -20,6 +20,10 @@ import jaims_development_studio.jaims.client.gui.GUIMain;
 
 public class PanelShowIcons extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long			serialVersionUID	= 1L;
 	private PanelAudioSettings			pas;
 	private PanelMessageSettings		pms;
 	private PanelChatBackgroundSettings	pcbs;
@@ -67,7 +71,7 @@ public class PanelShowIcons extends JPanel {
 		lblMessages.setOpaque(false);
 		lblMessages.setAlignmentX(Component.CENTER_ALIGNMENT);
 		lblMessages.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		lblMessages.setToolTipText("Message settings");
+		lblMessages.setToolTipText("ClientInternMessage settings");
 		lblMessages.addMouseListener(new MouseAdapter() {
 
 			@Override

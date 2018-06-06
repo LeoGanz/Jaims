@@ -30,23 +30,63 @@ import javax.swing.JSlider;
 import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicSliderUI;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jaims_development_studio.jaims.client.gui.GUIMain;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.RoundBorder;
 import jaims_development_studio.jaims.client.logic.PlayAudio;
-import jaims_development_studio.jaims.client.logic.SimpleContact;
 
+/**
+ * This class is a graphical representation of a voice message. It displays the
+ * sender's profile picture, a start/stop button, a slider indicating the clip's
+ * current position, which means how much of the audio has already been played,
+ * and a label displaying the clip's current position in a text format. On
+ * further notice one has to know that a voice message has a fixed size which
+ * fits into the frame's minimum size and isn't resized accordingly with the
+ * frame.
+ * 
+ * @author Bu88le
+ *
+ * @since v0.1.0
+ * 
+ * @see #VoiceMessage(UUID, String, boolean, GUIMain)
+ */
+@SuppressWarnings("deprecation")
 public class VoiceMessage extends JPanel {
-	String			path;
-	JLabel			currentTime, maxTime;
-	SimpleContact	simpleContact;
-	private boolean	own, paused = true;
-	Image			img;
-	PlayAudio		pa;
-	JSlider			slider;
-	Thread			thread;
-	JPanel			start;
-	private GUIMain	guiMain;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
+	private static final Logger	LOG					= LoggerFactory.getLogger(VoiceMessage.class);
 
+	private String				path;
+	private JLabel				currentTime, maxTime;
+	private boolean				own, paused = true;
+	private Image				img;
+	private JSlider				slider;
+	private Thread				thread;
+	private JPanel				start, backgroundPanel;
+	private PlayAudio			pa;
+	private GUIMain				guiMain;
+
+	/**
+	 * The constructor of this class; responsible for initialising the fields and
+	 * afterwards calling the {@link #initGUI(UUID)} method.
+	 * 
+	 * @param uuid
+	 *            The sender's UUID
+	 * @param pathToFile
+	 *            the path to the location on the disk where the audio file is saved
+	 * @param own
+	 *            boolean that indicates whether the voice message is from the user
+	 *            or from a contact
+	 * @param guiMain
+	 *            a reference to the GUIMain class
+	 * 
+	 * @see UUID
+	 * @see GUIMain
+	 */
 	public VoiceMessage(UUID uuid, String pathToFile, boolean own, GUIMain guiMain) {
 
 		path = pathToFile;
@@ -56,27 +96,70 @@ public class VoiceMessage extends JPanel {
 		try {
 			initGUI(uuid);
 		} catch (NullPointerException npe) {
-			npe.printStackTrace();
+			LOG.error("UUID was null", npe);
 		}
 
 	}
 
+	/**
+	 * This method is responsible for building everything needed to display the
+	 * voice message properly. It also initialises the parent's panel's main fields
+	 * like the layout, the preferredSize, the MaximumSize and the border.
+	 * </p>
+	 * Calls following methods:
+	 * <ul>
+	 * <li>{@link #buildBackgroundPanel()}</li>
+	 * <li>{@link #buildStartStopPanel()}</li>
+	 * <li>{@link #buildTimeSlider()}</li>
+	 * <li>{@link #addTimeLabel()}</li>
+	 * </ul>
+	 * 
+	 * @param uuid
+	 *            The voice message's sender
+	 */
 	private void initGUI(UUID uuid) {
 
 		setOpaque(false);
-
 		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 		setPreferredSize(new Dimension(350, 50));
 		setMaximumSize(getPreferredSize());
+
+		// Sets the border of the voice message based on the sender
 		if (own)
 			setBorder(new RoundBorder(330, 50, new Color(guiMain.getSettings().getColorContactMessageBorder())));
 		else
 			setBorder(new RoundBorder(330, 50, new Color(guiMain.getSettings().getColorContactMessageBorder())));
 
-		add(Box.createRigidArea(new Dimension(65, 0)));
-		long length = getAudioFileLength();
+		buildBackgroundPanel();
+		buildStartStopPanel();
+		buildTimeSlider();
 
-		JPanel p = new JPanel() {
+		add(Box.createRigidArea(new Dimension(65, 0)));
+		add(backgroundPanel);
+		add(Box.createRigidArea(new Dimension(8, 0)));
+		add(Box.createHorizontalGlue());
+
+		addTimeLabel();
+
+		img = scaleMaintainAspectRatio(guiMain.getProfileImage(uuid));
+		pa = new PlayAudio(path, currentTime, slider, backgroundPanel, this);
+
+	}
+
+	/**
+	 * Builds the background panel which holds all other GUI relevant objects like
+	 * the slider. The background panel overrides its <code>paintComponent</code>
+	 * method in order to be able to draw its corners rounded. It then sets the
+	 * panel's layout, preferred and maximum size.
+	 */
+	private void buildBackgroundPanel() {
+
+		backgroundPanel = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -100,72 +183,130 @@ public class VoiceMessage extends JPanel {
 				g2d.fillRoundRect(2, 2, getWidth() - 3, getHeight() - 3, 20, 20);
 			}
 		};
-		p.setOpaque(false);
-		p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
-		p.setPreferredSize(new Dimension(176, 42));
-		p.setMaximumSize(p.getPreferredSize());
-		{
-			p.add(Box.createRigidArea(new Dimension(5, 42)));
-			start = new JPanel() {
-				@Override
-				public void paintComponent(Graphics g) {
+		backgroundPanel.setOpaque(false);
+		backgroundPanel.setLayout(new BoxLayout(backgroundPanel, BoxLayout.LINE_AXIS));
+		backgroundPanel.setPreferredSize(new Dimension(176, 42));
+		backgroundPanel.setMaximumSize(backgroundPanel.getPreferredSize());
+	}
 
-					g.setColor(Color.WHITE);
-					g.fillRect(0, 0, getWidth(), getHeight());
+	/**
+	 * This methods builds a JPanel which displays a start button that changes to a
+	 * stop button once it is clicked. It is used for controlling the audio's
+	 * playback status. It also sets the panel's default settings which include the
+	 * preferred and maximum size, the cursor and adds a mouse Listener.
+	 * 
+	 * @see Graphics2D
+	 * @see BoxLayout
+	 * @see Dimension
+	 * @see Cursor
+	 * @see MouseAdapter
+	 */
+	private void buildStartStopPanel() {
 
-					Graphics2D g2d = (Graphics2D) g;
-					g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-					g2d.setColor(Color.GRAY);
-					if (paused) {
-						int[] x = {1, 1, 13};
-						int[] y = {1, 16, 8};
+		backgroundPanel.add(Box.createRigidArea(new Dimension(5, 42)));
 
-						g2d.fillPolygon(x, y, 3);
-					} else {
-						g2d.fillRect(1, 1, 4, 16);
-						g2d.fillRect(8, 1, 5, 16);
-					}
+		start = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void paintComponent(Graphics g) {
+
+				g.setColor(Color.WHITE);
+				g.fillRect(0, 0, getWidth(), getHeight());
+
+				Graphics2D g2d = (Graphics2D) g;
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g2d.setColor(Color.GRAY);
+				if (paused) {
+					int[] x = {1, 1, 13};
+					int[] y = {1, 16, 8};
+
+					g2d.fillPolygon(x, y, 3);
+				} else {
+					g2d.fillRect(1, 1, 4, 16);
+					g2d.fillRect(8, 1, 5, 16);
 				}
-			};
-			start.setOpaque(false);
-			start.setPreferredSize(new Dimension(13, 16));
-			start.setMaximumSize(start.getPreferredSize());
-			start.setCursor(new Cursor(Cursor.HAND_CURSOR));
-			start.addMouseListener(new MouseAdapter() {
+			}
+		};
+		start.setOpaque(false);
+		start.setPreferredSize(new Dimension(13, 16));
+		start.setMaximumSize(start.getPreferredSize());
+		start.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		start.addMouseListener(new MouseAdapter() {
 
-				@Override
-				public void mouseReleased(MouseEvent arg0) {
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
 
-					if (paused) {
-						paused = false;
-						start.repaint();
+				/*
+				 * If the button has been clicked before, it's displaying the play symbol which
+				 * means when clicking it again it will stop playing back. If it hasn't been
+				 * clicked before the boolean 'paused' is 'true' which means that on a clicking
+				 * event the playback will be started. In it's default state, which it displays
+				 * upon opening the chart for the first time after starting the program,
+				 * 'paused' is set to true which means that the play button, a triangle, is
+				 * shown.
+				 */
+				if (paused) {
+					paused = false;
+					start.repaint();
 
-						thread = new Thread(pa);
-						thread.start();
+					thread = new Thread(pa);
+					thread.start();
 
-					} else {
-						paused = true;
-						start.repaint();
-					}
+				} else {
+					paused = true;
+					start.repaint();
 				}
-			});
-			p.add(start);
-			p.add(Box.createRigidArea(new Dimension(5, 0)));
+			}
+		});
+		backgroundPanel.add(start);
+		backgroundPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+	}
 
-			slider = new JSlider(0, (int) (length / 1000), 0);
-			slider.setPreferredSize(new Dimension(150, 40));
-			slider.setUI(new CustomSliderUI(slider));
-			slider.setOpaque(false);
-			p.add(slider);
-			p.add(Box.createRigidArea(new Dimension(5, 0)));
-		}
-		add(p);
-		add(Box.createRigidArea(new Dimension(8, 0)));
-		add(Box.createHorizontalGlue());
+	/**
+	 * This method is responsible for creating a <code>JSlider</code> which
+	 * indicates the current playback position of the audio while it is played. It
+	 * initialises the JSlider with the minimum value of 0, a maximum value of the
+	 * audio file's length in seconds, a preferred size of width = 150 and height =
+	 * 40 and a custom Component UI.
+	 * 
+	 * @see JSlider
+	 * @see CustomSliderUI
+	 * 
+	 */
+	private void buildTimeSlider() {
+
+		long length = getAudioFileLength();
+
+		slider = new JSlider(0, (int) (length / 1000), 0);
+		slider.setPreferredSize(new Dimension(150, 40));
+		slider.setUI(new CustomSliderUI(slider));
+		slider.setOpaque(false);
+		backgroundPanel.add(slider);
+		backgroundPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+	}
+
+	/**
+	 * This method creates a JLabel which displays the current playback time and the
+	 * length of the whole audio file in the format 'current time/ length'. </br>
+	 * For example: '0:20/3:48' indicates that 20 seconds of the 3:48 minutes long
+	 * audio have been played
+	 * </p>
+	 * The label is then added next to the JSlider.
+	 * 
+	 * @see JLabel
+	 * @see SimpleDateFormat
+	 * @see Date
+	 */
+	private void addTimeLabel() {
+
+		long length = getAudioFileLength();
 
 		SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
 		Date d = new Date(0L);
-
 		currentTime = new JLabel(sdf.format(d) + " / ", JLabel.CENTER);
 		add(currentTime);
 
@@ -173,11 +314,27 @@ public class VoiceMessage extends JPanel {
 		maxTime = new JLabel(sdf.format(d));
 		add(maxTime);
 
-		img = scaleMaintainAspectRatio(guiMain.getProfileImage(uuid));
-		pa = new PlayAudio(path, currentTime, slider, p);
-		thread = new Thread(pa);
 	}
 
+	/**
+	 * This method calculates the audio file's length by dividing the number of the
+	 * file's sample frame's by the file's frame rate. The frame rate specifies the
+	 * number of frames per second, e.g. a sample rate of 44100 Hz = 44.1 kHz
+	 * contains 44100 samples of any size per elapsed second. </br>
+	 * Example case:
+	 * <ul>
+	 * <li>The audio file contains 3,840,000 samples</li>
+	 * <li>The audio file has a sample rate of 48000 Hz = 48000 samples per second
+	 * </li>
+	 * <li>Dividing the samples by the sample rate: 3,840,000/48000 = 80</li>
+	 * <li>Audio file has a length of 80 s = 1 minute, 20 seconds</li>
+	 * </ul>
+	 * </br>
+	 * If the audio file or the audio file's format isn't supported then an error is
+	 * thrown and the method returns 0.
+	 * 
+	 * @return the audio file's length in milliseconds
+	 */
 	private long getAudioFileLength() {
 
 		AudioFileFormat format;
@@ -186,13 +343,19 @@ public class VoiceMessage extends JPanel {
 			float duration = format.getFrameLength() / format.getFormat().getFrameRate();
 			return (long) (duration * 1000);
 		} catch (UnsupportedAudioFileException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("Unsupported file", e);
 			return 0;
 		}
 
 	}
 
+	/**
+	 * This method resizes a given image to the size of width=40px and height=40px.
+	 * 
+	 * @param image
+	 *            The image to be scaled
+	 * @return The scaled image
+	 */
 	private Image scaleMaintainAspectRatio(Image image) {
 
 		return image.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
@@ -238,6 +401,13 @@ public class VoiceMessage extends JPanel {
 	// -------------- CUSTOM SLIDER UI CLASS -----------------------------------
 	// -------------------------------------------------------------------------
 
+	/**
+	 * This class paints a custom Thumb and Track for the JSlider. Inspiration was
+	 * taken from the Internet from an unknown user's suggestion.
+	 * 
+	 * @author Bu88le
+	 *
+	 */
 	private class CustomSliderUI extends BasicSliderUI {
 		private BasicStroke stroke = new BasicStroke(1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0f,
 				new float[] {1f, 2f}, 0f);

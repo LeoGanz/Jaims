@@ -13,14 +13,31 @@ import javax.swing.JScrollBar;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
+/**
+ * This class is used as the new standard UI for ScrollBars. It paints a scroll
+ * bar with different colours depending on a mouse event and removes the
+ * unnecessary decrease and increase buttons.
+ * 
+ * @author Bu88le
+ * 
+ * @see BasicScrollBarUI
+ * @see JScrollBar
+ *
+ */
 public class CustomScrollBarUI extends BasicScrollBarUI {
-	private final Dimension	d			= new Dimension();
-	private final Color		transparent	= new Color(0, 0, 0, 0);
+	private final Dimension d = new Dimension();
 
+	// returns a JButton with a non-dimensional dimension which means that the
+	// Button won't be displayed.
 	@Override
 	protected JButton createDecreaseButton(int orientation) {
 
 		return new JButton() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public Dimension getPreferredSize() {
 
@@ -29,10 +46,17 @@ public class CustomScrollBarUI extends BasicScrollBarUI {
 		};
 	}
 
+	// returns a JButton with a non-dimensional dimension which means that the
+	// Button won't be displayed.
 	@Override
 	protected JButton createIncreaseButton(int orientation) {
 
 		return new JButton() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public Dimension getPreferredSize() {
 
@@ -78,6 +102,8 @@ public class CustomScrollBarUI extends BasicScrollBarUI {
 		scrollbar.repaint();
 	}
 
+	// This method is needed so that the program can set CustomScrollBarUI as the
+	// default UI for JScrollBars
 	public static ComponentUI createUI(JComponent c) {
 
 		return new CustomScrollBarUI();

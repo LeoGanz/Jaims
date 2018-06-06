@@ -16,16 +16,18 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -35,7 +37,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
 import javax.swing.JWindow;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
@@ -45,21 +46,29 @@ import org.apache.commons.io.IOUtils;
 import jaims_development_studio.jaims.api.message.VoiceMessage;
 import jaims_development_studio.jaims.api.sendables.SendableMessage;
 import jaims_development_studio.jaims.client.gui.GUIMain;
-import jaims_development_studio.jaims.client.gui.audio.AudioWaveformCreator;
+import jaims_development_studio.jaims.client.gui.audio.AudioWaveFormSampler;
 import jaims_development_studio.jaims.client.gui.messagePanels.PanelChat;
 
 public class AfterRecordingWindow extends JWindow {
 
-	private GUIMain			guiMain;
-	private PanelChat		panelChat;
-	private File			recordFile;
-	private boolean			paused		= true, waveFormSet = false;
-	private JSlider			slider;
-	private BufferedImage	bim;
-	private JPanel			waveForm;
-	private Clip			audioClip;
+	/**
+	 * 
+	 */
+	private static final long		serialVersionUID	= 1L;
+	private GUIMain					guiMain;
+	private PanelChat				panelChat;
+	private File					recordFile;
+	private boolean					paused				= true, waveFormSet = false;
+	private BufferedImage			bim;
+	private JPanel					waveForm, startButton;
+	private Clip					audioClip;
+	private AudioWaveFormSampler	awfs;
+	private JScrollPane				jsp;
+	private int						startValue			= 0;
+	private Timer					t;
 
-	private int				waveFormX	= -1, waveFormSetX = -1, currentPosition = 0;
+	private int						waveFormX			= -1, waveFormSetX = -1;
+	private double					currentPosition		= 0.0;
 
 	public AfterRecordingWindow(GUIMain guiMain, PanelChat panelChat, File recordFile) {
 
@@ -72,12 +81,17 @@ public class AfterRecordingWindow extends JWindow {
 	public void initGUI() {
 
 		setBackground(new Color(0, 0, 0, 0));
-		setSize(new Dimension(400, 160));
+		setSize(new Dimension(600, 200));
 		setLayout(new BorderLayout());
 		setLocationRelativeTo(panelChat);
 		setAlwaysOnTop(true);
 
 		JPanel center = new JPanel() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void paintComponent(Graphics g) {
@@ -88,13 +102,13 @@ public class AfterRecordingWindow extends JWindow {
 				Graphics2D g2 = (Graphics2D) g;
 				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 				g2.setColor(Color.WHITE);
-				g2.fillRoundRect(0, 0, 400, 160, 60, 60);
+				g2.fillRoundRect(0, 0, 600, 200, 60, 60);
 			}
 
 		};
 		center.setBackground(Color.WHITE);
 		center.setLayout(new BorderLayout(0, 10));
-		center.setPreferredSize(new Dimension(400, 160));
+		center.setPreferredSize(new Dimension(400, 200));
 		center.setMaximumSize(center.getPreferredSize());
 		center.setMinimumSize(center.getPreferredSize());
 		center.setBorder(new EmptyBorder(5, 0, 5, 0));
@@ -102,7 +116,13 @@ public class AfterRecordingWindow extends JWindow {
 		JPanel c = new JPanel();
 		c.setBackground(Color.WHITE);
 		c.setLayout(new BoxLayout(c, BoxLayout.LINE_AXIS));
-		JPanel startButton = new JPanel() {
+		c.setBorder(new EmptyBorder(0, 5, 0, 0));
+		startButton = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -129,6 +149,7 @@ public class AfterRecordingWindow extends JWindow {
 		};
 		startButton.setPreferredSize(new Dimension(30, 31));
 		startButton.setMaximumSize(new Dimension(30, 31));
+		startButton.setMinimumSize(startButton.getPreferredSize());
 		startButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		startButton.addMouseListener(new MouseAdapter() {
 
@@ -151,21 +172,15 @@ public class AfterRecordingWindow extends JWindow {
 		c.add(startButton);
 		c.add(Box.createRigidArea(new Dimension(10, 0)));
 
-		try {
-			AudioWaveformCreator awc = new AudioWaveformCreator(recordFile, "waveFile2");
-			bim = awc.createAudioInputStream();
-		} catch (UnsupportedAudioFileException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		awfs = new AudioWaveFormSampler();
+		bim = awfs.createWaveFile(recordFile);
 
 		waveForm = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g) {
 
@@ -193,12 +208,12 @@ public class AfterRecordingWindow extends JWindow {
 				if (paused == false) {
 					g2.setColor(Color.PINK);
 					g2.setStroke(new BasicStroke(1.3F));
-					g2.drawLine(currentPosition, 0, currentPosition, getHeight());
+					g2.draw(new Line2D.Double(currentPosition, 0, currentPosition, getHeight()));
 				}
 
 			}
 		};
-		waveForm.setMinimumSize(new Dimension(bim.getWidth(), bim.getHeight() - 30));
+		waveForm.setMinimumSize(new Dimension(bim.getWidth(), bim.getHeight()));
 		waveForm.setPreferredSize(waveForm.getMinimumSize());
 		waveForm.setMaximumSize(waveForm.getMinimumSize());
 		waveForm.addMouseListener(new MouseAdapter() {
@@ -234,12 +249,12 @@ public class AfterRecordingWindow extends JWindow {
 			}
 		});
 
-		JScrollPane jsp = new JScrollPane(waveForm, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+		jsp = new JScrollPane(waveForm, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		jsp.setMinimumSize(new Dimension(200, 90));
-		jsp.setPreferredSize(new Dimension(200, 90));
-		jsp.setMaximumSize(new Dimension(200, 90));
+		jsp.getHorizontalScrollBar().setValue(0);
+		jsp.getHorizontalScrollBar().setSize(new Dimension(50, 8));
 		c.add(jsp);
+		c.add(Box.createRigidArea(new Dimension(5, 0)));
 		c.add(Box.createHorizontalGlue());
 
 		center.add(c);
@@ -271,6 +286,11 @@ public class AfterRecordingWindow extends JWindow {
 				sendVoiceMessage();
 				dispose();
 
+				if (panelChat.getSimpleContact().chatExists() == false) {
+					panelChat.getSimpleContact().setChatExists(true);
+					updateDatabase();
+				}
+
 			}
 		});
 
@@ -286,6 +306,10 @@ public class AfterRecordingWindow extends JWindow {
 			public void mousePressed(MouseEvent e) {
 
 				recordFile.delete();
+				if (t != null && t.isRunning())
+					t.stop();
+				if (audioClip != null && audioClip.isActive())
+					audioClip.close();
 				dispose();
 
 			}
@@ -303,22 +327,6 @@ public class AfterRecordingWindow extends JWindow {
 
 	}
 
-	private long getAudioFileLength() {
-
-		AudioFileFormat format;
-		float duration = 0;
-		try {
-			format = AudioSystem.getAudioFileFormat(recordFile);
-			duration = format.getFrameLength() / format.getFormat().getFrameRate();
-		} catch (UnsupportedAudioFileException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return (long) (duration * 1000);
-
-	}
-
 	private void play() {
 
 		try {
@@ -327,17 +335,43 @@ public class AfterRecordingWindow extends JWindow {
 			AudioInputStream ais = AudioSystem.getAudioInputStream(recordFile);
 			audioClip.open(ais);
 			audioClip.start();
+			audioClip.addLineListener(new LineListener() {
 
-			Timer t = new Timer(100, new ActionListener() {
+				@Override
+				public void update(LineEvent event) {
+
+					if (event.getType() == LineEvent.Type.STOP) {
+						paused = true;
+						t.stop();
+					}
+
+				}
+			});
+			jsp.getHorizontalScrollBar().setValue(0);
+			jsp.revalidate();
+			jsp.repaint();
+
+			t = new Timer(20, new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
 
-					currentPosition += 1;
+					currentPosition += awfs.getPixelsPerSecond() / 50;
+					System.out.println("Running...");
 					waveForm.repaint();
 
-					if (currentPosition == bim.getWidth())
+					if (currentPosition % jsp.getViewport().getWidth() == 0) {
+						// jsp.getHorizontalScrollBar().setValue(startValue += (int) (currentPosition /
+						// 1000));
+						jsp.getHorizontalScrollBar().setValue(80);
+						jsp.repaint();
+					}
+
+					if (currentPosition == bim.getWidth()) {
 						((Timer) e.getSource()).stop();
+						paused = true;
+						startButton.repaint();
+					}
 
 				}
 			});
@@ -357,6 +391,11 @@ public class AfterRecordingWindow extends JWindow {
 
 	private void pausePlayback() {
 
+	}
+
+	private void updateDatabase() {
+
+		guiMain.updateHasChat(true, panelChat.getSimpleContact().getContactID());
 	}
 
 	private void sendVoiceMessage() {

@@ -18,10 +18,14 @@ import jaims_development_studio.jaims.client.gui.GUIMain;
 
 public class AddSign extends JPanel {
 
-	private boolean	drawAnimation	= false;
-	private int		x				= 19, y = 19, width = 0, height = 0, xOval = 1, yOval = 1, ovalWidth = 34,
-			ovalHeight = 34;
-	private Timer	timer;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
+	private boolean				drawAnimation		= false;
+	private int					x					= 19, y = 19, width = 0, height = 0, xOval = 1, yOval = 1,
+			ovalWidth = 34, ovalHeight = 34;
+	private Timer				timer;
 
 	public AddSign(GUIMain guiMain, PanelUserShowing pus) {
 
@@ -138,7 +142,7 @@ public class AddSign extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 
-		g.setColor(Color.white);
+		g.setColor(new Color(170, 170, 170));
 		g.fillRect(0, 0, getWidth(), getHeight());
 
 		Graphics2D g2d = (Graphics2D) g;
@@ -146,8 +150,10 @@ public class AddSign extends JPanel {
 		g2d.setColor(new Color(200, 200, 200));
 		g2d.drawOval(xOval, yOval, ovalWidth, ovalHeight);
 
-		if (drawAnimation)
+		if (drawAnimation) {
+			g2d.setColor(new Color(200, 200, 200));
 			g2d.fillOval(x, y, width, height);
+		}
 
 		g2d.setColor(Color.BLACK);
 		g2d.fillRect(10, 17, 18, 4);
