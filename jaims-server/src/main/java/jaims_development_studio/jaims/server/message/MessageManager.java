@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import jaims_development_studio.jaims.api.message.EMessageType;
 import jaims_development_studio.jaims.api.message.Message;
+import jaims_development_studio.jaims.api.message.MessageAlreadyExistsException;
 import jaims_development_studio.jaims.api.message.TextMessage;
 import jaims_development_studio.jaims.api.sendables.InvalidSendableException;
 import jaims_development_studio.jaims.api.sendables.SendableMessage;
@@ -27,8 +28,10 @@ public class MessageManager extends EntityManager<Message> {
 	}
 	
 	public void deliverMessage(SendableMessage sendableMessage, Server server)
-			throws UserNotFoundException, InvalidSendableException {
+			throws UserNotFoundException, InvalidSendableException, MessageAlreadyExistsException {
 		Message message = sendableMessage.getMessage();
+		if ((message.getUuid() != null) && getDao().isUuidRegistered(message.getUuid()))
+			throw new MessageAlreadyExistsException("A message with that UUID already exists. Messages can not be updated!");
 		save(message);
 		
 		UUID recipientUuid = message.getRecipient();
@@ -61,6 +64,15 @@ public class MessageManager extends EntityManager<Message> {
 		
 		recipient.enqueueSendable(sendableMessage);
 		userManager.save(recipient);
+	}
+
+	@Override
+	public void save(Message entity) {
+		if (entity != null) {
+			unload(entity);
+			((MessageDAO) getDao()).save(entity); //cast should be safe, as DAO is set from this class' constructor
+			load(entity);
+		}
 	}
 	
 }

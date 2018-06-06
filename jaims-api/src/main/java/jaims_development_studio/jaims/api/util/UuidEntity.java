@@ -16,6 +16,9 @@ import jaims_development_studio.jaims.api.profile.Profile;
 import jaims_development_studio.jaims.api.sendables.EEntityType;
 import jaims_development_studio.jaims.api.settings.Settings;
 
+/**
+ * @author WilliGross
+ */
 @MappedSuperclass
 public class UuidEntity implements Serializable {
 
@@ -23,7 +26,7 @@ public class UuidEntity implements Serializable {
 
 	@Column(name = "UUID", columnDefinition = "BINARY(16)")
 	@GeneratedValue(generator = "uuid2")
-	@GenericGenerator(name = "uuid2", strategy = "uuid2")
+	@GenericGenerator(name = "uuid2", strategy = "jaims_development_studio.jaims.api.util.FallbackUUIDGenerator")
 	@Id
 	private UUID uuid;
 	
