@@ -75,7 +75,7 @@ public class PanelDFEObject extends JPanel {
 			initGUIForAudio();
 		} else if (dfeo.getFileType().equals(EFileType.FILETYPE_EXCEL)) {
 
-		} else if (dfeo.getFileType().equals(EFileType.FILETYPE_OPD)) {
+		} else if (dfeo.getFileType().equals(EFileType.FILETYPE_OPT)) {
 
 		} else if (dfeo.getFileType().equals(EFileType.FILETYPE_PDF)) {
 

@@ -344,6 +344,16 @@ public class GUIMain implements Runnable {
 		cm.sendLogin(username, password);
 	}
 
+	public String[] getLogin() {
+
+		return cm.getLogin();
+	}
+
+	public void setRememberMe(boolean remember, String username, String password) {
+
+		cm.setRememberMe(remember, username, password);
+	}
+
 	public SimpleContact getLoggedInUser() {
 
 		return cm.getUserContact();

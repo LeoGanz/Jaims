@@ -41,7 +41,7 @@ public class ReadFromDatabase {
 	private Statement			statement;
 	private PreparedStatement	pStatement;
 	private boolean				messagesExist	= false, contactsExist = false, userExists = false, imageExists = false,
-			informationsExists = false, largeFilesExists = false;
+			informationsExists = false, largeFilesExists = false, rememberMeExists = false;
 
 	public ReadFromDatabase(Connection con) {
 
@@ -72,8 +72,11 @@ public class ReadFromDatabase {
 					informationsExists = true;
 				else if (tName != null && tName.equals("LARGE_FILES"))
 					largeFilesExists = true;
+				else if (tName != null && tName.equals("REMEMBER_ME"))
+					rememberMeExists = true;
 			}
-			if (messagesExist && contactsExist && userExists && imageExists && informationsExists)
+			if (messagesExist && contactsExist && userExists && imageExists && informationsExists && largeFilesExists
+					&& rememberMeExists)
 				return true;
 			else
 				return false;
@@ -577,6 +580,26 @@ public class ReadFromDatabase {
 			LOG.error("SQL Exception", e);
 			return list;
 		}
+	}
+
+	public String[] getLogin() {
+
+		return new String[] {};
+		// try {
+		// pStatement = con.prepareStatement("SELECT * FROM REMEMBER_ME");
+		//
+		// rs = pStatement.executeQuery();
+		// rs.next();
+		//
+		// if (rs.getBoolean(1))
+		// return new String[] {rs.getString(2), rs.getString(3)};
+		// else
+		// return new String[] {};
+		// } catch (SQLException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// return new String[] {};
+		// }
 	}
 
 	/**

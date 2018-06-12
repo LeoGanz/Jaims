@@ -92,6 +92,16 @@ public class DatabaseConnection {
 
 	}
 
+	public String[] getLogin() {
+
+		return readFromDatabase.getLogin();
+	}
+
+	public void setRememberMe(boolean remember, String username, String password) {
+
+		writeToDatabase.setRememberMe(remember, username, password);
+	}
+
 	/**
 	 * Gets all available contacts from the database.
 	 * 
