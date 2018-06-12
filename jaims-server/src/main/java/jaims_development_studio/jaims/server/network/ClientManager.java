@@ -16,6 +16,7 @@ import jaims_development_studio.jaims.api.sendables.InvalidSendableException;
 import jaims_development_studio.jaims.api.sendables.SendableConfirmation;
 import jaims_development_studio.jaims.api.sendables.SendableLogin;
 import jaims_development_studio.jaims.api.sendables.SendableMessage;
+import jaims_development_studio.jaims.api.sendables.SendableMessageResponse;
 import jaims_development_studio.jaims.api.sendables.SendableProfile;
 import jaims_development_studio.jaims.api.sendables.SendableRegistration;
 import jaims_development_studio.jaims.api.sendables.SendableRequest;
@@ -31,7 +32,7 @@ import jaims_development_studio.jaims.server.user.UserManager;
  * @author WilliGross
  */
 public class ClientManager implements ITickable {
-
+	
 	private final Logger					LOG					= LoggerFactory.getLogger(ClientManager.class);
 	private final Server					server;
 	private final List<ClientConnection>	connections;
@@ -39,25 +40,25 @@ public class ClientManager implements ITickable {
 	private int								nrConnections		= 0;
 	private final UserManager				userManager;
 	private boolean							terminatingAll;
-
+	
 	public ClientManager(Server server) {
 		this.server = server;
 		connections = new ObservableList<>(new LinkedList<>());
 		userManager = new UserManager(server);
 		server.subscribeToTicker(this);
 	}
-
+	
 	public void newConnection(Socket clientSocket) {
 		ClientConnection clientConnection = new ClientConnection(clientSocket, this);
 		clientConnection.setConnectionID(nextConnectionID++);
-
+		
 		connections.add(clientConnection);
 		Thread thread = new Thread(clientConnection, "ClientConnection-" + clientConnection.getConnectionID());
 		thread.start();
-
+		
 		nrConnections++;
 	}
-
+	
 	public void connectionTerminated(ClientConnection clientConnection) {
 		if (!terminatingAll)
 			connections.remove(clientConnection);
@@ -65,77 +66,80 @@ public class ClientManager implements ITickable {
 		userManager.save(clientConnection.getUser());
 		userManager.logoutUser(clientConnection.getUser());
 	}
-
+	
 	public void terminateAllConnections() {
 		terminatingAll = true;
 		connections.forEach(c -> c.terminate());
 		terminatingAll = false;
 		// TODO Handle connections not being removed from collection
 	}
-
+	
 	public Server getServer() {
 		return server;
 	}
-	
+
 	public List<ClientConnection> getConnections() {
 		return connections;
 	}
-
+	
 	public int getNrConnections() {
 		return nrConnections;
 	}
-
+	
 	public UserManager getUserManager() {
 		return userManager;
 	}
-
+	
 	public void shutdown() {
 		LOG.info("Disconnecting all clients");
 		terminateAllConnections();
 	}
-
+	
 	@Override
 	public void tick() {
 		// TODO save batches of users from connections list
 		// userManager.save(user batch);
 	}
-
+	
 	// Method forwarding
-
+	
 	public User registerNewUser(SendableRegistration registration) throws UserNameNotAvailableException {
 		User user = userManager.registerNewUser(registration);
-
+		
 		SendableConfirmation sendableConfirmation = new SendableConfirmation(EConfirmationType.REGISTRATION_SUCCESSFUL, user.getAccount().getUuid());
 		user.enqueueSendable(sendableConfirmation);
-
+		
 		return user;
 	}
-
+	
 	public User loginUser(SendableLogin login) throws UserNotFoundException, IncorrectPasswordException {
 		User user = userManager.loginUser(login);
-
+		
 		SendableConfirmation sendableConfirmation = new SendableConfirmation(EConfirmationType.LOGIN_SUCCESSFUL, user.getAccount().getUuid());
 		user.enqueueSendable(sendableConfirmation);
-
+		
 		return user;
 	}
-
+	
 	public void deleteUserAndAccount(UUID uuid) {
 		userManager.deleteUserAndAccount(uuid);
 	}
-
+	
 	public void manageRequest(SendableRequest request, UUID requester)
 			throws InvalidSendableException, NoEntityAvailableException {
 		userManager.manageRequest(request, requester);
 	}
-	
+
 	public void manageReceiveProfile(SendableProfile profile) {
 		userManager.manageReceiveProfile(profile);
 	}
-	
+
 	public void deliverMessage(SendableMessage message) throws UserNotFoundException, InvalidSendableException, MessageAlreadyExistsException {
 		userManager.deliverMessage(message);
 	}
-
-
+	
+	public void manageResponse(SendableMessageResponse messageResponse) throws InvalidSendableException, UserNotFoundException {
+		userManager.manageResponse(messageResponse);
+	}
+	
 }

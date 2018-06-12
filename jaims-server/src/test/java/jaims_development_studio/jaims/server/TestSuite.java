@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 	SendableAndUserTest.class,
 	UserManagerTest.class,
 	ContactsTest.class,
-	MessageAndFallbackUUIDGeneratorTest.class })
+	MessageAndFriendRequestAndFallbackUUIDGeneratorTest.class })
 
 public class TestSuite {
 

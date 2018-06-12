@@ -59,14 +59,16 @@ public class ContactsTest {
 		}
 		
 		
-		//		UUID[] uuids = { UUID.randomUUID(), UUID.randomUUID() };
+		UUID[] uuids = { UUID.randomUUID(), UUID.randomUUID() };
 		Assert.assertNotNull("Contacts shouldn't be null as it should have been stored just before", contacts);
-		//		contacts.addContacts(uuids);
+		contacts.addContacts(uuids);
 		contacts.updateLastUpdated();
 		contactsManager.saveOrUpdateEntity(contacts);
 
-		//		Assert.assertArrayEquals(uuids,
-		//				contactsManager.get(userManager.getUuidForUsername(username)).getContacts().toArray());
+		Assert.assertArrayEquals(uuids, contactsManager.get(userManager.getUuidForUsername(username)).getContacts().toArray());
+
+		contacts.removeContacts(uuids);
+		contactsManager.saveOrUpdateEntity(contacts);
 	}
 
 }

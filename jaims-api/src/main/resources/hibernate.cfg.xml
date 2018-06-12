@@ -21,6 +21,7 @@
   <mapping class="jaims_development_studio.jaims.api.message.TextMessage"/>
   <mapping class="jaims_development_studio.jaims.api.message.ImageMessage"/>
   <mapping class="jaims_development_studio.jaims.api.message.VoiceMessage"/>
+  <mapping class="jaims_development_studio.jaims.api.message.FriendRequest"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.Sendable"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableSendableGroup"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableConfirmation"/>
@@ -29,6 +30,7 @@
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableLogin"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableMessage"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableMessageResponse"/>
+  <mapping class="jaims_development_studio.jaims.api.sendables.SendableFriendRequestResponse"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableProfile"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableSettings"/>
   <mapping class="jaims_development_studio.jaims.api.sendables.SendableRegistration"/>

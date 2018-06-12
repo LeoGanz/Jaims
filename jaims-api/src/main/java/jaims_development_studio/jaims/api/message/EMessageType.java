@@ -10,7 +10,8 @@ public enum EMessageType {
 	FILE(Values.FILE), 
 	LOCATION(Values.LOCATION), 
 	CONTACT(Values.CONTACT), 
-	CALENDARENTRY(Values.CALENDARENTRY), 
+	CALENDAR_ENTRY(Values.CALENDAR_ENTRY), 
+	FRIEND_REQUEST(Values.FRIEND_REQUEST), 
 	OTHER(Values.OTHER);
 
 	private String value;
@@ -36,7 +37,8 @@ public enum EMessageType {
 		public static final String	FILE			= "FILE";
 		public static final String	LOCATION		= "LOCATION";
 		public static final String	CONTACT			= "CONTACT";
-		public static final String	CALENDARENTRY	= "CALENDARENTRY";
+		public static final String	CALENDAR_ENTRY	= "CALENDAR_ENTRY";
+		public static final String	FRIEND_REQUEST	= "FRIEND_REQUEST";
 		public static final String	OTHER			= "OTHER";
 	}
 }

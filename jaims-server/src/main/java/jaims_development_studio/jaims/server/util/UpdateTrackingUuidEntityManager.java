@@ -75,7 +75,10 @@ public class UpdateTrackingUuidEntityManager<E extends UpdateTrackingUuidEntity>
 		}
 
 		Account account = userManager.getAccountManager().get(uuid);
-		newUuidEntity.setAccount(account);
+		if (account == null)
+			account = newUuidEntity.getAccount();
+		else
+			newUuidEntity.setAccount(account);
 
 		//determines whether hibernate will perform an insert or an update
 		if (!getDao().isUuidRegistered(uuid))
