@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import jaims_development_studio.jaims.api.message.Message;
 import jaims_development_studio.jaims.api.message.TextMessage;
 import jaims_development_studio.jaims.api.profile.Profile;
+import jaims_development_studio.jaims.api.sendables.Sendable;
+import jaims_development_studio.jaims.client.logic.EEventType;
 
 /**
  * This class handles every request concerning writing something to the
@@ -260,6 +262,27 @@ public class WriteToDatabase {
 			return true;
 		} catch (SQLException e) {
 			LOG.error("Failed to delete contact", e);
+			return false;
+		}
+
+	}
+
+	public boolean saveNewEvent(Sendable s, EEventType e) {
+
+		try {
+			pStatement = con.prepareStatement("INSERT INTO PENDING_EVENTS VALUES (?,?,?,?)");
+			pStatement.setObject(1, s.getUuid());
+			pStatement.setObject(2, s);
+			pStatement.setString(3, e.getValue());
+			pStatement.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+
+			pStatement.executeUpdate();
+			con.commit();
+
+			return true;
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 			return false;
 		}
 

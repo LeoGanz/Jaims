@@ -11,8 +11,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import jaims_development_studio.jaims.client.directFileExchange.DFEObject;
 import jaims_development_studio.jaims.client.gui.GUIMain;
-import jaims_development_studio.jaims.client.logic.DFEObject;
 
 public class PanelStoreDFEs extends JPanel {
 

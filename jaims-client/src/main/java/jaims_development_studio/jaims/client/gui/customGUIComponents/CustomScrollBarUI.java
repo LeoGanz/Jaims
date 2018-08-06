@@ -68,7 +68,7 @@ public class CustomScrollBarUI extends BasicScrollBarUI {
 	@Override
 	protected void paintTrack(Graphics g, JComponent c, Rectangle r) {
 
-		g.setColor(c.getBackground());
+		g.setColor(new Color(0, 0, 0, 0));
 		g.fillRect(r.x, r.y, r.width, r.height);
 	}
 
@@ -84,9 +84,9 @@ public class CustomScrollBarUI extends BasicScrollBarUI {
 		} else if (isDragging) {
 			color = new Color(96, 96, 96, 200);
 		} else if (isThumbRollover()) {
-			color = new Color(160, 160, 160, 220);
+			color = new Color(120, 120, 120, 220);
 		} else {
-			color = new Color(160, 160, 160, 120);
+			color = new Color(120, 120, 120, 120);
 		}
 		g2.setPaint(color);
 		g2.fillRoundRect(r.x, r.y, r.width, r.height, 10, 10);

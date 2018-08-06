@@ -229,7 +229,7 @@ public class PanelAddUser extends JPanel {
 
 	private void sendEnquiry(String s) {
 
-		SendableRequest sr = new SendableRequest(ERequestType.PROFILE, s);
+		SendableRequest sr = new SendableRequest(ERequestType.FRIEND, s);
 		guiMain.sendSendable(sr);
 	}
 }

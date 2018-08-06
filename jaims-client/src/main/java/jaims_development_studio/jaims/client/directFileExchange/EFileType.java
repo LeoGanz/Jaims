@@ -1,11 +1,12 @@
-package jaims_development_studio.jaims.client.logic;
+package jaims_development_studio.jaims.client.directFileExchange;
 
 public enum EFileType {
 	FILETYPE_AUDIO(Values.FILETYPE_AUDIO), FILETYPE_PDF(Values.FILETYPE_PDF), FILETYPE_VIDEO(
 			Values.FILETYPE_VIDEO), FILETYPE_TEXT(Values.FILETYPE_TEXT), FILETYPE_WORD(
-					Values.FILETYPE_WORD), FILETYPE_EXCEL(Values.FILETYPE_EXCEL), FILETYPE_OPT(
+					Values.FILETYPE_WORD), FILETYPE_EXCEL(Values.FILETYPE_EXCEL), FILETYPE_ODT(
 							Values.FILETYPE_ODT), FILETYPE_ZIP(Values.FILETYPE_ZIP), FILETYPE_PPT(
-									Values.FILETYPE_PPT), FILETYPE_IMAGE(Values.FILETYPE_IMAGE);
+									Values.FILETYPE_PPT), FILETYPE_IMAGE(Values.FILETYPE_IMAGE), FILETYPE_OTHER(
+											Values.FILETYPE_OTHER), FILETYPE_JAVA(Values.FILETYPE_JAVA);
 
 	private String value;
 
@@ -33,6 +34,8 @@ public enum EFileType {
 		public static final String	FILETYPE_ZIP	= "FILETYPE_ZIP";
 		public static final String	FILETYPE_PPT	= "FILETYPE_PPT";
 		public static final String	FILETYPE_IMAGE	= "FILETYPE_IMAGE";
+		public static final String	FILETYPE_OTHER	= "FILETYPE_OTHER";
+		public static final String	FILETYPE_JAVA	= "FILETYPE_JAVA";
 	}
 
 }

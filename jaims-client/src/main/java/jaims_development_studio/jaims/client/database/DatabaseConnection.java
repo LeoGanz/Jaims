@@ -15,9 +15,12 @@ import org.slf4j.LoggerFactory;
 
 import jaims_development_studio.jaims.api.message.Message;
 import jaims_development_studio.jaims.api.profile.Profile;
+import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.client.chatObjects.ClientInternMessage;
+import jaims_development_studio.jaims.client.directFileExchange.DFEObject;
 import jaims_development_studio.jaims.client.logic.ClientMain;
-import jaims_development_studio.jaims.client.logic.DFEObject;
+import jaims_development_studio.jaims.client.logic.EEventType;
+import jaims_development_studio.jaims.client.logic.Event;
 import jaims_development_studio.jaims.client.logic.SimpleContact;
 
 /**
@@ -375,5 +378,15 @@ public class DatabaseConnection {
 	public ArrayList<DFEObject> getDFEObjects(UUID user) {
 
 		return readFromDatabase.getDFEObjects(user);
+	}
+
+	public boolean saveNewEvent(Sendable s, EEventType type) {
+
+		return writeToDatabase.saveNewEvent(s, type);
+	}
+
+	public ArrayList<Event> getAllPendingEvents() {
+
+		return readFromDatabase.getAllPendingEvents();
 	}
 }

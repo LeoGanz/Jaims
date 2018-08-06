@@ -30,79 +30,87 @@ import jaims_development_studio.jaims.api.util.UpdateTrackingUuidEntity;
 @Table(name = "SETTINGS")
 public class Settings extends UpdateTrackingUuidEntity {
 
-	private static final long	serialVersionUID			= 1176941652188927120L;
-	public static final int		RESIZE_ALONG_WIDTH			= 0;
-	public static final int		RESIZE_ALONG_HEIGHT			= 1;
-	public static final int		RESIZE_FILL_SCREEN			= 2;
+	private static final long	serialVersionUID									= 1176941652188927120L;
+	public static final int		RESIZE_ALONG_WIDTH									= 0;
+	public static final int		RESIZE_ALONG_HEIGHT									= 1;
+	public static final int		RESIZE_FILL_SCREEN									= 2;
 	@Column(name = "ARC_MESSAGE", columnDefinition = "INTEGER")
-	private int					arcMessages					= 20;
+	private int					arcMessages											= 20;
 	@Column(name = "ARC_CONTACT_IMAGE", columnDefinition = "INTEGER")
-	private int					arcContactImage				= 15;
+	private int					arcContactImage										= 15;
 	@Column(name = "ARC_PROFILE_IMMAGE", columnDefinition = "INTEGER")
-	private int					arcProfileImage				= 15;
+	private int					arcProfileImage										= 15;
 	@Column(name = "CHAT_BACKGROUND", columnDefinition = "INTEGER")
-	private int					chatBackground				= Color.DARK_GRAY.getRGB();
+	private int					chatBackground										= Color.DARK_GRAY.getRGB();
 
 	// Font attributes for User-Message
 	@Column(name = "OWN_FONT_NAME", columnDefinition = "VARCHAR(128)")
-	private String				ownFontName					= "Serif";
+	private String				ownFontName											= "Serif";
 	@Column(name = "OWN_FONT_STYLE", columnDefinition = "INTEGER")
-	private int					ownFontStyle				= 0;
+	private int					ownFontStyle										= 0;
 	@Column(name = "OWN_FONT_SIZE", columnDefinition = "INTEGER")
-	private int					ownFontSize					= 14;
+	private int					ownFontSize											= 14;
 
 	// Color Attributes for User-Message
 	@Column(name = "COLOR_OWN_MESSAGE", columnDefinition = "INTEGER")
-	private int					colorOwnMessages			= new Color(191, 225, 14).getRGB();
+	private int					colorOwnMessages									= new Color(191, 225, 14).getRGB();
 	@Column(name = "COLOR_OWN_MESSAGE_BORDER", columnDefinition = "INTEGER")
-	private int					colorOwnMessageBorder		= Color.GRAY.getRGB();
+	private int					colorOwnMessageBorder								= Color.GRAY.getRGB();
 	@Column(name = "COLOR_OWN_MESSAGE_FONT", columnDefinition = "INTEGER")
-	private int					colorOwnMessageFont			= Color.BLACK.getRGB();
+	private int					colorOwnMessageFont									= Color.BLACK.getRGB();
 
 	// Font attributes for Contact-Message
 	@Column(name = "CONTACT_FONT_NAME", columnDefinition = "VARCHAR(128)")
-	private String				contactFontName				= "Serif";
+	private String				contactFontName										= "Serif";
 	@Column(name = "CONTACT_FONT_STYLE", columnDefinition = "INTEGER")
-	private int					contactFontStyle			= 0;
+	private int					contactFontStyle									= 0;
 	@Column(name = "CONTACT_FONT_SIZE", columnDefinition = "INTEGER")
-	private int					contactFontSize				= 14;
+	private int					contactFontSize										= 14;
 
 	// Color attributes for Contact-Message
 	@Column(name = "COLOR_CONTACT_MESSAGE", columnDefinition = "INTEGER")
-	private int					colorContactMessages		= new Color(255, 250, 240).getRGB();
+	private int					colorContactMessages								= new Color(255, 250, 240).getRGB();
 	@Column(name = "COLOR_CONTACT_MESSAGE_BORDER", columnDefinition = "INTEGER")
-	private int					colorContactMessageBorder	= Color.GRAY.getRGB();
+	private int					colorContactMessageBorder							= Color.GRAY.getRGB();
 	@Column(name = "COLOR_CONTACT_MESSAGE_FONT", columnDefinition = "INTEGER")
-	private int					colorContactMessageFont		= Color.BLACK.getRGB();
+	private int					colorContactMessageFont								= Color.BLACK.getRGB();
 
 	// Devices
 	@Column(name = "INPUT_MIXER_INFO_NAME", columnDefinition = "VARCHAR(128)")
-	private String				inputMixerInfoName			= null;
+	private String				inputMixerInfoName									= null;
 	@Column(name = "OUTPUT_MIXER_INFO_NAME", columnDefinition = "VARCHAR(128)")
-	private String				outputMixerInfoName			= null;
+	private String				outputMixerInfoName									= null;
 	@Column(name = "INPUT_GAIN", columnDefinition = "DOUBLE")
-	private float				inputGain					= 1.0F;
+	private float				inputGain											= 1.0F;
 	@Column(name = "OUTPUT_VOLUME", columnDefinition = "DOUBLE")
-	private float				outputVolume				= 1.0F;
+	private float				outputVolume										= 1.0F;
 	@Column(name = "INPUT_ENCODING", columnDefinition = "VARCHAR(64)")
 	@Enumerated(EnumType.STRING)
-	private EInputEncodingType	inputEncoding				= EInputEncodingType.ENCODING_PCM_SIGNED;
+	private EInputEncodingType	inputEncoding										= EInputEncodingType.ENCODING_PCM_SIGNED;
 	@Column(name = "INPUT_SAMPLE_RATE", columnDefinition = "DOUBLE")
-	private float				inputSampleRate				= 16000;
+	private float				inputSampleRate										= 16000;
 	@Column(name = "INPUT_SAMPLE_SIZE", columnDefinition = "INTEGER")
-	private int					inputSampleSize				= 16;
+	private int					inputSampleSize										= 16;
 	@Column(name = "INPUT_CHANNELS", columnDefinition = "INTEGER")
-	private int					inputChannels				= 2;
+	private int					inputChannels										= 2;
 	@Column(name = "ENDIANNESS", columnDefinition = "VARCHAR(64)")
 	@Enumerated(EnumType.STRING)
-	private EEndianness			endianness					= EEndianness.LITTLE_ENDIAN;
+	private EEndianness			endianness											= EEndianness.LITTLE_ENDIAN;
 	@Column(name = "FRAME_SIZE", columnDefinition = "INTEGER")
-	private int					frameSize					= 4;
+	private int					frameSize											= 4;
 	@Column(name = "INPUT_FORMAT_TYPE", columnDefinition = "VARCHAR(64)")
 	@Enumerated(EnumType.STRING)
-	private EFileFormatType		inputFormatType				= EFileFormatType.FORMAT_WAVE;
+	private EFileFormatType		inputFormatType										= EFileFormatType.FORMAT_WAVE;
 	@Column(name = "IMAGE_RESIZE_HINT", columnDefinition = "INTEGER")
-	private int					imageResizeHint				= RESIZE_FILL_SCREEN;
+	private int					imageResizeHint										= RESIZE_FILL_SCREEN;
+
+	// Direct file exchange
+	@Column(name = "PORT_SENDING", columnDefinition = "INTEGER")
+	private int					portSending											= 6050;
+	@Column(name = "PORT_RECEIVING", columnDefinition = "INTEGER")
+	private int					portReceiving										= 6100;
+	@Column(name = "ALWAYS_SELECT_DESTINATION_WHEN_RECEIVING_MULTIPLE_FILES", columnDefinition = "BOOLEAN")
+	private boolean				alwaysSelectDestinationWhenReceivingMultipleFiles	= false;
 
 	public Settings() {
 
@@ -161,7 +169,8 @@ public class Settings extends UpdateTrackingUuidEntity {
 				ownFontName, ownFontStyle, ownFontSize, colorOwnMessages, colorOwnMessageBorder, colorOwnMessageFont,
 				contactFontName, contactFontStyle, contactFontSize, colorContactMessages, colorContactMessageBorder,
 				colorContactMessageFont, inputMixerInfoName, outputMixerInfoName, inputGain, outputVolume,
-				inputEncoding, inputSampleRate, inputSampleSize, inputChannels, endianness, frameSize, inputFormatType, imageResizeHint);
+				inputEncoding, inputSampleRate, inputSampleSize, inputChannels, endianness, frameSize, inputFormatType,
+				imageResizeHint);
 	}
 
 	@Override
@@ -184,73 +193,37 @@ public class Settings extends UpdateTrackingUuidEntity {
 		if (getClass() != o.getClass())
 			return false;
 		Settings other = (Settings) o;
-		return new EqualsBuilder()
-				.append(getUuid(), other.getUuid())
-				.append(getLastUpdated(), other.getLastUpdated())
-				.append(arcMessages, other.arcMessages)
-				.append(arcContactImage, other.arcContactImage)
-				.append(arcProfileImage, other.arcProfileImage)
-				.append(ownFontName, other.ownFontName)
-				.append(ownFontStyle, other.ownFontStyle)
-				.append(ownFontSize, other.ownFontSize)
+		return new EqualsBuilder().append(getUuid(), other.getUuid()).append(getLastUpdated(), other.getLastUpdated())
+				.append(arcMessages, other.arcMessages).append(arcContactImage, other.arcContactImage)
+				.append(arcProfileImage, other.arcProfileImage).append(ownFontName, other.ownFontName)
+				.append(ownFontStyle, other.ownFontStyle).append(ownFontSize, other.ownFontSize)
 				.append(colorOwnMessages, other.colorOwnMessages)
 				.append(colorOwnMessageBorder, other.colorOwnMessageBorder)
-				.append(colorOwnMessageFont, other.colorOwnMessageFont)
-				.append(contactFontName, other.contactFontName)
-				.append(contactFontStyle, other.contactFontStyle)
-				.append(contactFontSize, other.contactFontSize)
+				.append(colorOwnMessageFont, other.colorOwnMessageFont).append(contactFontName, other.contactFontName)
+				.append(contactFontStyle, other.contactFontStyle).append(contactFontSize, other.contactFontSize)
 				.append(colorContactMessages, other.colorContactMessages)
 				.append(colorContactMessageBorder, other.colorContactMessageBorder)
 				.append(colorContactMessageFont, other.colorContactMessageFont)
 				.append(inputMixerInfoName, other.inputMixerInfoName)
-				.append(outputMixerInfoName, other.outputMixerInfoName)
-				.append(inputGain, other.inputGain)
-				.append(outputVolume, other.outputVolume)
-				.append(inputEncoding, other.inputEncoding)
-				.append(inputSampleRate, other.inputSampleRate)
-				.append(inputSampleSize, other.inputSampleSize)
-				.append(inputChannels, other.inputChannels)
-				.append(endianness, other.endianness)
-				.append(frameSize, other.frameSize)
-				.append(inputFormatType, other.inputFormatType)
-				.append(imageResizeHint, other.imageResizeHint)
-				.isEquals();
+				.append(outputMixerInfoName, other.outputMixerInfoName).append(inputGain, other.inputGain)
+				.append(outputVolume, other.outputVolume).append(inputEncoding, other.inputEncoding)
+				.append(inputSampleRate, other.inputSampleRate).append(inputSampleSize, other.inputSampleSize)
+				.append(inputChannels, other.inputChannels).append(endianness, other.endianness)
+				.append(frameSize, other.frameSize).append(inputFormatType, other.inputFormatType)
+				.append(imageResizeHint, other.imageResizeHint).isEquals();
 	}
 
 	@Override
 	public int hashCode() {
 
-		return new HashCodeBuilder(42, 321)
-				.append(getUuid())
-				.append(getLastUpdated())
-				.append(arcMessages)
-				.append(arcContactImage)
-				.append(arcProfileImage)
-				.append(ownFontName)
-				.append(ownFontStyle)
-				.append(ownFontSize)
-				.append(colorOwnMessages)
-				.append(colorOwnMessageBorder)
-				.append(colorOwnMessageFont)
-				.append(contactFontName)
-				.append(contactFontStyle)
-				.append(contactFontSize)
-				.append(colorContactMessages)
-				.append(colorContactMessageBorder)
-				.append(colorContactMessageFont)
-				.append(inputMixerInfoName)
-				.append(outputMixerInfoName)
-				.append(inputGain)
-				.append(outputVolume)
-				.append(inputEncoding)
-				.append(inputSampleRate)
-				.append(inputSampleSize)
-				.append(inputChannels)
-				.append(endianness)
-				.append(frameSize)
-				.append(inputFormatType)
-				.append(imageResizeHint)
-				.toHashCode();
+		return new HashCodeBuilder(42, 321).append(getUuid()).append(getLastUpdated()).append(arcMessages)
+				.append(arcContactImage).append(arcProfileImage).append(ownFontName).append(ownFontStyle)
+				.append(ownFontSize).append(colorOwnMessages).append(colorOwnMessageBorder).append(colorOwnMessageFont)
+				.append(contactFontName).append(contactFontStyle).append(contactFontSize).append(colorContactMessages)
+				.append(colorContactMessageBorder).append(colorContactMessageFont).append(inputMixerInfoName)
+				.append(outputMixerInfoName).append(inputGain).append(outputVolume).append(inputEncoding)
+				.append(inputSampleRate).append(inputSampleSize).append(inputChannels).append(endianness)
+				.append(frameSize).append(inputFormatType).append(imageResizeHint).toHashCode();
 	}
 
 	// --------------------------------------------------------------
@@ -572,6 +545,21 @@ public class Settings extends UpdateTrackingUuidEntity {
 	public void setImageResizeHint(int imageResizeHint) {
 
 		this.imageResizeHint = imageResizeHint;
+	}
+
+	public int getPortSending() {
+
+		return portSending;
+	}
+
+	public int getPortReceiving() {
+
+		return portReceiving;
+	}
+
+	public boolean selectDestinationForEachFile() {
+
+		return alwaysSelectDestinationWhenReceivingMultipleFiles;
 	}
 
 }

@@ -23,8 +23,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import jaims_development_studio.jaims.client.logic.DFEObject;
-import jaims_development_studio.jaims.client.logic.EFileType;
+import jaims_development_studio.jaims.client.directFileExchange.DFEObject;
+import jaims_development_studio.jaims.client.directFileExchange.EFileType;
 
 public class PanelDFEObject extends JPanel {
 
@@ -75,7 +75,7 @@ public class PanelDFEObject extends JPanel {
 			initGUIForAudio();
 		} else if (dfeo.getFileType().equals(EFileType.FILETYPE_EXCEL)) {
 
-		} else if (dfeo.getFileType().equals(EFileType.FILETYPE_OPT)) {
+		} else if (dfeo.getFileType().equals(EFileType.FILETYPE_ODT)) {
 
 		} else if (dfeo.getFileType().equals(EFileType.FILETYPE_PDF)) {
 

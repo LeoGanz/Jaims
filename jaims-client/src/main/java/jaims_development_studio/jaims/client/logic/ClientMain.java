@@ -28,6 +28,7 @@ import jaims_development_studio.jaims.api.sendables.SendableRequest;
 import jaims_development_studio.jaims.api.settings.Settings;
 import jaims_development_studio.jaims.client.chatObjects.ClientInternMessage;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
+import jaims_development_studio.jaims.client.directFileExchange.DFEObject;
 import jaims_development_studio.jaims.client.gui.GUIMain;
 import jaims_development_studio.jaims.client.networking.ServerConnection;
 
@@ -833,5 +834,16 @@ public class ClientMain {
 
 		initProgram(false);
 
+	}
+
+	public void saveNewEvent(Sendable s, EEventType eventType) {
+
+		databaseConnection.saveNewEvent(s, eventType);
+		guiMain.addNewEvent();
+	}
+
+	public ArrayList<Event> getAllPendingEvents() {
+
+		return databaseConnection.getAllPendingEvents();
 	}
 }

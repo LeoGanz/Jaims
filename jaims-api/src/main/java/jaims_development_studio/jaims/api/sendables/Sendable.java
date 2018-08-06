@@ -31,8 +31,7 @@ import jaims_development_studio.jaims.api.user.User;
 @Entity(name = "Sendable")
 @Table(name = "SENDABLES")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "SENDABLE_TYPE", discriminatorType = DiscriminatorType.STRING,
-columnDefinition = "VARCHAR(64)", length = 64)
+@DiscriminatorColumn(name = "SENDABLE_TYPE", discriminatorType = DiscriminatorType.STRING, columnDefinition = "VARCHAR(64)", length = 64)
 @DiscriminatorValue(value = ESendableType.Values.OTHER)
 public class Sendable implements Serializable {
 
@@ -61,50 +60,61 @@ public class Sendable implements Serializable {
 
 	@SuppressWarnings("unused")
 	private Sendable() {
+
 		this(null);
 	}
 
 	public Sendable(ESendableType type) {
+
 		this.type = type;
 	}
 
 	public Sendable(ESendableType type, int priority) {
+
 		this.type = type;
 		if (priority < 0)
 			throw new IllegalArgumentException("priority must be greater zero");
 		this.priority = priority;
 	}
 
-	protected UUID getUuid() {
+	public UUID getUuid() {
+
 		return uuid;
 	}
 
 	public ESendableType getType() {
+
 		return type;
 	}
 
 	public int getPriority() {
+
 		return priority;
 	}
 
 	public User getUser() {
+
 		return user;
 	}
 
 	public void setUser(User user) {
+
 		this.user = user;
 	}
 
 	public Date getTimestampSent() {
+
 		return timestampSent;
 	}
 
 	public void setTimestampSent() {
+
 		timestampSent = new Date();
 	}
 
 	@Override
 	public boolean equals(Object o) {
+
 		if (this == o)
 			return true;
 		if (o == null)
@@ -117,6 +127,7 @@ public class Sendable implements Serializable {
 
 	@Override
 	public int hashCode() {
+
 		return new HashCodeBuilder(17, 31).append(uuid).toHashCode();
 	}
 

@@ -20,8 +20,10 @@ import jaims_development_studio.jaims.api.sendables.SendableException;
 import jaims_development_studio.jaims.api.sendables.SendableMessage;
 import jaims_development_studio.jaims.api.sendables.SendableMessageResponse;
 import jaims_development_studio.jaims.api.sendables.SendableProfile;
+import jaims_development_studio.jaims.api.sendables.SendableRequest;
 import jaims_development_studio.jaims.api.sendables.SendableUUID;
 import jaims_development_studio.jaims.client.logic.ClientMain;
+import jaims_development_studio.jaims.client.logic.EEventType;
 
 /**
  * This class handles all incoming {@link Sendable}s from the server and decides
@@ -190,6 +192,12 @@ public class ListenForInput implements Runnable {
 					cm.loginSuccessful(sc.getStoredUuid());
 				}
 				break;
+			case "REQUEST":
+				SendableRequest sr = (SendableRequest) s;
+				LOG.info("Received sendable of type " + sr.getRequestType().getValue());
+				if (sr.getRequestType().getValue().equals("FRIEND")) {
+					cm.saveNewEvent(sr, EEventType.FRIEND_REQUEST);
+				}
 			case "OTHER":
 				break;
 			default:

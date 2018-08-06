@@ -20,7 +20,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import jaims_development_studio.jaims.api.message.FriendRequest;
 import jaims_development_studio.jaims.api.profile.Profile;
+import jaims_development_studio.jaims.api.sendables.SendableMessage;
 import jaims_development_studio.jaims.client.gui.GUIMain;
 
 public class PanelSelectNewContact extends JPanel {
@@ -99,15 +101,10 @@ public class PanelSelectNewContact extends JPanel {
 			public void mousePressed(MouseEvent e) {
 
 				if (guiMain.hasEntry(userProfile.getUuid()) == false) {
-					if (guiMain.saveProfile(userProfile)) {
-						PanelSelectNewContact.this.inDatabase = true;
-						repaint();
-					}
-				} else {
-					if (guiMain.deleteProfile(userProfile.getUuid())) {
-						PanelSelectNewContact.this.inDatabase = false;
-						repaint();
-					}
+					FriendRequest fr = new FriendRequest(guiMain.getUserUUID(), userProfile.getUuid(),
+							"Add me as a friend");
+					SendableMessage sm = new SendableMessage(fr);
+					guiMain.sendSendable(sm);
 				}
 
 			}

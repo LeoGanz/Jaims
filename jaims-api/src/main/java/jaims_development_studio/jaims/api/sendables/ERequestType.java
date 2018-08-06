@@ -16,6 +16,7 @@ public enum ERequestType {
 	PROFILE(Values.PROFILE),
 	SETTINGS(Values.SETTINGS),
 	CONTACTS(Values.CONTACTS),
+	FRIEND(Values.FRIEND),
 	OTHER(Values.OTHER);
 	
 	private String value;
@@ -37,6 +38,7 @@ public enum ERequestType {
 		public static final String	PROFILE			= "PROFILE";
 		public static final String	SETTINGS		= "SETTINGS";
 		public static final String	CONTACTS		= "CONTACTS";
+		public static final String 	FRIEND 			= "FRIEND";
 		public static final String	OTHER			= "OTHER";
 	}
 }

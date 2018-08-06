@@ -1,6 +1,5 @@
 package jaims_development_studio.jaims.client.gui.showContacts;
 
-import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -37,9 +36,8 @@ public class PanelTabbedPane extends JPanel {
 	private boolean						chatsSelected		= true, paintChats = true, paintContacts = false;
 	private JScrollPane					jspChats, jspContacts;
 	private JPanel						panelChats, panelContacts, panelTabs;
-	private int							xChats				= 10, xContacts = -130, yContacts = 30;
 	private int							paintChatWidth		= 130, paintChatHeight = 35, paintContactWidth = 0,
-			paintContactHeight = 0;
+			paintContactHeight = 0, paintChatX = 0, paintChatY = -1, paintContactX = 65, paintContactY = 17;
 	private boolean						animationRunning	= false;
 	private JButton						btChats, btContacts;
 	private ArrayList<SimpleContact>	sortedList;
@@ -72,8 +70,8 @@ public class PanelTabbedPane extends JPanel {
 					g.setColor(Color.GRAY);
 					g.fillRect(0, 0, getWidth(), getHeight());
 					if (paintChats) {
-						g.setColor(Color.LIGHT_GRAY);
-						g.fillRect(0, 0, paintChatWidth, paintChatHeight);
+						g.setColor(new Color(180, 180, 180));
+						g.fillRect(paintChatX, paintChatY, paintChatWidth, paintChatHeight);
 					}
 
 					Graphics2D g2 = (Graphics2D) g;
@@ -84,10 +82,6 @@ public class PanelTabbedPane extends JPanel {
 
 					g2.setColor(Color.WHITE);
 					g2.drawString("Chats", xChat, yChats);
-
-					g2.setColor(new Color(191, 30, 30));
-					g2.setStroke(new BasicStroke(3));
-					g2.fillOval(xChats, getHeight() - 5, getWidth() - 20, 4);
 
 				}
 			};
@@ -110,8 +104,8 @@ public class PanelTabbedPane extends JPanel {
 					g.setColor(Color.GRAY);
 					g.fillRect(0, 0, getWidth(), getHeight());
 					if (paintContacts) {
-						g.setColor(Color.LIGHT_GRAY);
-						g.fillRect(0, 0, paintContactWidth, paintContactHeight);
+						g.setColor(new Color(180, 180, 180));
+						g.fillRect(paintContactX, paintContactY, paintContactWidth, paintContactHeight);
 					}
 
 					Graphics2D g2 = (Graphics2D) g;
@@ -122,10 +116,6 @@ public class PanelTabbedPane extends JPanel {
 
 					g2.setColor(Color.WHITE);
 					g2.drawString("Contacts", xChat, yChats);
-
-					g2.setColor(new Color(191, 30, 30));
-					g2.setStroke(new BasicStroke(3));
-					g2.fillOval(xContacts, yContacts, 105, 4);
 
 				}
 			};
@@ -275,8 +265,6 @@ public class PanelTabbedPane extends JPanel {
 			}
 		}
 
-		System.out.println("Adding user");
-
 		PanelContactShowing pcs = new PanelContactShowing(guiMain, simpleContact);
 		panelChats.add(Box.createRigidArea(new Dimension(0, 5)), 0);
 		panelChats.add(pcs, 1);
@@ -363,54 +351,47 @@ public class PanelTabbedPane extends JPanel {
 			animationRunning = true;
 			paintContacts = true;
 
-			Timer timer = new Timer(10, e -> {
-
-				if (xChats < 130) {
-					xChats += 10;
-					btChats.repaint();
-				}
-
-				if (xContacts < 10) {
-					xContacts += 10;
-					yContacts = btContacts.getHeight() - 5;
-					btContacts.repaint();
-				}
-
-				if (xContacts >= 10) {
-					((Timer) e.getSource()).stop();
-					animationRunning = false;
-				}
-
-			});
-			timer.start();
-
-			Timer t = new Timer(10, new ActionListener() {
+			new Timer(10, new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
 
-					if (paintContactWidth < 130) {
+					if (paintContactWidth < 130)
 						paintContactWidth += 10;
-					}
 
-					if (paintContactHeight < 35) {
+					if (paintContactX >= 5)
+						paintContactX -= 5;
+
+					if (paintContactHeight < 35)
 						paintContactHeight += 5;
-					}
+
+					if (paintContactY >= 1)
+						paintContactY -= 2;
 
 					if (paintChatWidth > 0)
 						paintChatWidth -= 10;
 
+					if (paintChatX <= 60)
+						paintChatX += 5;
+
 					if (paintChatHeight > 0)
 						paintChatHeight -= 5;
+
+					if (paintChatY <= 15)
+						paintChatY += 2;
+
+					btChats.repaint();
+					btContacts.repaint();
 
 					if (paintContactWidth >= 130) {
 						((Timer) e.getSource()).stop();
 						paintChats = false;
+						animationRunning = false;
 					}
 
 				}
-			});
-			t.start();
+			}).start();
+			btChats.repaint();
 			chatsSelected = false;
 		}
 	}
@@ -426,28 +407,7 @@ public class PanelTabbedPane extends JPanel {
 			animationRunning = true;
 			paintChats = true;
 
-			Timer timer = new Timer(10, e -> {
-
-				if (xChats > 10) {
-					xChats -= 10;
-					btChats.repaint();
-				}
-
-				if (xContacts > -130) {
-					xContacts -= 10;
-					yContacts = btContacts.getHeight() - 5;
-					btContacts.repaint();
-				}
-
-				if (xChats <= 10) {
-					((Timer) e.getSource()).stop();
-					animationRunning = false;
-				}
-
-			});
-			timer.start();
-
-			Timer t = new Timer(10, new ActionListener() {
+			new Timer(10, new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -458,19 +418,36 @@ public class PanelTabbedPane extends JPanel {
 					if (paintChatHeight < 35)
 						paintChatHeight += 5;
 
+					if (paintChatX >= 5)
+						paintChatX -= 5;
+
+					if (paintChatY >= 1)
+						paintChatY -= 2;
+
 					if (paintContactWidth > 0)
 						paintContactWidth -= 10;
 
 					if (paintContactHeight > 0)
 						paintContactHeight -= 5;
 
+					if (paintContactX <= 60)
+						paintContactX += 5;
+
+					if (paintContactY <= 15)
+						paintContactY += 2;
+
+					btContacts.repaint();
+					btChats.repaint();
+
 					if (paintChatWidth >= 130) {
 						((Timer) e.getSource()).stop();
 						paintContacts = false;
+						animationRunning = false;
 					}
 				}
-			});
-			t.start();
+			}).start();
+			btContacts.repaint();
+			btChats.repaint();
 			chatsSelected = true;
 		}
 	}

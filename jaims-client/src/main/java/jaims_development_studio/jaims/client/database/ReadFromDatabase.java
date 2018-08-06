@@ -17,9 +17,11 @@ import org.slf4j.LoggerFactory;
 
 import jaims_development_studio.jaims.api.profile.Profile;
 import jaims_development_studio.jaims.client.chatObjects.ClientInternMessage;
+import jaims_development_studio.jaims.client.directFileExchange.DFEObject;
+import jaims_development_studio.jaims.client.directFileExchange.EFileType;
 import jaims_development_studio.jaims.client.logic.ClientMain;
-import jaims_development_studio.jaims.client.logic.DFEObject;
-import jaims_development_studio.jaims.client.logic.EFileType;
+import jaims_development_studio.jaims.client.logic.EEventType;
+import jaims_development_studio.jaims.client.logic.Event;
 import jaims_development_studio.jaims.client.logic.SimpleContact;
 
 /**
@@ -41,7 +43,7 @@ public class ReadFromDatabase {
 	private Statement			statement;
 	private PreparedStatement	pStatement;
 	private boolean				messagesExist	= false, contactsExist = false, userExists = false, imageExists = false,
-			informationsExists = false, largeFilesExists = false, rememberMeExists = false;
+			informationsExists = false, largeFilesExists = false, rememberMeExists = false, pendingEventsExists = false;
 
 	public ReadFromDatabase(Connection con) {
 
@@ -70,10 +72,12 @@ public class ReadFromDatabase {
 					imageExists = true;
 				else if (tName != null && tName.equals("INFORMATIONS"))
 					informationsExists = true;
-				else if (tName != null && tName.equals("LARGE_FILES"))
+				else if (tName != null && tName.equals("DFE"))
 					largeFilesExists = true;
 				else if (tName != null && tName.equals("REMEMBER_ME"))
 					rememberMeExists = true;
+				else if (tName != null && tName.equals("PENDING_EVENTS"))
+					pendingEventsExists = true;
 			}
 			if (messagesExist && contactsExist && userExists && imageExists && informationsExists && largeFilesExists
 					&& rememberMeExists)
@@ -122,7 +126,12 @@ public class ReadFromDatabase {
 			}
 			if (largeFilesExists == false) {
 				s.execute(
-						"CREATE TABLE LARGE_FILES (FILE_ID UUID NOT NULL PRIMARY KEY, SENDER UUID NOT NULL, RECIPIENT UUID NOT NULL, FILENAME VARCHAR(256) NOT NULL, PATH VARCHAR(512) NOT NULL, EXTENSION VARCHAR(32) NOT NULL, FILE_TYPE VARCHAR(64) NOT NULL, DATE_SENT TIMESTAMP NOT NULL)");
+						"CREATE TABLE DFE (OBJECT_UUID UUID NOT NULL PRIMARY KEY,SENDER UUID NOT NULL,RECIPIENT UUID NOT NULL,FILENAME VARCHAR(256) NOT NULL,PATH VARCHAR(256) NOT NULL,EXTENSION VARCHAR(16) NOT NULL,FILE_TYPE VARCHAR(16) NOT NULL, DATE_SENT TIMESTAMP NOT NULL,BYTES_DOWNLOADED BIGINT NOT NULL,LENGTH_OF_FILE BIGINT NOT NULL)");
+				con.commit();
+			}
+			if (pendingEventsExists == false) {
+				s.execute(
+						"CREATE TABLE PENDING_EVENTS (SENDABLE_ID UUID NOT NULL PRIMARY KEY, SENDABLE BLOB NOT NULL, EVENT_TYPE VARCHAR(128) NOT NULL, DATE_SENT TIMESTAMP NOT NULL)");
 				con.commit();
 			}
 		} catch (SQLException e) {
@@ -561,7 +570,7 @@ public class ReadFromDatabase {
 
 		ArrayList<DFEObject> list = new ArrayList<>();
 		try {
-			pStatement = con.prepareStatement("SELECT * FROM LARGE_FILES WHERE (CONTACT_ID=? OR USER_ID=?)");
+			pStatement = con.prepareStatement("SELECT * FROM DFE WHERE (SENDER=? OR RECIPIENT=?)");
 			pStatement.setObject(1, user);
 			pStatement.setObject(2, user);
 			rs = pStatement.executeQuery();
@@ -619,6 +628,27 @@ public class ReadFromDatabase {
 			return new Date(millis);
 		} else
 			return null;
+	}
+
+	public ArrayList<Event> getAllPendingEvents() {
+
+		ArrayList<Event> list = new ArrayList<>();
+
+		try {
+			pStatement = con.prepareStatement("SELECT * FROM PENDING_EVENTS");
+			rs = pStatement.executeQuery();
+
+			while (rs.next()) {
+				Event e = new Event(EEventType.valueOf(rs.getString(3)), convertToDate(rs.getTimestamp(4)));
+				list.add(e);
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return list;
 	}
 
 }

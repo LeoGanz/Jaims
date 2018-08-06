@@ -1,4 +1,4 @@
-package jaims_development_studio.jaims.client.logic;
+package jaims_development_studio.jaims.client.directFileExchange;
 
 import java.util.Date;
 import java.util.UUID;

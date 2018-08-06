@@ -31,7 +31,9 @@ import jaims_development_studio.jaims.api.settings.Settings;
 import jaims_development_studio.jaims.client.audio.ListAudioDevices;
 import jaims_development_studio.jaims.client.chatObjects.ChatInformation;
 import jaims_development_studio.jaims.client.chatObjects.ClientInternMessage;
+import jaims_development_studio.jaims.client.directFileExchange.DFEObject;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.CenterPanel;
+import jaims_development_studio.jaims.client.gui.customGUIComponents.EventManager;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.FrameTop;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.ParentPanel;
 import jaims_development_studio.jaims.client.gui.login.PanelProgramStartup;
@@ -43,7 +45,6 @@ import jaims_development_studio.jaims.client.gui.showContacts.PanelContactShowin
 import jaims_development_studio.jaims.client.gui.showContacts.PanelTabbedPane;
 import jaims_development_studio.jaims.client.gui.showContacts.PanelUserShowing;
 import jaims_development_studio.jaims.client.logic.ClientMain;
-import jaims_development_studio.jaims.client.logic.DFEObject;
 import jaims_development_studio.jaims.client.logic.SimpleContact;
 
 public class GUIMain implements Runnable {
@@ -65,6 +66,7 @@ public class GUIMain implements Runnable {
 	private PanelSelectSettings				panelSelectSettings;
 	private ListAudioDevices				listAudioDevices;
 	private boolean							showSplashScreen;
+	private EventManager					eventManager;
 
 	public GUIMain(ClientMain cm, boolean showSplashScreen) {
 
@@ -232,6 +234,7 @@ public class GUIMain implements Runnable {
 		listAudioDevices = new ListAudioDevices(this);
 
 		buildChatStart();
+
 	}
 
 	private void buildChatStart() {
@@ -260,15 +263,17 @@ public class GUIMain implements Runnable {
 			panelUserShowing = new PanelUserShowing(this, cm.getUserContact());
 			panelLeftSide.add(panelUserShowing);
 
-			infoPanel = new JPanel();
-			infoPanel.setBackground(new Color(0, 0, 0, 0));
-			infoPanel.setOpaque(false);
-			infoPanel.setMinimumSize(new Dimension(250, 50));
-			infoPanel.setPreferredSize(infoPanel.getMinimumSize());
-			infoPanel.setMaximumSize(new Dimension(350, 50));
+			eventManager = new EventManager(cm.getAllPendingEvents().size());
+			eventManager.setBackground(new Color(0, 0, 0, 0));
+			eventManager.setOpaque(false);
+			eventManager.setMinimumSize(new Dimension(250, 50));
+			eventManager.setPreferredSize(eventManager.getMinimumSize());
+			eventManager.setMaximumSize(new Dimension(250, 50));
+			panelLeftSide.add(Box.createVerticalGlue());
 			panelLeftSide.add(Box.createRigidArea(new Dimension(0, 6)));
-			panelLeftSide.add(infoPanel);
+			panelLeftSide.add(eventManager);
 			panelLeftSide.add(Box.createRigidArea(new Dimension(0, 6)));
+			panelLeftSide.add(Box.createVerticalGlue());
 
 			panelLeftSide.add(panelTabbedPane);
 		}
@@ -575,6 +580,12 @@ public class GUIMain implements Runnable {
 
 	public void askForNewPassword() {
 
+	}
+
+	public void addNewEvent() {
+
+		System.out.println("Adding");
+		eventManager.addNewEvent();
 	}
 
 }
