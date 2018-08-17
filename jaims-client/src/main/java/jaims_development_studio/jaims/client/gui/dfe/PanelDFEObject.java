@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.UUID;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -23,8 +24,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import jaims_development_studio.jaims.client.directFileExchange.DFEObject;
-import jaims_development_studio.jaims.client.directFileExchange.EFileType;
+import jaims_development_studio.jaims.client.directFileExchange.fileUtil.EFileType;
+
 
 public class PanelDFEObject extends JPanel {
 
@@ -70,9 +71,9 @@ public class PanelDFEObject extends JPanel {
 					}
 			}
 		});
-
+		initGUIForAudio();
 		if (dfeo.getFileType().equals(EFileType.FILETYPE_AUDIO)) {
-			initGUIForAudio();
+			
 		} else if (dfeo.getFileType().equals(EFileType.FILETYPE_EXCEL)) {
 
 		} else if (dfeo.getFileType().equals(EFileType.FILETYPE_ODT)) {
@@ -120,6 +121,14 @@ public class PanelDFEObject extends JPanel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public UUID getFileID() {
+		return dfeo.getFileID();
+	}
+	
+	public void setPath(String path) {
+		dfeo.setPath(path);
 	}
 
 	@Override

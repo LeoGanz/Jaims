@@ -17,7 +17,7 @@ import jaims_development_studio.jaims.api.message.Message;
 import jaims_development_studio.jaims.api.profile.Profile;
 import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.client.chatObjects.ClientInternMessage;
-import jaims_development_studio.jaims.client.directFileExchange.DFEObject;
+import jaims_development_studio.jaims.client.gui.dfe.DFEObject;
 import jaims_development_studio.jaims.client.logic.ClientMain;
 import jaims_development_studio.jaims.client.logic.EEventType;
 import jaims_development_studio.jaims.client.logic.Event;

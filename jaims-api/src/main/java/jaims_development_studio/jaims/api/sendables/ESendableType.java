@@ -17,6 +17,7 @@ public enum ESendableType {
 	FRIEND_REQUEST_RESPONSE(Values.FRIEND_REQUEST_RESPONSE),
 	COMMAND(Values.COMMAND),
 	EXCEPTION(Values.EXCEPTION),
+	DFE_INITATION(Values.DFE_INITIATION),
 	SENDABLE_GROUP(Values.SENDABLE_GROUP),
 	OTHER(Values.OTHER); //maybe friend request?
 	
@@ -48,6 +49,7 @@ public enum ESendableType {
 		public static final String	FRIEND_REQUEST_RESPONSE	= "FRIEND_REQUEST_RESPONSE";
 		public static final String	COMMAND					= "COMMAND";
 		public static final String	EXCEPTION				= "EXCEPTION";
+		public static final String 	DFE_INITIATION			= "DFE_INITIATION";
 		public static final String	SENDABLE_GROUP			= "SENDABLE_GROUP";
 		public static final String	OTHER					= "OTHER";
 	}

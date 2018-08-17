@@ -105,6 +105,8 @@ public class PanelChatWindowBottom extends JPanel {
 			@Override
 			public void componentResized(ComponentEvent e) {
 
+				panelTextField.revalidate();
+
 				revalidate();
 				repaint();
 

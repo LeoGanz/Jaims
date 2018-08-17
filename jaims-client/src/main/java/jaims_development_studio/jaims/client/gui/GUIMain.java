@@ -31,11 +31,11 @@ import jaims_development_studio.jaims.api.settings.Settings;
 import jaims_development_studio.jaims.client.audio.ListAudioDevices;
 import jaims_development_studio.jaims.client.chatObjects.ChatInformation;
 import jaims_development_studio.jaims.client.chatObjects.ClientInternMessage;
-import jaims_development_studio.jaims.client.directFileExchange.DFEObject;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.CenterPanel;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.EventManager;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.FrameTop;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.ParentPanel;
+import jaims_development_studio.jaims.client.gui.dfe.DFEObject;
 import jaims_development_studio.jaims.client.gui.login.PanelProgramStartup;
 import jaims_development_studio.jaims.client.gui.login.ShowGuiBuildingProcess;
 import jaims_development_studio.jaims.client.gui.messagePanels.ManageMessagePanels;
@@ -131,6 +131,10 @@ public class GUIMain implements Runnable {
 			jaimsFrame.getContentPane().repaint();
 		}
 
+	}
+	
+	public ParentPanel getCurrentParentPanel() {
+		return parentPanel;
 	}
 
 	public void showParentPanel(ParentPanel pp, PanelContactShowing caller) {
@@ -588,4 +592,7 @@ public class GUIMain implements Runnable {
 		eventManager.addNewEvent();
 	}
 
+	public ClientMain getClientMain() {
+		return cm;
+	}
 }

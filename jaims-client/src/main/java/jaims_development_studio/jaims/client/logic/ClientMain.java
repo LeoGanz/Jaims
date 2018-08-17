@@ -28,8 +28,9 @@ import jaims_development_studio.jaims.api.sendables.SendableRequest;
 import jaims_development_studio.jaims.api.settings.Settings;
 import jaims_development_studio.jaims.client.chatObjects.ClientInternMessage;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
-import jaims_development_studio.jaims.client.directFileExchange.DFEObject;
 import jaims_development_studio.jaims.client.gui.GUIMain;
+import jaims_development_studio.jaims.client.gui.customGUIComponents.ParentPanel;
+import jaims_development_studio.jaims.client.gui.dfe.DFEObject;
 import jaims_development_studio.jaims.client.networking.ServerConnection;
 
 /**
@@ -649,6 +650,10 @@ public class ClientMain {
 	public void showAvailableUsersForAdding(Profile... users) {
 
 		guiMain.showAvailableUsersForAdding(users);
+	}
+	
+	public ParentPanel getCurrentParentPanel() {
+		return guiMain.getCurrentParentPanel();
 	}
 
 	/**

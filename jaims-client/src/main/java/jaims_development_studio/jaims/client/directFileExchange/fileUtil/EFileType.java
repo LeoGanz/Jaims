@@ -1,4 +1,4 @@
-package jaims_development_studio.jaims.client.directFileExchange;
+package jaims_development_studio.jaims.client.directFileExchange.fileUtil;
 
 public enum EFileType {
 	FILETYPE_AUDIO(Values.FILETYPE_AUDIO), FILETYPE_PDF(Values.FILETYPE_PDF), FILETYPE_VIDEO(

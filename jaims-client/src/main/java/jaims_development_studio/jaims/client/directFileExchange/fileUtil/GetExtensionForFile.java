@@ -1,8 +1,13 @@
-package jaims_development_studio.jaims.client.directFileExchange;
+package jaims_development_studio.jaims.client.directFileExchange.fileUtil;
+
+import java.io.File;
 
 public class GetExtensionForFile {
 
-	public static EFileType getExtensionForFile(String extension) {
+	public static EFileType getExtensionForFile(File f) {
+
+		String[] split = f.getName().split("\\.");
+		String extension = split[split.length - 1];
 
 		if (isAudioFile(extension))
 			return EFileType.FILETYPE_AUDIO;

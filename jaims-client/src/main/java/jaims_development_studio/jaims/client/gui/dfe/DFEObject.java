@@ -1,20 +1,21 @@
-package jaims_development_studio.jaims.client.directFileExchange;
+package jaims_development_studio.jaims.client.gui.dfe;
 
 import java.util.Date;
 import java.util.UUID;
 
-//DFE = Direct File Exchange
+import jaims_development_studio.jaims.client.directFileExchange.fileUtil.EFileType;
+
 public class DFEObject {
 
-	private UUID		objectUUID, sender, recipient;
+	private UUID		fileID, sender, recipient;
 	private String		filename, path, extension;
 	private EFileType	fileType;
 	private Date		dateSent;
 
-	public DFEObject(UUID objectUUID, UUID sender, UUID recipient, String filename, String path, String extension,
+	public DFEObject(UUID fileID, UUID sender, UUID recipient, String filename, String path, String extension,
 			EFileType fileType, Date dateSent) {
 
-		this.objectUUID = objectUUID;
+		this.fileID = fileID;
 		this.sender = sender;
 		this.recipient = recipient;
 		this.filename = filename;
@@ -24,9 +25,9 @@ public class DFEObject {
 		this.dateSent = dateSent;
 	}
 
-	public UUID getObjectUUID() {
+	public UUID getFileID() {
 
-		return objectUUID;
+		return fileID;
 	}
 
 	public UUID getSender() {
@@ -62,6 +63,10 @@ public class DFEObject {
 	public Date getDateSent() {
 
 		return dateSent;
+	}
+	
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 }

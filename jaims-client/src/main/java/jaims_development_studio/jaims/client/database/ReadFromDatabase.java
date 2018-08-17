@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import jaims_development_studio.jaims.api.profile.Profile;
 import jaims_development_studio.jaims.client.chatObjects.ClientInternMessage;
-import jaims_development_studio.jaims.client.directFileExchange.DFEObject;
-import jaims_development_studio.jaims.client.directFileExchange.EFileType;
+import jaims_development_studio.jaims.client.directFileExchange.fileUtil.EFileType;
+import jaims_development_studio.jaims.client.gui.dfe.DFEObject;
 import jaims_development_studio.jaims.client.logic.ClientMain;
 import jaims_development_studio.jaims.client.logic.EEventType;
 import jaims_development_studio.jaims.client.logic.Event;

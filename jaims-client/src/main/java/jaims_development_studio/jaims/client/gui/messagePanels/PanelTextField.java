@@ -81,7 +81,7 @@ public class PanelTextField extends JPanel {
 		setLayout(new BorderLayout());
 		setOpaque(false);
 		// add(Box.createRigidArea(new Dimension(25, 0)));
-		add(jta, BorderLayout.CENTER);
+		add(jta);
 		// add(Box.createRigidArea(new Dimension(25, 0)));
 	}
 

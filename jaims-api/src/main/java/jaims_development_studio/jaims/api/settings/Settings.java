@@ -105,12 +105,12 @@ public class Settings extends UpdateTrackingUuidEntity {
 	private int					imageResizeHint										= RESIZE_FILL_SCREEN;
 
 	// Direct file exchange
-	@Column(name = "PORT_SENDING", columnDefinition = "INTEGER")
+	@Column(name = "PORT_DFE", columnDefinition = "INTEGER")
 	private int					portSending											= 6050;
-	@Column(name = "PORT_RECEIVING", columnDefinition = "INTEGER")
-	private int					portReceiving										= 6100;
 	@Column(name = "ALWAYS_SELECT_DESTINATION_WHEN_RECEIVING_MULTIPLE_FILES", columnDefinition = "BOOLEAN")
 	private boolean				alwaysSelectDestinationWhenReceivingMultipleFiles	= false;
+	@Column(name = "BUFFER_SIZE", columnDefinition = "INTEGER")
+	private int bufferSize = 4096;
 
 	public Settings() {
 
@@ -547,19 +547,23 @@ public class Settings extends UpdateTrackingUuidEntity {
 		this.imageResizeHint = imageResizeHint;
 	}
 
-	public int getPortSending() {
+	public int getDFEPort() {
 
 		return portSending;
 	}
 
-	public int getPortReceiving() {
-
-		return portReceiving;
-	}
 
 	public boolean selectDestinationForEachFile() {
 
 		return alwaysSelectDestinationWhenReceivingMultipleFiles;
+	}
+	
+	public void setBufferSize(int i) {
+		bufferSize = i;
+	}
+	
+	public int getBufferSize() {
+		return bufferSize;
 	}
 
 }
