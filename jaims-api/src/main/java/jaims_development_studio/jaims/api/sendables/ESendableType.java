@@ -1,6 +1,9 @@
 package jaims_development_studio.jaims.api.sendables;
 
 /**
+ * This enum is used to define the type of a {@link Sendable}. It is possible that certain sub-subtypes are not listed
+ * if there is no need to differentiate them during initial processing (e.g. different types of messages).
+ *
  * @author WilliGross
  */
 public enum ESendableType {
@@ -19,7 +22,8 @@ public enum ESendableType {
 	EXCEPTION(Values.EXCEPTION),
 	DFE_INITATION(Values.DFE_INITIATION),
 	SENDABLE_GROUP(Values.SENDABLE_GROUP),
-	OTHER(Values.OTHER); //maybe friend request?
+	DIRECT_DELIVERY(Values.DIRECT_DELIVERY),
+	OTHER(Values.OTHER);
 	
 	private String value;
 	
@@ -51,6 +55,7 @@ public enum ESendableType {
 		public static final String	EXCEPTION				= "EXCEPTION";
 		public static final String 	DFE_INITIATION			= "DFE_INITIATION";
 		public static final String	SENDABLE_GROUP			= "SENDABLE_GROUP";
+		public static final String	DIRECT_DELIVERY			= "DIRECT_DELIVERY";
 		public static final String	OTHER					= "OTHER";
 	}
 }
