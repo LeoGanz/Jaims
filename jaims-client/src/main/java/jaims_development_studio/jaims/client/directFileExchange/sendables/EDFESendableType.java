@@ -1,6 +1,13 @@
 package jaims_development_studio.jaims.client.directFileExchange.sendables;
 
-
+/**
+ * 
+ * 
+ * @since v0.1.0
+ * 
+ * @author Bu88le
+ *
+ */
 public enum EDFESendableType {
 	TYPE_FILEINFO(Values.TYPE_FILEINFO), 
 	TYPE_STARTSENDING(Values.TYPE_STARTSENDING), 
@@ -29,7 +36,7 @@ public enum EDFESendableType {
 		public static final String	TYPE_SENDLAST			= "SEND_LAST";
 		public static final String	TYPE_CLOSECONNECTION	= "CLOSE_CONNECTION";
 		public static final String 	TYPE_FILEDATA 			= "FILE_DATA";
-		public static final String TYPE_PAUSESENDING = "PAUSE_SENDING";
+		public static final String 	TYPE_PAUSESENDING		= "PAUSE_SENDING";
 
 	}
 
