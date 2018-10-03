@@ -14,11 +14,11 @@ import jaims_development_studio.jaims.server.util.UpdateTrackingUuidEntityManage
  * @author WilliGross
  */
 public class ProfileManager extends UpdateTrackingUuidEntityManager<Profile> {
-	
+
 	public ProfileManager(UserManager userManager) {
 		super(new ProfileDAO(), userManager, EEntityType.PROFILE);
 	}
-	
+
 	/**
 	 * Server is not supposed to create Profiles. It is the client's job to send a SendableProfile which the server will
 	 * manage. Use method linked below instead.
@@ -26,16 +26,16 @@ public class ProfileManager extends UpdateTrackingUuidEntityManager<Profile> {
 	 * @see UpdateTrackingUuidEntityManager#saveOrUpdateEntity(UuidEntity)
 	 */
 	@Deprecated
-	public Profile newProfile(Account account, String nickname, String description, String status, byte[] profilePicture) throws ProfileAlreadyExistsException {
-		
+	public Profile newProfile(Account account, String registrationName, String nickname, String description, String status, byte[] profilePicture) throws ProfileAlreadyExistsException {
+
 		if (isUuidRegistered(account.getUuid()))
 			throw new ProfileAlreadyExistsException(account.getUuid(), "A profile for the specified account / uuid already exists");
-		
-		Profile profile = new Profile(account, nickname, description, status, profilePicture, new Date());
-		
+
+		Profile profile = new Profile(account, registrationName, nickname, description, status, profilePicture, new Date());
+
 		save(profile);
-		
+
 		return profile;
 	}
-	
+
 }

@@ -46,7 +46,7 @@ import jaims_development_studio.jaims.server.user.UserNotLoggedInException;
  * @author WilliGross
  */
 public class ClientConnection implements Runnable {
-	
+
 	private final Logger		LOG	= LoggerFactory.getLogger(ClientConnection.class);
 	private final Socket		clientSocket;
 	private final ClientManager	clientManager;
@@ -56,7 +56,7 @@ public class ClientConnection implements Runnable {
 	private User				user;
 	private boolean				connectionTerminated;
 	private boolean				autoSendSendables;
-	
+
 	/**
 	 * Builds a new ClientConnection. Basic 'infrastructure' like input and output streams is set up. Furthermore the
 	 * client is notified of the server's current UUID.
@@ -68,11 +68,11 @@ public class ClientConnection implements Runnable {
 		this.clientSocket = clientSocket;
 		this.clientManager = clientManager;
 		connectionTerminated = false;
-
+		
 		try {
 			in = new ObjectInputStream(clientSocket.getInputStream());
 			out = new ObjectOutputStream(clientSocket.getOutputStream());
-			
+
 			UUID serverUUID = clientManager.getServer().getServerUUID();
 			SendableUUID sendableServerUUID = new SendableUUID(serverUUID);
 			manageSendSendable(sendableServerUUID);
@@ -87,7 +87,7 @@ public class ClientConnection implements Runnable {
 			terminate();
 		}
 	}
-	
+
 	/**
 	 * This starts a separate {@link Thread} the only job of which is to send all {@link Sendable}s that are queued by
 	 * the {@link User} to the client. When no Sendable is queued the Thread waits.
@@ -96,12 +96,12 @@ public class ClientConnection implements Runnable {
 	 *             to the User object
 	 */
 	public void startSendableAutoSender() throws UserNotLoggedInException {
-		
+
 		if (user == null)
 			throw new UserNotLoggedInException("SendableAutoSender can only be activated for logged in users!");
-		
-		autoSendSendables = true;
 
+		autoSendSendables = true;
+		
 		Thread sendableSender = new Thread(() -> {
 			while (autoSendSendables)
 				synchronized (user) {
@@ -112,16 +112,16 @@ public class ClientConnection implements Runnable {
 							break;
 						Sendable sendable = user.takeSendable();
 						manageSendSendable(sendable);
-
+						
 					} catch (@SuppressWarnings("unused") InterruptedException e) {
-
+						
 					}
 				}
 		}, "SendableAutoSender-" + connectionID);
 		sendableSender.setDaemon(true);
 		sendableSender.start();
 	}
-	
+
 	/**
 	 * The main loop that keeps a ClientConnection alive. It reads from the connection's {@link InputStream} and
 	 * processes received data. Furthermore it handles different exceptions and properly terminates the connection if it
@@ -130,23 +130,23 @@ public class ClientConnection implements Runnable {
 	@Override
 	public void run() {
 		try {
-			
+
 			if (!connectionTerminated)
 				LOG.debug("ClientConnection " + connectionID + " running");
-			
+
 			//HANDLE DATA RECEIVING
 			Sendable sendable = null;
 			while (!connectionTerminated)
 				try {
 					sendable = (Sendable) in.readObject();
-
+					
 					if (user != null)
 						synchronized (user) {
 							processReceivedSendable(sendable);
 						}
 					else
 						processReceivedSendable(sendable);
-					
+
 				} catch (ClassCastException e) {
 					LOG.warn("Recieved data that's no instance of Sendable from client connection " + connectionID, e);
 					terminate();
@@ -162,14 +162,14 @@ public class ClientConnection implements Runnable {
 					LOG.info("ClientConnection-" + connectionID + " disconnected!");
 					terminate();
 				}
-			
+
 		} catch (Exception e) {
 			LOG.error("An unexpected exception occurred in client connection " + connectionID, e);
 		} finally {
 			terminate();
 		}
 	}
-	
+
 	/**
 	 * All received {@link Sendable}s are forwarded to this method to be processed. It sorts them by their type and
 	 * takes actions accordingly.
@@ -177,16 +177,16 @@ public class ClientConnection implements Runnable {
 	 * @param sendable the data to process
 	 */
 	private void processReceivedSendable(Sendable sendable) {
-		
+
 		LOG.debug("Received Sendable of type: " + sendable.getType());
-		
+
 		if (user == null)
 			if (!((sendable.getType() == ESendableType.LOGIN) || (sendable.getType() == ESendableType.REGISTRATION))) {
 				InvalidSendableException invalidSendableException = new InvalidSendableException("No user is logged in!", sendable);
 				error(invalidSendableException);
 				return;
 			}
-
+		
 		try {
 			switch (sendable.getType()) {
 				case REGISTRATION:
@@ -214,6 +214,7 @@ public class ClientConnection implements Runnable {
 					manageReceiveProfile((SendableProfile) sendable);
 					break;
 				case DIRECT_DELIVERY:
+				case DFE_INITATION:
 					manageReceiveDirectDelivery((SendableDirectDelivery) sendable);
 					break;
 				default:
@@ -225,16 +226,16 @@ public class ClientConnection implements Runnable {
 			manageReceiveInvalidSendable(sendable);
 		}
 	}
-	
+
 	/*
 	 * The following are methods for further processing received Sendables. Most actions are passed on to the
 	 * ClientManager.
 	 */
-	
+
 	private void manageReceiveRegistration(SendableRegistration registration) {
 		try {
 			user = clientManager.registerNewUser(registration, connectionID);
-			
+
 			startSendableAutoSender();
 		} catch (NullPointerException | UserNameNotAvailableException e) {
 			error(e);
@@ -242,11 +243,11 @@ public class ClientConnection implements Runnable {
 			LOG.warn("Could not start SendableAutoSender eventhough the user should be logged in by now", e);
 		}
 	}
-	
+
 	private void manageReceiveLogin(SendableLogin login) {
 		try {
 			user = clientManager.loginUser(login, connectionID);
-			
+
 			startSendableAutoSender();
 		} catch (NullPointerException | UserNotFoundException | IncorrectPasswordException e) {
 			error(e);
@@ -254,7 +255,7 @@ public class ClientConnection implements Runnable {
 			LOG.warn("Could not start SendableAutoSender eventhough the user should be logged in by now", e);
 		}
 	}
-	
+
 	private void manageReceiveMessage(SendableMessage message) {
 		try {
 			message.setTimestampServerReceived();
@@ -265,7 +266,7 @@ public class ClientConnection implements Runnable {
 			error(e);
 		}
 	}
-	
+
 	private void manageReceiveResponse(SendableMessageResponse messageResponse) {
 		try {
 			clientManager.manageResponse(messageResponse);
@@ -273,7 +274,7 @@ public class ClientConnection implements Runnable {
 			error(e);
 		}
 	}
-
+	
 	private void manageReceiveRequest(SendableRequest request) {
 		try {
 			if (user != null) {
@@ -293,7 +294,7 @@ public class ClientConnection implements Runnable {
 					default:
 						break;
 				}
-
+				
 				clientManager.manageRequest(request, user.getAccount().getUuid());
 			} else
 				throw new UserNotFoundException("User not logged in!");
@@ -305,7 +306,7 @@ public class ClientConnection implements Runnable {
 			error(e);
 		}
 	}
-
+	
 	/**
 	 * @deprecated use {@link SendableRequest} instead
 	 */
@@ -319,7 +320,7 @@ public class ClientConnection implements Runnable {
 			error(userNotFoundException);
 		}
 	}
-
+	
 	private void manageReceiveProfile(SendableProfile profile) {
 		if (user != null) {
 			if (profile.getProfile() == null) {
@@ -327,16 +328,16 @@ public class ClientConnection implements Runnable {
 				error(nullPointerException);
 				return;
 			}
-			
+
 			if (!user.getAccount().getUuid().equals(profile.getProfile().getUuid())) {
 				InsufficientPermissionException insufficientPermissionException = new InsufficientPermissionException("No permission to alter other user's profiles!");
 				error(insufficientPermissionException);
 				return;
 			}
-			
+
 			if (profile.getProfile().getAccount() != null)
 				profile.getProfile().setAccount(null);
-			
+
 			try {
 				clientManager.manageReceiveProfile(profile);
 			} catch (IllegalArgumentException e) {
@@ -347,7 +348,7 @@ public class ClientConnection implements Runnable {
 			error(userNotFoundException);
 		}
 	}
-	
+
 	private void manageReceiveDirectDelivery(SendableDirectDelivery delivery) {
 		if (user != null)
 			try {
@@ -360,16 +361,16 @@ public class ClientConnection implements Runnable {
 			error(userNotFoundException);
 		}
 	}
-
+	
 	private void manageReceiveInvalidSendable(Sendable sendable) {
 		LOG.warn("Recieved invalid data from client connection " + connectionID
 				+ ((user != null) ? " (" + user.toString() + ")" : ""));
-		
+
 		InvalidSendableException invalidSendableTypeException = new InvalidSendableException(
 				"Unknown sendable type! Make sure you use the latest API version.", sendable);
 		error(invalidSendableTypeException);
 	}
-
+	
 	/**
 	 * Helper method for delivering exceptions to the client
 	 *
@@ -379,7 +380,7 @@ public class ClientConnection implements Runnable {
 		SendableException sendableException = new SendableException(e);
 		manageSendSendable(sendableException);
 	}
-
+	
 	/**
 	 * This method sends data to the client via the connection's {@link ObjectOutputStream}
 	 *
@@ -387,41 +388,41 @@ public class ClientConnection implements Runnable {
 	 */
 	public synchronized void manageSendSendable(Sendable sendable) {
 		LOG.debug("Sending sendable of type: " + sendable.getType());
-		
+
 		if (sendable.getType() == ESendableType.MESSAGE)
 			((SendableMessage) sendable).setTimestampServerSent();
 		else if (sendable.getType() == ESendableType.MESSAGE_RESPONSE) {
 		} else if (sendable.getType() == ESendableType.EXCEPTION)
 			LOG.debug("Sendable Exception: " + ((SendableException) sendable).getException().getClass()
 					+ ": " + ((SendableException) sendable).getException().getMessage());
-
+		
 		if ((sendable.getTimestampSent() == null) && (sendable.getType() != ESendableType.MESSAGE_RESPONSE))
 			sendable.setTimestampSent();
-		
+
 		try {
 			out.writeObject(sendable);
 			out.flush();
 		} catch (@SuppressWarnings("unused") IOException e) {
 			//Couldn't send sendable to client
 			LOG.debug("Couldn't deliver sendable!");
-			
-			autoSendSendables = false;
 
+			autoSendSendables = false;
+			
 			if (user != null)
 				user.enqueueSendable(sendable);
 			terminate();
 		}
 	}
-
+	
 	/**
 	 * Instructs the connection to terminate and closes existing data streams.
 	 */
 	public synchronized void terminate() {
 		if (connectionTerminated)
 			return;
-		
-		try {
 
+		try {
+			
 			connectionTerminated = true;
 			if (in != null)
 				in.close();
@@ -433,7 +434,7 @@ public class ClientConnection implements Runnable {
 			LOG.error("An unexpected exception occurred while closing client connection" + connectionID, e);
 		}
 	}
-
+	
 	/**
 	 * Automatic termination when object is deleted from cash by the GC. Just in case.
 	 */
@@ -441,17 +442,17 @@ public class ClientConnection implements Runnable {
 	protected void finalize() {
 		terminate();
 	}
-
+	
 	public User getUser() {
 		return user;
 	}
-
+	
 	public int getConnectionID() {
 		return connectionID;
 	}
-
+	
 	public void setConnectionID(int connectionID) {
 		this.connectionID = connectionID;
 	}
-
+	
 }
