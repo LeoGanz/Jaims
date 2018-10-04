@@ -2,6 +2,21 @@ package jaims_development_studio.jaims.client.directFileExchange.fileUtil;
 
 import java.io.File;
 
+import jaims_development_studio.jaims.client.gui.dfe.PanelDFEObject;
+
+/**
+ * This class, especially its static method {@code getExtensionForFile(File)},
+ * is used to filter through many supported file types and return a
+ * {@link EFileType} based on the file's extension. <br>
+ * In this case 'supported' does not mean that the program is able to reflect
+ * all of these files, it only means that it recognises their extensions and can
+ * select a image to display on the {@link PanelDFEObject} accordingly.
+ * 
+ * @since v0.1.0
+ * 
+ * @author Bu88le
+ *
+ */
 public class GetExtensionForFile {
 
 	public static EFileType getExtensionForFile(File f) {
