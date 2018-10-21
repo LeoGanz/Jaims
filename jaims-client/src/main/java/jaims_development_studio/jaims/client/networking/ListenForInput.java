@@ -16,6 +16,7 @@ import jaims_development_studio.jaims.api.message.TextMessage;
 import jaims_development_studio.jaims.api.sendables.ESendableType;
 import jaims_development_studio.jaims.api.sendables.Sendable;
 import jaims_development_studio.jaims.api.sendables.SendableConfirmation;
+import jaims_development_studio.jaims.api.sendables.SendableDFEInitiation;
 import jaims_development_studio.jaims.api.sendables.SendableException;
 import jaims_development_studio.jaims.api.sendables.SendableMessage;
 import jaims_development_studio.jaims.api.sendables.SendableMessageResponse;
@@ -48,10 +49,8 @@ public class ListenForInput implements Runnable {
 	 * Constructor of this class. Initialises only the files; reading the socket
 	 * input has to be started by running a thread.
 	 *
-	 * @param so
-	 *            Socket which represents the connection to the database
-	 * @param cm
-	 *            Object representing ClientMain class
+	 * @param so Socket which represents the connection to the database
+	 * @param cm Object representing ClientMain class
 	 */
 	public ListenForInput(Socket so, ClientMain cm) {
 
@@ -198,6 +197,8 @@ public class ListenForInput implements Runnable {
 				if (sr.getRequestType().getValue().equals("FRIEND")) {
 					cm.saveNewEvent(sr, EEventType.FRIEND_REQUEST);
 				}
+			case "DIRECT_DELIVERY":
+				LOG.info("Received sendable of type " + ((SendableDFEInitiation) s).getType().getValue());
 			case "OTHER":
 				break;
 			default:

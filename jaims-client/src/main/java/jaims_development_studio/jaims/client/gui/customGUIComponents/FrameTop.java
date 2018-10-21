@@ -6,10 +6,12 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -38,14 +40,14 @@ public class FrameTop extends JPanel {
 	private boolean				maximized			= false, hoveringOnClose = false;
 	private JPanel				pMinimize, pMaximize, pClose;
 	private GUIMain				guiMain;
+	private Point				lastPoint;
 
 	/**
 	 * Constructor of this class. Takes a reference to the <code>GUIMain</code>
 	 * class and calls all methods needed to build the <code>JPanel</code> which
 	 * later on will be added to the frame's content pane's top position.
 	 * 
-	 * @param guiMain
-	 *            reference to the GUIMain class
+	 * @param guiMain reference to the GUIMain class
 	 * 
 	 * @see #initPanelMinimise()
 	 * @see #pMinimiseAddListener()
@@ -65,6 +67,7 @@ public class FrameTop extends JPanel {
 		pMaximizeAddListener();
 		initPanelClose();
 		pCloseAddListener();
+		addMovementListener();
 
 		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 		add(Box.createRigidArea(new Dimension(0, 40)));
@@ -87,6 +90,7 @@ public class FrameTop extends JPanel {
 	private void initPanelMinimise() {
 
 		pMinimize = new JPanel() {
+
 			/**
 			 * 
 			 */
@@ -173,6 +177,7 @@ public class FrameTop extends JPanel {
 	private void initPanelMaximise() {
 
 		pMaximize = new JPanel() {
+
 			/**
 			 * 
 			 */
@@ -283,6 +288,7 @@ public class FrameTop extends JPanel {
 	private void initPanelClose() {
 
 		pClose = new JPanel() {
+
 			/**
 			 * 
 			 */
@@ -374,6 +380,47 @@ public class FrameTop extends JPanel {
 		pClose.setPreferredSize(pClose.getMinimumSize());
 		pClose.setMaximumSize(pClose.getMinimumSize());
 		pClose.setCursor(new Cursor(Cursor.HAND_CURSOR));
+	}
+
+	private void addMovementListener() {
+
+		addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+				lastPoint = e.getLocationOnScreen();
+
+			}
+		});
+
+		addMouseMotionListener(new MouseMotionAdapter() {
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+
+				if (guiMain.getJaimsFrame().getExtendedState() == JFrame.MAXIMIZED_BOTH) {
+					guiMain.getJaimsFrame().setExtendedState(JFrame.NORMAL);
+					maximized = false;
+					repaint();
+				}
+
+				int xDifference = (int) e.getLocationOnScreen().getX() - (int) lastPoint.getX();
+				int yDifference = (int) (e.getLocationOnScreen().getY() - lastPoint.getY());
+
+				guiMain.getJaimsFrame().setLocation((int) guiMain.getJaimsFrame().getLocation().getX() + xDifference,
+						(int) guiMain.getJaimsFrame().getLocation().getY() + yDifference);
+
+				lastPoint = e.getLocationOnScreen();
+
+				if (e.getLocationOnScreen().getY() < 1) {
+					guiMain.getJaimsFrame().setExtendedState(JFrame.MAXIMIZED_BOTH);
+					maximized = true;
+					repaint();
+				}
+
+			}
+		});
 	}
 
 	@Override

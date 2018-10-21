@@ -23,18 +23,16 @@ import jaims_development_studio.jaims.client.gui.GUIMain;
 import jaims_development_studio.jaims.client.logic.SimpleContact;
 
 public class PanelUserShowing extends JPanel {
+
 	/**
 	 * 
 	 */
 	private static final long	serialVersionUID	= 1L;
 
-	private SimpleContact		simpleContact;
 	private Image				img;
 	private BufferedImage		output				= new BufferedImage(50, 50, BufferedImage.TYPE_INT_ARGB);
 
 	public PanelUserShowing(GUIMain guiMain, SimpleContact simpleContact) {
-
-		this.simpleContact = simpleContact;
 
 		img = guiMain.getUserProfileImage(simpleContact.getContactID()).getScaledInstance(50, 50, Image.SCALE_SMOOTH);
 		setPreferredSize(new Dimension(250, 60));

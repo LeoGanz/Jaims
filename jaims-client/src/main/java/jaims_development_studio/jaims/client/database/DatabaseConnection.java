@@ -53,8 +53,7 @@ public class DatabaseConnection {
 	 * Builds a connection to the database and creates instances of
 	 * {@link ReadFromDatabase} and {@link WriteToDatabase}.
 	 * 
-	 * @param username
-	 *            the logged-in-user's name
+	 * @param username the logged-in-user's name
 	 */
 	private void initConnection(String username) {
 
@@ -139,12 +138,11 @@ public class DatabaseConnection {
 	/**
 	 * Gets all messages with the contact specified by the UUID.
 	 * 
-	 * @param uuid
-	 *            the contact's UUID.
+	 * @param uuid the contact's UUID.
 	 * @return ArrayList filled with messages
 	 * 
 	 * @see jaims_development_studio.jaims.client.chatObjects.ClientInternMessage
-	 *      ClientInternMessage
+	 * ClientInternMessage
 	 * @see ReadFromDatabase#getContactMessages(UUID)
 	 * @see UUID
 	 * @see ArrayList
@@ -158,12 +156,9 @@ public class DatabaseConnection {
 	/**
 	 * Gets the contact representing the logged-in-user
 	 * 
-	 * @param uuid
-	 *            The logged-in-user's UUID
-	 * @param username
-	 *            the logged-in-users nickname
-	 * @param cm
-	 *            instance representing the ClientMain class
+	 * @param uuid The logged-in-user's UUID
+	 * @param username the logged-in-users nickname
+	 * @param cm instance representing the ClientMain class
 	 * @return logged-in-user's <code>SimpleContact</code> equivalent
 	 * 
 	 * @see ReadFromDatabase#getUserContact(UUID, String, ClientMain)
@@ -181,8 +176,7 @@ public class DatabaseConnection {
 	/**
 	 * Gets a contact's profile picture.
 	 * 
-	 * @param uuid
-	 *            the contact's UUID whose picture the program is looking for
+	 * @param uuid the contact's UUID whose picture the program is looking for
 	 * @return a contact's profile picture
 	 * 
 	 * @see ReadFromDatabase#getProfileImage(UUID)
@@ -197,8 +191,7 @@ public class DatabaseConnection {
 	/**
 	 * Gets the user's profile picture.
 	 * 
-	 * @param uuid
-	 *            the user's UUID
+	 * @param uuid the user's UUID
 	 * @return the user's profile picture
 	 * 
 	 * @see ReadFromDatabase#getUserProfileImage(UUID)
@@ -223,8 +216,7 @@ public class DatabaseConnection {
 
 	/**
 	 * 
-	 * @param uuid
-	 *            The contact's UUId whose status has to be retrieved
+	 * @param uuid The contact's UUId whose status has to be retrieved
 	 * @return the contacts status
 	 * 
 	 * @see ReadFromDatabase#getContactStatus(UUID)
@@ -238,8 +230,7 @@ public class DatabaseConnection {
 	 * Returns a boolean which indicated whether a chat history with the user
 	 * specified by the <code>UUID</code> exists.
 	 * 
-	 * @param uuid
-	 *            the contact's UUID
+	 * @param uuid the contact's UUID
 	 * @return true if chat exists, otherwise false
 	 * 
 	 * @see ReadFromDatabase#hasEntry(UUID)
@@ -253,10 +244,8 @@ public class DatabaseConnection {
 	/**
 	 * Saves the given profile to the database.
 	 * 
-	 * @param pf
-	 *            the profile to be saved
-	 * @param contact
-	 *            indicated whether to save as contact or as user profile
+	 * @param pf the profile to be saved
+	 * @param contact indicated whether to save as contact or as user profile
 	 * @return true if saved successfully
 	 * 
 	 * @see WriteToDatabase#saveProfile(Profile, boolean)
@@ -271,8 +260,7 @@ public class DatabaseConnection {
 	 * Deletes the <code>Profile</code> associated with the given <code>UUID</code>
 	 * from the database.
 	 * 
-	 * @param uuid
-	 *            the profile's UUID
+	 * @param uuid the profile's UUID
 	 * @return true if successfully deleted
 	 * 
 	 * @see WriteToDatabase#deleteContact(UUID)
@@ -288,10 +276,8 @@ public class DatabaseConnection {
 	 * Updates the <code>Profile</code> associated with the given <code>UUID</code>
 	 * in the database.
 	 * 
-	 * @param pf
-	 *            the new version of the profile
-	 * @param contact
-	 *            update a contact's profile or the user's profile
+	 * @param pf the new version of the profile
+	 * @param contact update a contact's profile or the user's profile
 	 * 
 	 * @see WriteToDatabase#updateProfile(Profile, boolean)
 	 * @see Profile
@@ -305,8 +291,7 @@ public class DatabaseConnection {
 	/**
 	 * Saves,as the name suggests, a new text message to the database.
 	 * 
-	 * @param m
-	 *            the message to be saved
+	 * @param m the message to be saved
 	 * 
 	 * @see WriteToDatabase#saveTextMessage(ClientInternMessage)
 	 * @see ClientInternMessage
@@ -319,10 +304,8 @@ public class DatabaseConnection {
 	/**
 	 * Saves the given <code>VoiceMessage</code> to the database.
 	 * 
-	 * @param m
-	 *            the voice message to be saved
-	 * @param pathToFile
-	 *            the path to the folder where the audio is saved
+	 * @param m the voice message to be saved
+	 * @param pathToFile the path to the folder where the audio is saved
 	 */
 	public void saveVoiceMessage(Message m, String pathToFile) {
 
@@ -333,10 +316,8 @@ public class DatabaseConnection {
 	 * Updates the contacts table in the database and sets the boolean hasChat of
 	 * the contact specified by the UUID to the new value.
 	 * 
-	 * @param hasChat
-	 *            the new boolean value
-	 * @param contactID
-	 *            the contact's UUID
+	 * @param hasChat the new boolean value
+	 * @param contactID the contact's UUID
 	 * 
 	 * @see WriteToDatabase#updateHasChat(boolean, UUID)
 	 * @see UUID
@@ -349,8 +330,7 @@ public class DatabaseConnection {
 	/**
 	 * Updates the user's profile in the database and return the updated version.
 	 * 
-	 * @param uuid
-	 *            the user's UUID
+	 * @param uuid the user's UUID
 	 * @return the updated user profile
 	 * 
 	 * @see ReadFromDatabase#getAndUpdateUser(UUID)
@@ -388,5 +368,15 @@ public class DatabaseConnection {
 	public ArrayList<Event> getAllPendingEvents() {
 
 		return readFromDatabase.getAllPendingEvents();
+	}
+
+	public ReadFromDatabase getReadFromDatabase() {
+
+		return readFromDatabase;
+	}
+
+	public WriteToDatabase getWriteToDatabase() {
+
+		return writeToDatabase;
 	}
 }

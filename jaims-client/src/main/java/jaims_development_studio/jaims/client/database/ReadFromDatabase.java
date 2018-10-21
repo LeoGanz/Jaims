@@ -59,7 +59,7 @@ public class ReadFromDatabase {
 
 		try {
 			// Gets all the tables available in the db
-			rs = con.getMetaData().getTables(null, null, null, new String[] {"TABLE"});
+			rs = con.getMetaData().getTables(null, null, null, new String[] { "TABLE" });
 			while (rs.next()) {
 				String tName = rs.getString("TABLE_NAME");
 				if (tName != null && tName.equals("MESSAGES")) {
@@ -145,12 +145,9 @@ public class ReadFromDatabase {
 	 * from the server and returns the <code>SimpleContact</code> with the least
 	 * needed information - the UUID and the username.
 	 * 
-	 * @param uuid
-	 *            the user's UUID
-	 * @param username
-	 *            the user's nickname
-	 * @param cm
-	 *            ClientMain instance
+	 * @param uuid the user's UUID
+	 * @param username the user's nickname
+	 * @param cm ClientMain instance
 	 * @return the user's SimpleContact
 	 * 
 	 * @see SimpleContact
@@ -168,6 +165,7 @@ public class ReadFromDatabase {
 				return simpleContact;
 			} else {
 				Thread thread = new Thread("Thread-RequestUserProfile") {
+
 					@Override
 					public void run() {
 
@@ -181,6 +179,7 @@ public class ReadFromDatabase {
 		} catch (SQLException e) {
 			LOG.error("Failed to create statement or resultSet!", e);
 			new Thread() {
+
 				@Override
 				public void run() {
 
@@ -196,8 +195,7 @@ public class ReadFromDatabase {
 	 * the statements can't be executed and an exception is thrown the method is
 	 * called again until the profile was successfully updated and retrieved again.
 	 * 
-	 * @param uuid
-	 *            the user's UUID
+	 * @param uuid the user's UUID
 	 * @return the user's profile
 	 * 
 	 * @see UUID
@@ -214,7 +212,7 @@ public class ReadFromDatabase {
 			pStatement.setObject(1, uuid);
 			rs = pStatement.executeQuery();
 			Profile user = new Profile((UUID) rs.getObject(1), null, rs.getString(2), rs.getString(3), rs.getString(4),
-					rs.getBytes(5), convertToDate(rs.getTimestamp(6)));
+					null, null, rs.getBytes(5), 0, convertToDate(rs.getTimestamp(6)));
 			return user;
 		} catch (SQLException e) {
 			LOG.error("Couldn't execute statement properly! Trying again...", e);
@@ -228,8 +226,7 @@ public class ReadFromDatabase {
 	 * Gets the date the user's profile in the database was last updated. This needs
 	 * to be done in order to get the newest version of the profile from the server.
 	 * 
-	 * @param uuid
-	 *            the user's UUID
+	 * @param uuid the user's UUID
 	 * @return the date of the last update
 	 * 
 	 * @see Date
@@ -321,8 +318,7 @@ public class ReadFromDatabase {
 	 * are added to an ArrayList an sorted by the date they where received. In case
 	 * of own messages the 'received date' is the date the message was created.
 	 * 
-	 * @param uuid
-	 *            the contact's UUID
+	 * @param uuid the contact's UUID
 	 * @return an ArrayList with messages
 	 * 
 	 * @see ClientInterMessage
@@ -385,8 +381,7 @@ public class ReadFromDatabase {
 	 * database and converts it to an image. If there is no profile picture in the
 	 * database or the loading fails, the standard picture is loaded.
 	 * 
-	 * @param uuid
-	 *            the contact's UUID whose picture the program is looking for
+	 * @param uuid the contact's UUID whose picture the program is looking for
 	 * @return the contact's profile picture
 	 * 
 	 * @see UUID
@@ -420,8 +415,7 @@ public class ReadFromDatabase {
 	 * image. If there is no profile picture or the loading fails, the standard
 	 * picture is loaded.
 	 * 
-	 * @param uuid
-	 *            the user's UUID
+	 * @param uuid the user's UUID
 	 * @return the user's profile picture
 	 * 
 	 * @see UUID
@@ -485,8 +479,7 @@ public class ReadFromDatabase {
 
 	/**
 	 * 
-	 * @param uuid
-	 *            the contact's UUID whose status the program is looking for
+	 * @param uuid the contact's UUID whose status the program is looking for
 	 * @return the contact's status
 	 * 
 	 * @see UUID
@@ -509,8 +502,7 @@ public class ReadFromDatabase {
 	}
 
 	/**
-	 * @param uuid
-	 *            the contact's UUID whose description the program is looking for
+	 * @param uuid the contact's UUID whose description the program is looking for
 	 * @return the contact's description
 	 * 
 	 * @see UUID
@@ -535,8 +527,7 @@ public class ReadFromDatabase {
 	/**
 	 * Checks the database whether an entry for the given UUID exists.
 	 * 
-	 * @param uuid
-	 *            the UUID to be checked
+	 * @param uuid the UUID to be checked
 	 * @return true if an entry exists otherwise false
 	 * 
 	 * @see UUID
@@ -614,8 +605,7 @@ public class ReadFromDatabase {
 	/**
 	 * Converts a sql Timestamp retrieved from the database to a java util Date.
 	 * 
-	 * @param ts
-	 *            the timestamp to be converted
+	 * @param ts the timestamp to be converted
 	 * @return a date equivalent to the given timestamp
 	 * 
 	 * @see java.sql.Timestamp Timestamp

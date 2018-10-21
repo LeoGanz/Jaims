@@ -62,8 +62,7 @@ public class ClientMain {
 	/**
 	 * Main entry point for program. Creates new Instance of ClientMain.
 	 * 
-	 * @param args
-	 *            String array with arguments for the program
+	 * @param args String array with arguments for the program
 	 */
 	public static void main(String[] args) {
 
@@ -92,9 +91,8 @@ public class ClientMain {
 	 * gui</li>
 	 * </ul>
 	 * 
-	 * @param showSplashScreen
-	 *            a boolean deciding whether the splash screen should be shown when
-	 *            starting the program
+	 * @param showSplashScreen a boolean deciding whether the splash screen should
+	 * be shown when starting the program
 	 * @see GUIMain
 	 */
 	private void initProgram(boolean showSplashScreen) {
@@ -165,10 +163,9 @@ public class ClientMain {
 	 * {@link ClientInternMessage}s that have the given <code>UUID</code> as either
 	 * recipient or sender.
 	 * 
-	 * @param uuid
-	 *            specifies the contact for whose messages the client is looking
+	 * @param uuid specifies the contact for whose messages the client is looking
 	 * @return an ArrayList filled with <code>ClientInternMessage</code>s to or from
-	 *         this contact
+	 * this contact
 	 * 
 	 * @see DatabaseConnection#getContactMessages(UUID)
 	 * @see ArrayList
@@ -209,10 +206,8 @@ public class ClientMain {
 	 * check whether the login information is correct.
 	 * 
 	 * 
-	 * @param username
-	 *            the username the user enters when logging in
-	 * @param password
-	 *            the password the user enters when logging in
+	 * @param username the username the user enters when logging in
+	 * @param password the password the user enters when logging in
 	 * 
 	 * @see ServerConnection#sendSendable(Sendable)
 	 */
@@ -244,8 +239,7 @@ public class ClientMain {
 	 * <li>{@link GUIMain#loginSuccessful()}</li>
 	 * </ul>
 	 * 
-	 * @param uuid
-	 *            the logged-in-user's UUID
+	 * @param uuid the logged-in-user's UUID
 	 * 
 	 * @see GUIMain
 	 */
@@ -270,8 +264,7 @@ public class ClientMain {
 	 * When called this method starts the connection to the database and then loads
 	 * the logged-in-user's <code>SimpleContact</code> from the database.
 	 * 
-	 * @param uuid
-	 *            the logged-in-user's UUID
+	 * @param uuid the logged-in-user's UUID
 	 * 
 	 * @see #connectToDatabase()
 	 * @see DatabaseConnection#getUserContact(UUID, String, ClientMain)
@@ -311,8 +304,8 @@ public class ClientMain {
 	 * Returns the profile picture available in the database from the user
 	 * represented by the {@link UUID}.
 	 * 
-	 * @param uuid
-	 *            the contact's UUID whose profile picture the caller is looking for
+	 * @param uuid the contact's UUID whose profile picture the caller is looking
+	 * for
 	 * @return the contact's profile picture
 	 * 
 	 * @see DatabaseConnection#getProfileImage(UUID)
@@ -327,8 +320,7 @@ public class ClientMain {
 	 * Returns the profile picture in the database for the logged-in-user
 	 * represented by his {@link UUID}.
 	 * 
-	 * @param uuid
-	 *            the logged-in-user's UUID
+	 * @param uuid the logged-in-user's UUID
 	 * @return the logged-in-user's profile picture
 	 * 
 	 * @see DatabaseConnection#getUserProfileImage(UUID)
@@ -355,8 +347,7 @@ public class ClientMain {
 	/**
 	 * Returns the status of a contact represented by the {@link UUID} as a String
 	 * 
-	 * @param uuid
-	 *            the contact's UUID whose status the caller is looking for
+	 * @param uuid the contact's UUID whose status the caller is looking for
 	 * @return the contact's status
 	 * 
 	 * @see DatabaseConnection#getContactStatus(UUID)
@@ -371,8 +362,7 @@ public class ClientMain {
 	 * Returns whether the contact represented by the {@link UUID} is saved in the
 	 * database
 	 * 
-	 * @param uuid
-	 *            the contact's UUID the caller is searching for
+	 * @param uuid the contact's UUID the caller is searching for
 	 * @return boolean whether the contact is saved
 	 * 
 	 * @see DatabaseConnection#hasEntry(UUID)
@@ -397,8 +387,7 @@ public class ClientMain {
 	/**
 	 * Sets the login button enabled/disabled
 	 * 
-	 * @param enabled
-	 *            whether de login button should be enabled or disabled
+	 * @param enabled whether de login button should be enabled or disabled
 	 * 
 	 * @see GUIMain#setLoginEnabled(boolean)
 	 */
@@ -410,8 +399,7 @@ public class ClientMain {
 	/**
 	 * Notifies the user when the login failed because of a wrong username.
 	 * 
-	 * @param wrong
-	 *            is true when the username is wrong
+	 * @param wrong is true when the username is wrong
 	 * 
 	 * @see GUIMain#setWrongUsername(boolean)
 	 */
@@ -423,8 +411,7 @@ public class ClientMain {
 	/**
 	 * Notifies the user when the login failes because of a wrong password.
 	 * 
-	 * @param wrong
-	 *            is true when the password is wrong
+	 * @param wrong is true when the password is wrong
 	 * 
 	 * @see GUIMain#setWrongPassword(boolean)
 	 */
@@ -438,8 +425,7 @@ public class ClientMain {
 	 * profile's UUID whether to save it as a contact's profile or as the
 	 * logged-in-user's profile.
 	 * 
-	 * @param p
-	 *            the profile that has to be saved
+	 * @param p the profile that has to be saved
 	 * @return true if the profile has successfully been saved otherwise false
 	 * 
 	 * @see DatabaseConnection#saveProfile(Profile, boolean)
@@ -457,8 +443,7 @@ public class ClientMain {
 	 * on the basis of the profile's UUID whether to update the logged-in-user's
 	 * profile or a contact one's.
 	 * 
-	 * @param p
-	 *            the profile that has to be updated
+	 * @param p the profile that has to be updated
 	 * 
 	 * @see DatabaseConnection#updateProfile(Profile, boolean)
 	 */
@@ -473,8 +458,7 @@ public class ClientMain {
 	/**
 	 * Sends a request for a profile with the given {@link UUID} to the server.
 	 * 
-	 * @param uuid
-	 *            the profile's UUID that has to be requested
+	 * @param uuid the profile's UUID that has to be requested
 	 * 
 	 * @see SendableRequest
 	 * @see ServerConnection#sendSendable(Sendable)
@@ -489,12 +473,9 @@ public class ClientMain {
 	 * After the user has entered his sign-up informations, these information are
 	 * sent to the server in order to register a new user.
 	 * 
-	 * @param username
-	 *            the new user's username
-	 * @param password
-	 *            the new user's password
-	 * @param email
-	 *            the new user's email
+	 * @param username the new user's username
+	 * @param password the new user's password
+	 * @param email the new user's email
 	 */
 	public void registerNewUser(String username, String password, String email) {
 
@@ -510,8 +491,7 @@ public class ClientMain {
 	 * <li>{@link GUIMain#succesfulRegistration()}</li>
 	 * </ul>
 	 * 
-	 * @param uuid
-	 *            the UUID of the newly registered user
+	 * @param uuid the UUID of the newly registered user
 	 */
 	public void succesfullRegistration(UUID uuid) {
 
@@ -523,8 +503,7 @@ public class ClientMain {
 	 * This method creates a {@link Profile} for the new user after a successful
 	 * registration and sends it to the server.
 	 * 
-	 * @param uuid
-	 *            the user's UUID for the profile
+	 * @param uuid the user's UUID for the profile
 	 * 
 	 * @see Profile#setUuid(UUID)
 	 * @see ServerConnection#sendSendable(Sendable)
@@ -533,7 +512,8 @@ public class ClientMain {
 	 */
 	public void sendRegistrationProfile(UUID uuid) {
 
-		Profile pf = new Profile(null, guiMain.getRegisteredUsername(), "", "", null, new Date());
+		Profile pf = new Profile(null, guiMain.getRegisteredUsername(), "", "", "", loggedInUsername, null, 0,
+				new Date());
 		pf.setUuid(uuid);
 		SendableProfile sp = new SendableProfile(pf);
 		sc.sendSendable(sp);
@@ -543,8 +523,7 @@ public class ClientMain {
 	 * Saves a {@link jaims_development_studio.jaims.api.message.TextMessage
 	 * TextMessage} which was sent from the server to the database.
 	 * 
-	 * @param m
-	 *            the TextMessage to be saved
+	 * @param m the TextMessage to be saved
 	 */
 	public void saveTextMessage(jaims_development_studio.jaims.api.message.TextMessage m) {
 
@@ -555,10 +534,8 @@ public class ClientMain {
 	 * Saves a {@link jaims_development_studio.jaims.api.message.VoiceMessage
 	 * VoiceMessage} which was sent from the server to the database.
 	 * 
-	 * @param v
-	 *            The <code>VoiceMessage</code> to be saved
-	 * @param pathToFile
-	 *            Path to the voice message on the disk
+	 * @param v The <code>VoiceMessage</code> to be saved
+	 * @param pathToFile Path to the voice message on the disk
 	 */
 	public void saveVoiceMessage(jaims_development_studio.jaims.api.message.VoiceMessage v, String pathToFile) {
 
@@ -569,14 +546,12 @@ public class ClientMain {
 	 * Adds a {@link jaims_development_studio.jaims.api.message.Message
 	 * ClientInternMessage} which was sent from the server to a chat.
 	 * 
-	 * @param m
-	 *            The message to be added
-	 * @param messageType
-	 *            The type of the message
+	 * @param m The message to be added
+	 * @param messageType The type of the message
 	 * 
 	 * @see EMessageType
 	 * @see GUIMain#addMessageToChat(jaims_development_studio.jaims.api.message.Message,
-	 *      EMessageType) addMessageToChat(ClientInternMessage, EMessageType)
+	 * EMessageType) addMessageToChat(ClientInternMessage, EMessageType)
 	 * 
 	 */
 	public void addMessageToChat(jaims_development_studio.jaims.api.message.Message m, EMessageType messageType) {
@@ -588,10 +563,9 @@ public class ClientMain {
 	 * Updates a contact specified by the <code>UUID</code> in the database and
 	 * changes its hasChat field to the given value.
 	 * 
-	 * @param hasChat
-	 *            The value to be written into the database
-	 * @param contactID
-	 *            The UUID of the contact whose hasChat value has to be changed
+	 * @param hasChat The value to be written into the database
+	 * @param contactID The UUID of the contact whose hasChat value has to be
+	 * changed
 	 * 
 	 * @see DatabaseConnection#updateHasChat(boolean, UUID)
 	 */
@@ -605,8 +579,7 @@ public class ClientMain {
 	 * profiles that the server send during this time aren't just saved to the
 	 * database but are shown on the <code>PanelAddUser</code>.
 	 * 
-	 * @param b
-	 *            true if adding new contacts otherwise false
+	 * @param b true if adding new contacts otherwise false
 	 */
 	public void setAddingNewContact(boolean b) {
 
@@ -626,8 +599,7 @@ public class ClientMain {
 	 * Calls a method to delete the profile belonging to this <code>UUID</code> from
 	 * the database and returns a boolean whether it was successfully deleted.
 	 * 
-	 * @param uuid
-	 *            the UUID of the profile that has to be deleted
+	 * @param uuid the UUID of the profile that has to be deleted
 	 * @return true if profile was successfully deleted otherwise false
 	 * 
 	 * @see DatabaseConnection#deleteProfile(UUID)
@@ -642,8 +614,7 @@ public class ClientMain {
 	 * Gets a profile array the server has sent and forwards it to
 	 * <code>GUIMain</code> to show these profiles on the <code>PanelAddUser</code>.
 	 * 
-	 * @param users
-	 *            the array of profiles to be displayed
+	 * @param users the array of profiles to be displayed
 	 * 
 	 * @see GUIMain#showAvailableUsersForAdding(Profile...)
 	 */
@@ -651,8 +622,9 @@ public class ClientMain {
 
 		guiMain.showAvailableUsersForAdding(users);
 	}
-	
+
 	public ParentPanel getCurrentParentPanel() {
+
 		return guiMain.getCurrentParentPanel();
 	}
 
@@ -766,8 +738,7 @@ public class ClientMain {
 	/**
 	 * Creates the directories JAIMS needs under the user's home directory
 	 * 
-	 * @param path
-	 *            the path where the directories have to be created
+	 * @param path the path where the directories have to be created
 	 */
 	private void createDirectory(String path) {
 
@@ -787,8 +758,7 @@ public class ClientMain {
 
 	/**
 	 * 
-	 * @param s
-	 *            The Sendable that has to be sent to the server
+	 * @param s The Sendable that has to be sent to the server
 	 * 
 	 * @see ServerConnection#sendSendable(Sendable)
 	 */
@@ -850,5 +820,10 @@ public class ClientMain {
 	public ArrayList<Event> getAllPendingEvents() {
 
 		return databaseConnection.getAllPendingEvents();
+	}
+
+	public DatabaseConnection getDatabaseConnection() {
+
+		return databaseConnection;
 	}
 }
