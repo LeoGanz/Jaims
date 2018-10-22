@@ -94,23 +94,24 @@ public class DatabaseConnection {
 
 	}
 
-	public String[] getLogin() {
-
-		return readFromDatabase.getLogin();
-	}
-
-	public void setRememberMe(boolean remember, String username, String password) {
-
-		writeToDatabase.setRememberMe(remember, username, password);
-	}
-
-	/**
-	 * Gets all available contacts from the database.
+	/*
+	 * public String[] getLogin() {
+	 * 
+	 * return readFromDatabase.getLogin(); }
+	 * 
+	 * public void setRememberMe(boolean remember, String username, String password)
+	 * {
+	 * 
+	 * writeToDatabase.setRememberMe(remember, username, password); }
+	 * 
+	 * /** Gets all available contacts from the database.
 	 * 
 	 * @return ArrayList filled with SimpleContacts
 	 * 
 	 * @see ReadFromDatabase#getSimpleContacts()
+	 * 
 	 * @see ArrayList
+	 * 
 	 * @see SimpleContact
 	 */
 	public ArrayList<SimpleContact> getSimpleContacts() {

@@ -120,6 +120,7 @@ public class ListenForInput implements Runnable {
 	 */
 	private void handleSendable(Sendable s) {
 
+		LOG.info("Received sendable: " + s.getType());
 		try {
 			switch (s.getType().getValue()) {
 			case "MESSAGE":
@@ -197,8 +198,9 @@ public class ListenForInput implements Runnable {
 				if (sr.getRequestType().getValue().equals("FRIEND")) {
 					cm.saveNewEvent(sr, EEventType.FRIEND_REQUEST);
 				}
+			case "DFE_INITIATION":
+				LOG.info("Received sendable of type: " + ((SendableDFEInitiation) s).getType());
 			case "DIRECT_DELIVERY":
-				LOG.info("Received sendable of type " + ((SendableDFEInitiation) s).getType().getValue());
 			case "OTHER":
 				break;
 			default:

@@ -28,6 +28,7 @@ import jaims_development_studio.jaims.api.sendables.SendableRequest;
 import jaims_development_studio.jaims.api.settings.Settings;
 import jaims_development_studio.jaims.client.chatObjects.ClientInternMessage;
 import jaims_development_studio.jaims.client.database.DatabaseConnection;
+import jaims_development_studio.jaims.client.directFileExchange.DFEManager;
 import jaims_development_studio.jaims.client.gui.GUIMain;
 import jaims_development_studio.jaims.client.gui.customGUIComponents.ParentPanel;
 import jaims_development_studio.jaims.client.gui.dfe.DFEObject;
@@ -55,6 +56,7 @@ public class ClientMain {
 	private Settings			settings;
 	private boolean				addingNewContact		= false;
 	private boolean				profileChanged			= false;
+	private DFEManager			dfeManager;
 
 	public SimpleContact		userContact;
 	public static UUID			serverUUID;
@@ -608,6 +610,12 @@ public class ClientMain {
 	public boolean deleteProfile(UUID uuid) {
 
 		return databaseConnection.deleteProfile(uuid);
+	}
+
+	public void createDFEManager() {
+
+		if (dfeManager != null)
+			dfeManager = new DFEManager(this);
 	}
 
 	/**

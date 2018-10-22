@@ -5,7 +5,7 @@ public class SendableDFEInitiation extends SendableDirectDelivery {
 	private static final long	serialVersionUID	= 1L;
 
 	private int					port;
-	private ESendableType		type				= ESendableType.DFE_INITATION;
+	private ESendableType		type				= ESendableType.DFE_INITIATION;
 
 	public SendableDFEInitiation(int port) {
 

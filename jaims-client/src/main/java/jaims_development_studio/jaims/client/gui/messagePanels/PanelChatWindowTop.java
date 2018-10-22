@@ -21,8 +21,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
-import jaims_development_studio.jaims.api.sendables.SendableDFEInitiation;
 import jaims_development_studio.jaims.client.gui.GUIMain;
+import jaims_development_studio.jaims.client.gui.dfe.DFEWindow;
 import jaims_development_studio.jaims.client.logic.SimpleContact;
 
 /**
@@ -124,9 +124,8 @@ public class PanelChatWindowTop extends JPanel {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 
-				SendableDFEInitiation sdfe = new SendableDFEInitiation(6050);
-				sdfe.setRecipient(contactProfile.getContactID());
-				guiMain.sendSendable(sdfe);
+				guiMain.showParentPanel(
+						new DFEWindow(guiMain, contactProfile.getContactID(), contactProfile.getContactNickname()));
 
 			}
 		});
