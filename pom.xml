@@ -34,6 +34,7 @@
 	<modules>
 		<module>jaims-api</module>
 		<module>jaims-client</module>
+		<module>jaims-clientfx</module>
 		<module>jaims-server</module>
 	</modules>
 
