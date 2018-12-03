@@ -1,0 +1,21 @@
+//@charset ["ISO-8859-1"];
+
+#background-pane {
+	-fx-background-radius: 100 100 100 100;
+	-fx-border-radius: 100 100 100 100;
+	-fx-background-image: url("../images/Loginbackground.png");
+	-fx-background-repeat: no-repeat;
+	-fx-padding: 50 20 50 20;
+	
+}
+
+#scene-pane {
+	-fx-border-radius: 60 60 60 60;
+}
+
+#sign-in-pane {
+	-fx-font-family: "Calibri";
+	-fx-font-size: 24;
+	-fx-font-weight: bold;
+	-fx-text-fill: #FFFFFF;
+}
